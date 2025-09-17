@@ -1,8 +1,8 @@
-
 import React from 'react';
 import { ActionType } from '../types';
 import MindMapRenderer from './MindMapRenderer';
 import { LoadingIcon } from './icons';
+import FormattedResponse from './FormattedResponse';
 
 interface ResultsViewProps {
     isLoading: boolean;
@@ -16,7 +16,7 @@ const ResultsView: React.FC<ResultsViewProps> = ({ isLoading, result, error, act
         return (
             <div className="flex flex-col items-center justify-center h-full text-center text-slate-400">
                 <LoadingIcon className="h-10 w-10 animate-spin text-sky-400" />
-                <p className="mt-4 text-lg font-semibold">Analisando a página...</p>
+                <p className="mt-4 text-lg font-semibold">Analisando o texto...</p>
                 <p className="text-sm">A IA está trabalhando para gerar sua resposta.</p>
             </div>
         );
@@ -38,20 +38,14 @@ const ResultsView: React.FC<ResultsViewProps> = ({ isLoading, result, error, act
             return <MindMapRenderer text={result} />;
         }
         
-        // Formatação básica para outras respostas: negrito e quebras de linha.
-        const formattedHtml = result
-            .replace(/\*\*(.*?)\*\*/g, '<strong class="text-sky-300">$1</strong>')
-            .replace(/\n/g, '<br />');
-
-        return <div className="prose prose-invert prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: formattedHtml }} />;
+        return <FormattedResponse text={result} actionType={actionType} />;
     };
 
     return (
-        <div className="bg-slate-900 p-4 rounded-xl h-full overflow-y-auto">
+        <div className="bg-slate-900/70 p-4 rounded-xl h-full overflow-y-auto">
             {renderContent()}
         </div>
     );
 };
 
 export default ResultsView;
-    
