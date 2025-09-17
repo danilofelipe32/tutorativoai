@@ -1,5 +1,3 @@
-
-
 import React, { useState, useCallback } from 'react';
 import { ActionType, View } from './types';
 import Header from './components/Header';
@@ -11,7 +9,21 @@ import { actionConfig } from './constants';
 // --- Logic moved from background.js and adapted for PWA ---
 
 function getPromptForAction(action: ActionType, context: string): string {
-    const basePrompt = `Você é um "Tutor Inteligente", uma IA assistente de estudos. Analise o seguinte texto e execute a tarefa solicitada. Responda em Português do Brasil.\n\n--- INÍCIO DO TEXTO ---\n${context}\n--- FIM DO TEXTO ---\n\n`;
+    // Advanced prompt instructing the AI to use a structured reasoning process.
+    const basePrompt = `Você é um "Tutor Inteligente", uma IA assistente de estudos. Sua tarefa é analisar o texto fornecido e executar a tarefa solicitada com a máxima precisão e clareza.
+
+Para garantir a mais alta qualidade em sua resposta, você DEVE seguir este processo de raciocínio interno antes de fornecer a resposta final:
+1.  **Cadeia de Pensamento (Chain of Thought - CoT):** Primeiro, analise a solicitação do usuário e o texto. Pense passo a passo sobre o que está sendo pedido e quais são as informações-chave no texto. Identifique os conceitos centrais, argumentos e evidências.
+2.  **Auto-Reflexão e Árvore de Pensamentos (Tree of Thoughts - ToT):** Gere 2-3 abordagens iniciais ou rascunhos de resposta. Critique cada rascunho. Pergunte a si mesmo: Isso é preciso? Está completo? Responde diretamente à solicitação do usuário? É fácil de entender? Selecione a melhor abordagem ou sintetize as melhores partes de cada rascunho para construir uma resposta superior.
+3.  **Resposta Final Polida:** Com base em sua análise interna, formule a resposta final, limpa e bem estruturada para o usuário.
+
+**IMPORTANTE:** Sua saída final deve ser APENAS a resposta polida. NÃO inclua seu pensamento passo a passo, seus rascunhos ou suas autocríticas na resposta final. O usuário deve receber apenas o resultado do seu processo de raciocínio.
+
+--- INÍCIO DO TEXTO ---
+${context}
+--- FIM DO TEXTO ---
+
+`;
 
     switch (action) {
         case 'SUMMARIZE':
