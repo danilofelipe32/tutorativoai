@@ -1,6 +1,6 @@
 
+
 import React, { useState, useCallback } from 'react';
-import { GoogleGenAI } from "@google/genai";
 import { ActionType, View } from './types';
 import Header from './components/Header';
 import MainView from './components/MainView';
@@ -37,16 +37,33 @@ function getPromptForAction(action: ActionType, context: string): string {
     }
 }
 
-async function callGemini(prompt: string): Promise<string> {
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+async function callApiFreeLLM(prompt: string): Promise<string> {
+    const API_URL = 'https://apifreellm.com/api/chat';
+
     try {
-        const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
-            contents: prompt,
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ message: prompt }),
         });
-        return response.text;
+
+        if (!response.ok) {
+            throw new Error(`Erro de rede: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+
+        if (data.status === 'success') {
+            return data.response;
+        } else if (data.status === 'rate_limited') {
+            throw new Error(`Limite de requisições atingido. Por favor, aguarde ${data.retry_after} segundos.`);
+        } else {
+            throw new Error(data.error || 'Ocorreu um erro desconhecido na resposta da API.');
+        }
     } catch (error: any) {
-        console.error("Error calling Google GenAI:", error);
+        console.error("Error calling APIFreeLLM:", error);
         throw new Error(`Não foi possível se conectar ao serviço de IA. Detalhes: ${error.message}`);
     }
 }
@@ -74,7 +91,7 @@ const App: React.FC = () => {
 
         try {
             const prompt = getPromptForAction(action, inputText);
-            const aiResponse = await callGemini(prompt);
+            const aiResponse = await callApiFreeLLM(prompt);
             setResult(aiResponse);
         } catch (err: any) {
             setError(err.message || 'Ocorreu um erro desconhecido.');
