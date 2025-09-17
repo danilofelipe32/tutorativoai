@@ -3,6 +3,7 @@ import { ActionType } from '../types';
 import MindMapRenderer from './MindMapRenderer';
 import { LoadingIcon } from './icons';
 import FormattedResponse from './FormattedResponse';
+import ShareButtons from './ShareButtons';
 
 interface ResultsViewProps {
     isLoading: boolean;
@@ -42,8 +43,16 @@ const ResultsView: React.FC<ResultsViewProps> = ({ isLoading, result, error, act
     };
 
     return (
-        <div className="bg-slate-900/70 p-4 rounded-xl h-full overflow-y-auto">
-            {renderContent()}
+        <div className="bg-slate-900/70 rounded-xl h-full flex flex-col">
+            <div className="flex-grow p-4 overflow-y-auto">
+                {renderContent()}
+            </div>
+            
+            {result && (
+                 <div className="flex-shrink-0 p-4 border-t border-slate-700/50">
+                    <ShareButtons textToShare={result} actionType={actionType} />
+                </div>
+            )}
         </div>
     );
 };
