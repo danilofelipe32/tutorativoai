@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { ActionType } from '../types';
 import { actionConfig } from '../constants';
@@ -15,13 +14,13 @@ const ActionButton: React.FC<{ action: ActionType; onClick: () => void; isDisabl
         <button
             onClick={onClick}
             disabled={isDisabled}
-            className={`p-4 rounded-xl flex flex-col items-start justify-between text-white shadow-lg transition-all duration-200 ease-in-out hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-white disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 ${config.className}`}
+            className={`p-3 rounded-xl flex flex-col items-start justify-between text-white shadow-lg transition-all duration-200 ease-in-out hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-white disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 ${config.className}`}
             aria-disabled={isDisabled}
         >
-            <config.icon className="h-8 w-8 mb-3" />
+            <config.icon className="h-7 w-7 mb-2" />
             <div className="text-left">
-                <h3 className="font-bold text-sm md:text-base">{config.title}</h3>
-                <p className="text-xs opacity-80 mt-1">{config.description}</p>
+                <h3 className="font-bold text-xs md:text-sm">{config.title}</h3>
+                <p className="text-[10px] opacity-80 mt-1">{config.description}</p>
             </div>
         </button>
     );
