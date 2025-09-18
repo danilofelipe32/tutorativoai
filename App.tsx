@@ -1,4 +1,5 @@
 
+
 import React, { useState, useCallback, useEffect } from 'react';
 import { ActionType, View, HistoryItem } from './types';
 import Header from './components/Header';
@@ -108,6 +109,11 @@ const App: React.FC = () => {
         localStorage.setItem('inputText', text);
     };
 
+    const handleClearText = () => {
+        setInputText('');
+        localStorage.removeItem('inputText');
+    };
+
     const callGenerativeAI = useCallback(async (action: ActionType, text: string) => {
         setView(View.RESULTS);
         setIsLoading(true);
@@ -213,6 +219,7 @@ const App: React.FC = () => {
                         onActionSelect={handleActionSelect}
                         inputText={inputText}
                         onTextChange={handleTextChange}
+                        onClearText={handleClearText}
                         history={history}
                         onHistoryItemClick={handleHistoryItemClick}
                     />

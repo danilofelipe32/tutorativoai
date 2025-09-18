@@ -1,13 +1,16 @@
 
+
 import React from 'react';
 import { ActionType, HistoryItem } from '../types';
 import { actionConfig } from '../constants';
 import HistoryList from './HistoryList';
+import { TrashIcon } from './icons';
 
 interface MainViewProps {
     onActionSelect: (action: ActionType) => void;
     inputText: string;
     onTextChange: (text: string) => void;
+    onClearText: () => void;
     history: HistoryItem[];
     onHistoryItemClick: (item: HistoryItem) => void;
 }
@@ -31,14 +34,26 @@ const ActionButton: React.FC<{ action: ActionType; onClick: () => void; isDisabl
 };
 
 
-const MainView: React.FC<MainViewProps> = ({ onActionSelect, inputText, onTextChange, history, onHistoryItemClick }) => {
+const MainView: React.FC<MainViewProps> = ({ onActionSelect, inputText, onTextChange, onClearText, history, onHistoryItemClick }) => {
     const isTextProvided = inputText.trim().length > 0;
     
     return (
         <div className="flex flex-col h-full">
-            <div className="mb-4">
-                <h2 className="text-2xl font-bold text-slate-100">Bem-vindo!</h2>
-                <p className="text-slate-400">Cole o texto que você deseja analisar abaixo.</p>
+            <div className="flex justify-between items-center mb-4">
+                <div>
+                    <h2 className="text-2xl font-bold text-slate-100">Bem-vindo!</h2>
+                    <p className="text-slate-400">Cole o texto que você deseja analisar abaixo.</p>
+                </div>
+                {isTextProvided && (
+                     <button
+                        onClick={onClearText}
+                        className="bg-slate-700 hover:bg-slate-600 text-slate-200 font-semibold py-2 px-4 rounded-lg transition-colors text-sm flex items-center space-x-2"
+                        title="Limpar texto"
+                    >
+                        <TrashIcon className="h-4 w-4" />
+                        <span>Limpar</span>
+                    </button>
+                )}
             </div>
 
             <textarea
