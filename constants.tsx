@@ -4,7 +4,8 @@ import { ActionType } from './types';
 import { 
     SummarizeIcon, KeywordsIcon, ReflectIcon, TestIcon, SimplifyIcon, MindmapIcon, AnalogyIcon, 
     StepByStepIcon, ConnectionsIcon, LessonPlanIcon, RubricIcon, SparkleIcon, SocraticOpponentIcon,
-    ProjectIdeasIcon, ChoiceBoardIcon, MisconceptionsIcon, InformationalTextIcon
+    ProjectIdeasIcon, ChoiceBoardIcon, MisconceptionsIcon, InformationalTextIcon,
+    StorytellerIcon, FactCheckerIcon
 } from './components/icons';
 
 type ActionConfig = {
@@ -148,5 +149,17 @@ export const actionConfig: ActionConfig = {
         description: 'Brainstorm de aplicações práticas e exemplos reais.',
         icon: SparkleIcon,
         className: 'bg-amber-600 hover:bg-amber-700',
+    },
+    [ActionType.STORYTELLER]: {
+        title: 'Contador de Histórias',
+        description: 'Transforma o texto em uma narrativa envolvente.',
+        icon: StorytellerIcon,
+        className: 'bg-stone-500 hover:bg-stone-600',
+    },
+    [ActionType.FACT_CHECKER]: {
+        title: 'Verificador de Fatos',
+        description: 'Formula perguntas para verificar a veracidade das informações.',
+        icon: FactCheckerIcon,
+        className: 'bg-red-600 hover:bg-red-700',
     },
 };

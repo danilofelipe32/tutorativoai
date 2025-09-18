@@ -72,6 +72,10 @@ ${context}
             return basePrompt + "Tarefa: Reescreva ou sintetize o conteúdo principal do texto em um novo texto informativo curto e coeso (cerca de 3-4 parágrafos). O novo texto deve ser escrito para um público que não tem conhecimento prévio sobre o assunto, definindo termos-chave e apresentando as informações de forma lógica e clara.";
         case 'REAL_WORLD_EXAMPLES':
             return basePrompt + "Tarefa: Liste de 4 a 6 exemplos concretos do mundo real que ilustrem os conceitos ou teorias principais apresentados no texto. Para cada exemplo, explique brevemente (1-2 frases) como ele se conecta ao tópico. Use bullet points.";
+        case 'STORYTELLER':
+            return basePrompt + "Tarefa: Atue como um 'Contador de Histórias Mestre'. Sua tarefa é transformar o conteúdo informativo do texto em uma pequena história, narrativa ou conto envolvente. Use personagens, um cenário e um enredo simples (início, meio, fim) para ilustrar os conceitos principais. O objetivo é tornar o material mais memorável e interessante. A história deve ser curta, direta ao ponto e adequada para o público-alvo do texto original.";
+        case 'FACT_CHECKER':
+            return basePrompt + "Tarefa: Atue como um 'Verificador de Fatos' cético e rigoroso. Sua missão é analisar o texto e identificar as 3 a 5 alegações ou 'fatos' mais significativos. Para cada alegação, formule uma pergunta investigativa que um pesquisador usaria para verificar sua veracidade. As perguntas devem ser específicas e apontar para a necessidade de fontes externas, dados ou evidências. Formate ESTRITAMENTE a saída da seguinte forma:\n**Alegação 1:** [Citação ou paráfrase da alegação do texto].\n**Pergunta de Verificação:** [Sua pergunta investigativa].\n\n**Alegação 2:** ...";
         default:
             const unhandledAction = action.toString().replace(/_/g, ' ').toLowerCase();
             return basePrompt + `Tarefa: Execute a seguinte ação no texto: ${unhandledAction}.`;
