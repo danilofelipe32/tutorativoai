@@ -1,6 +1,5 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
-import { GoogleGenAI } from "@google/genai";
 import { ActionType, View } from './types';
 import Header from './components/Header';
 import MainView from './components/MainView';
@@ -8,21 +7,7 @@ import ResultsView from './components/ResultsView';
 import HelpModal from './components/HelpModal';
 import { actionConfig } from './constants';
 
-// --- Gemini API Setup ---
-let ai: GoogleGenAI | null = null;
-let apiKeyError = '';
-
-try {
-  const apiKey = process.env.API_KEY;
-  if (!apiKey) {
-    throw new Error("A chave de API não foi configurada. Certifique-se de que a variável de ambiente API_KEY está definida nas configurações de build do seu site (ex: Netlify).");
-  }
-  ai = new GoogleGenAI({ apiKey });
-} catch (e: any) {
-  console.error("Erro na inicialização da API Gemini:", e);
-  apiKeyError = e.message || 'Ocorreu um erro desconhecido ao configurar a API.';
-}
-
+// No API setup needed for ApiFreeLLM
 
 function getPromptForAction(action: ActionType, context: string): string {
     // Prompt avançado instruindo a IA a usar um processo de raciocínio estruturado.
@@ -121,23 +106,37 @@ const App: React.FC = () => {
         setError('');
         setLastAction(action);
 
-        if (!ai) {
-            setError(apiKeyError);
-            setIsLoading(false);
-            return;
-        }
-
         try {
             const prompt = getPromptForAction(action, text);
-            const response = await ai.models.generateContent({
-                model: 'gemini-2.5-flash',
-                contents: prompt,
+            
+            const apiResponse = await fetch('https://apifreellm.com/api/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: prompt }),
             });
-            setResult(response.text);
+
+            if (!apiResponse.ok) {
+                throw new Error(`Erro de rede: ${apiResponse.status} ${apiResponse.statusText}`);
+            }
+
+            const data = await apiResponse.json();
+
+            if (data.status === 'success') {
+                setResult(data.response);
+            } else {
+                let userErrorMessage = data.error || 'Ocorreu um erro desconhecido na API.';
+                if (data.status === 'rate_limited' && data.retry_after) {
+                    userErrorMessage = `Limite de solicitações atingido. Por favor, aguarde ${data.retry_after} segundos antes de tentar novamente.`;
+                }
+                setError(`Falha ao gerar resposta da IA: ${userErrorMessage}`);
+            }
+
         } catch (e: any) {
             console.error(e);
             const errorMessage = e.message || 'Ocorreu um erro desconhecido.';
-            setError(`Falha ao gerar resposta da IA. ${errorMessage} Verifique sua conexão e se a chave de API é válida.`);
+            setError(`Falha ao se comunicar com a API. ${errorMessage} Verifique sua conexão com a internet.`);
         } finally {
             setIsLoading(false);
         }
