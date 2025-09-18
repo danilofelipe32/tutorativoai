@@ -28,3 +28,12 @@ export enum View {
     MAIN = 'MAIN',
     RESULTS = 'RESULTS',
 }
+
+export interface HistoryItem {
+    id: number;
+    actionType: ActionType;
+    inputTextSnippet: string;
+    fullInputText: string;
+    fullResult: string;
+    timestamp: string; // ISO String
+}

@@ -1,11 +1,15 @@
+
 import React from 'react';
-import { ActionType } from '../types';
+import { ActionType, HistoryItem } from '../types';
 import { actionConfig } from '../constants';
+import HistoryList from './HistoryList';
 
 interface MainViewProps {
     onActionSelect: (action: ActionType) => void;
     inputText: string;
     onTextChange: (text: string) => void;
+    history: HistoryItem[];
+    onHistoryItemClick: (item: HistoryItem) => void;
 }
 
 const ActionButton: React.FC<{ action: ActionType; onClick: () => void; isDisabled: boolean }> = ({ action, onClick, isDisabled }) => {
@@ -27,7 +31,7 @@ const ActionButton: React.FC<{ action: ActionType; onClick: () => void; isDisabl
 };
 
 
-const MainView: React.FC<MainViewProps> = ({ onActionSelect, inputText, onTextChange }) => {
+const MainView: React.FC<MainViewProps> = ({ onActionSelect, inputText, onTextChange, history, onHistoryItemClick }) => {
     const isTextProvided = inputText.trim().length > 0;
     
     return (
@@ -59,6 +63,8 @@ const MainView: React.FC<MainViewProps> = ({ onActionSelect, inputText, onTextCh
                     />
                 ))}
             </div>
+
+            <HistoryList history={history} onItemClick={onHistoryItemClick} />
         </div>
     );
 };

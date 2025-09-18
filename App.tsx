@@ -1,6 +1,6 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
-import { ActionType, View } from './types';
+import { ActionType, View, HistoryItem } from './types';
 import Header from './components/Header';
 import MainView from './components/MainView';
 import ResultsView from './components/ResultsView';
@@ -86,11 +86,20 @@ const App: React.FC = () => {
     const [error, setError] = useState<string>('');
     const [isHelpVisible, setIsHelpVisible] = useState<boolean>(false);
     const [lastAction, setLastAction] = useState<ActionType | null>(null);
+    const [history, setHistory] = useState<HistoryItem[]>([]);
 
     useEffect(() => {
-        const savedText = localStorage.getItem('inputText');
-        if (savedText) {
-            setInputText(savedText);
+        // Garante que a aplicação inicie com um estado limpo, removendo qualquer texto salvo anteriormente.
+        localStorage.removeItem('inputText');
+        // Load history from localStorage
+        try {
+            const storedHistory = localStorage.getItem('actionHistory');
+            if (storedHistory) {
+                setHistory(JSON.parse(storedHistory));
+            }
+        } catch (error) {
+            console.error("Failed to load history from localStorage", error);
+            setHistory([]);
         }
     }, []);
 
@@ -125,6 +134,25 @@ const App: React.FC = () => {
 
             if (data.status === 'success') {
                 setResult(data.response);
+                const newHistoryItem: HistoryItem = {
+                    id: Date.now(),
+                    actionType: action,
+                    fullInputText: text,
+                    inputTextSnippet: text.substring(0, 80) + (text.length > 80 ? '...' : ''),
+                    fullResult: data.response,
+                    timestamp: new Date().toISOString(),
+                };
+
+                setHistory(prevHistory => {
+                    const updatedHistory = [newHistoryItem, ...prevHistory].slice(0, 50); // Keep max 50 items
+                    try {
+                        localStorage.setItem('actionHistory', JSON.stringify(updatedHistory));
+                    } catch (error) {
+                        console.error("Failed to save history to localStorage", error);
+                    }
+                    return updatedHistory;
+                });
+
             } else {
                 let userErrorMessage = data.error || 'Ocorreu um erro desconhecido na API.';
                 if (data.status === 'rate_limited' && data.retry_after) {
@@ -157,6 +185,14 @@ const App: React.FC = () => {
             callGenerativeAI(lastAction, inputText);
         }
     };
+    
+    const handleHistoryItemClick = (item: HistoryItem) => {
+        setInputText(item.fullInputText);
+        setResult(item.fullResult);
+        setLastAction(item.actionType);
+        setView(View.RESULTS);
+        setError('');
+    };
 
     const headerTitle = view === View.MAIN ? 'Tutor Ativo AI' : (lastAction ? actionConfig[lastAction].title : 'Resultado');
     
@@ -177,6 +213,8 @@ const App: React.FC = () => {
                         onActionSelect={handleActionSelect}
                         inputText={inputText}
                         onTextChange={handleTextChange}
+                        history={history}
+                        onHistoryItemClick={handleHistoryItemClick}
                     />
                 ) : (
                     <ResultsView
