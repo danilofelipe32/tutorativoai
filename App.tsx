@@ -9,8 +9,19 @@ import HelpModal from './components/HelpModal';
 import { actionConfig } from './constants';
 
 // --- Gemini API Setup ---
-// A chave de API é assumida como disponível em process.env.API_KEY
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+let ai: GoogleGenAI | null = null;
+let apiKeyError = '';
+
+try {
+  const apiKey = process.env.API_KEY;
+  if (!apiKey) {
+    throw new Error("A chave de API não foi configurada. Certifique-se de que a variável de ambiente API_KEY está definida nas configurações de build do seu site (ex: Netlify).");
+  }
+  ai = new GoogleGenAI({ apiKey });
+} catch (e: any) {
+  console.error("Erro na inicialização da API Gemini:", e);
+  apiKeyError = e.message || 'Ocorreu um erro desconhecido ao configurar a API.';
+}
 
 
 function getPromptForAction(action: ActionType, context: string): string {
@@ -109,6 +120,12 @@ const App: React.FC = () => {
         setResult('');
         setError('');
         setLastAction(action);
+
+        if (!ai) {
+            setError(apiKeyError);
+            setIsLoading(false);
+            return;
+        }
 
         try {
             const prompt = getPromptForAction(action, text);
