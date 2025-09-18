@@ -8,7 +8,7 @@ interface FormattedResponseProps {
 }
 
 // Helper para converter texto com **negrito** em JSX
-const renderBoldText = (line: string) => {
+const renderBoldText = (line: string): React.ReactNode[] => {
     const parts = line.split(/(\*\*.*?\*\*)/g);
     return parts.map((part, index) => {
         if (part.startsWith('**') && part.endsWith('**')) {
@@ -17,6 +17,48 @@ const renderBoldText = (line: string) => {
         return part;
     });
 };
+
+const TableRenderer: React.FC<{ tableLines: string[] }> = ({ tableLines }) => {
+    if (tableLines.length < 2) return null; // Header + separator required
+
+    const headerLine = tableLines[0];
+    const headers = headerLine.split('|').map(h => h.trim()).filter(Boolean);
+    
+    const bodyRows = tableLines.slice(2); // Skip header and separator
+
+    return (
+        <div className="overflow-x-auto my-4 rounded-lg border border-slate-700">
+            <table className="w-full text-sm text-left text-slate-300">
+                <thead className="bg-slate-700 text-xs text-slate-200 uppercase">
+                    <tr>
+                        {headers.map((header, index) => (
+                            <th key={index} scope="col" className="px-4 py-3">
+                                {renderBoldText(header)}
+                            </th>
+                        ))}
+                    </tr>
+                </thead>
+                <tbody>
+                    {bodyRows.map((rowLine, rowIndex) => {
+                        const cells = rowLine.split('|').map(c => c.trim()).filter(Boolean);
+                        // Make sure the number of cells matches the number of headers
+                        if (cells.length !== headers.length) return null; 
+                        return (
+                            <tr key={rowIndex} className="bg-slate-800/50 even:bg-slate-800/80 border-b border-slate-700">
+                                {cells.map((cell, cellIndex) => (
+                                    <td key={cellIndex} className="px-4 py-3">
+                                        {renderBoldText(cell)}
+                                    </td>
+                                ))}
+                            </tr>
+                        );
+                    })}
+                </tbody>
+            </table>
+        </div>
+    );
+};
+
 
 const FormattedResponse: React.FC<FormattedResponseProps> = ({ text, actionType }) => {
 
@@ -34,7 +76,27 @@ const FormattedResponse: React.FC<FormattedResponseProps> = ({ text, actionType 
         let isList = false;
 
         for (let i = 0; i < lines.length; i++) {
-            const line = lines[i].trim();
+            let line = lines[i];
+
+            // Table Detection
+            if (line.includes('|')) {
+                const tableLines: string[] = [];
+                // Consume all consecutive lines that are part of the table
+                while (i < lines.length && lines[i].includes('|')) {
+                    // Ignore separator line for content
+                    if (!lines[i].replace(/[-|: ]/g, '').length) {
+                         // This is likely a separator line like |---|---|
+                    }
+                    tableLines.push(lines[i]);
+                    i++;
+                }
+                i--; // Decrement to account for the loop's i++
+                elements.push(<TableRenderer key={`table-${i}`} tableLines={tableLines} />);
+                isList = false;
+                continue;
+            }
+
+            line = line.trim();
 
             if (line.startsWith('- ')) {
                 if (!isList) {
