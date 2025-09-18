@@ -1,7 +1,11 @@
 
 import React from 'react';
 import { ActionType } from './types';
-import { SummarizeIcon, KeywordsIcon, ReflectIcon, TestIcon, SimplifyIcon, MindmapIcon, AnalogyIcon, StepByStepIcon, ConnectionsIcon } from './components/icons';
+import { 
+    SummarizeIcon, KeywordsIcon, ReflectIcon, TestIcon, SimplifyIcon, MindmapIcon, AnalogyIcon, 
+    StepByStepIcon, ConnectionsIcon, LessonPlanIcon, RubricIcon, SparkleIcon, SocraticOpponentIcon,
+    ProjectIdeasIcon, ChoiceBoardIcon, MisconceptionsIcon, InformationalTextIcon
+} from './components/icons';
 
 type ActionConfig = {
     [key in ActionType]: {
@@ -66,5 +70,83 @@ export const actionConfig: ActionConfig = {
         description: 'Conecta o tema com o mundo real e outras áreas.',
         icon: ConnectionsIcon,
         className: 'bg-orange-500 hover:bg-orange-600',
+    },
+    [ActionType.LESSON_PLAN]: {
+        title: 'Esboçar Plano de Aula',
+        description: 'Estrutura um plano de aula sobre o tópico.',
+        icon: LessonPlanIcon,
+        className: 'bg-cyan-500 hover:bg-cyan-600',
+    },
+    [ActionType.RUBRIC]: {
+        title: 'Criar/Converter Rubrica',
+        description: 'Gera uma rubrica de avaliação a partir do texto.',
+        icon: RubricIcon,
+        className: 'bg-yellow-600 hover:bg-yellow-700',
+    },
+    [ActionType.DIFFERENTIATION]: {
+        title: 'Estratégias de Diferenciação',
+        description: 'Cria estratégias para diferentes níveis de alunos.',
+        icon: SparkleIcon,
+        className: 'bg-fuchsia-500 hover:bg-fuchsia-600',
+    },
+    [ActionType.DOK_QUESTIONS]: {
+        title: 'Criar Perguntas DOK',
+        description: 'Elabora perguntas com base na Profundidade de Conhecimento.',
+        icon: SparkleIcon,
+        className: 'bg-lime-500 hover:bg-lime-600',
+    },
+    [ActionType.WORKSHEETS]: {
+        title: 'Criar Planilhas de Atividades',
+        description: 'Gera planilhas de atividades envolventes.',
+        icon: SparkleIcon,
+        className: 'bg-violet-500 hover:bg-violet-600',
+    },
+    [ActionType.SOCRATIC_OPPONENT]: {
+        title: 'Oponente Socrático',
+        description: 'Desafia suas ideias com perguntas críticas.',
+        icon: SocraticOpponentIcon,
+        className: 'bg-slate-500 hover:bg-slate-600',
+    },
+    [ActionType.PROJECT_IDEAS]: {
+        title: 'Ideias de Projetos',
+        description: 'Brainstorm de ideias de projetos criativos sobre o tema.',
+        icon: ProjectIdeasIcon,
+        className: 'bg-cyan-600 hover:bg-cyan-700',
+    },
+    [ActionType.EXEMPLARS]: {
+        title: 'Exemplos e Não-Exemplos',
+        description: 'Cria um exemplo forte e um fraco de uma tarefa.',
+        icon: SparkleIcon,
+        className: 'bg-rose-600 hover:bg-rose-700',
+    },
+    [ActionType.CHOICE_BOARD]: {
+        title: 'Quadro de Escolhas',
+        description: 'Cria um quadro com 9 atividades variadas.',
+        icon: ChoiceBoardIcon,
+        className: 'bg-pink-500 hover:bg-pink-600',
+    },
+    [ActionType.MISCONCEPTIONS]: {
+        title: 'Equívocos Comuns',
+        description: 'Aborda e corrige equívocos comuns sobre o tópico.',
+        icon: MisconceptionsIcon,
+        className: 'bg-blue-700 hover:bg-blue-800',
+    },
+    [ActionType.DISCUSSION_PROMPTS]: {
+        title: 'Perguntas para Discussão',
+        description: 'Cria perguntas que geram debate e engajamento.',
+        icon: SparkleIcon,
+        className: 'bg-indigo-600 hover:bg-indigo-700',
+    },
+    [ActionType.INFORMATIONAL_TEXT]: {
+        title: 'Escrever Texto Informativo',
+        description: 'Cria um texto informativo sobre o mesmo tópico.',
+        icon: InformationalTextIcon,
+        className: 'bg-emerald-600 hover:bg-emerald-700',
+    },
+    [ActionType.REAL_WORLD_EXAMPLES]: {
+        title: 'Exemplos do Mundo Real',
+        description: 'Brainstorm de aplicações práticas e exemplos reais.',
+        icon: SparkleIcon,
+        className: 'bg-amber-600 hover:bg-amber-700',
     },
 };
