@@ -1,6 +1,8 @@
 
+
 import React from 'react';
 import { actionConfig } from '../constants';
+import { CloseIcon } from './icons';
 
 interface HelpModalProps {
     isVisible: boolean;
@@ -16,14 +18,21 @@ const HelpModal: React.FC<HelpModalProps> = ({ isVisible, onClose }) => {
             onClick={onClose}
         >
             <div 
-                className="bg-slate-800 border border-slate-700 rounded-2xl p-6 w-full max-w-md shadow-2xl animate-fade-in"
+                className="relative bg-slate-800 border border-slate-700 rounded-2xl p-6 w-full max-w-md shadow-2xl animate-fade-in"
                 onClick={(e) => e.stopPropagation()}
             >
+                <button 
+                    onClick={onClose} 
+                    className="absolute top-3 right-3 p-2 rounded-full text-slate-400 hover:bg-slate-700 hover:text-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500"
+                    aria-label="Fechar modal"
+                >
+                    <CloseIcon className="h-6 w-6" />
+                </button>
                 <h2 className="text-xl font-bold text-white mb-3">Como usar o Tutor Ativo AI</h2>
                 <p className="text-slate-400 mb-5">
                     Esta extensão ajuda-o a estudar o conteúdo de qualquer página web. Use os botões para interagir com o texto:
                 </p>
-                <ul className="space-y-3 text-sm">
+                <ul className="space-y-3 text-sm max-h-[50vh] overflow-y-auto pr-2">
                     {Object.values(actionConfig).map(config => (
                         <li key={config.title}>
                             <strong className="text-slate-200">{config.title}:</strong>
@@ -43,4 +52,3 @@ const HelpModal: React.FC<HelpModalProps> = ({ isVisible, onClose }) => {
 };
 
 export default HelpModal;
-    
