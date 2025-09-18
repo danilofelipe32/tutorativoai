@@ -1,6 +1,4 @@
-
-
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { ActionType, View, HistoryItem } from './types';
 import Header from './components/Header';
 import MainView from './components/MainView';
@@ -92,6 +90,7 @@ const App: React.FC = () => {
     const [isHelpVisible, setIsHelpVisible] = useState<boolean>(false);
     const [lastAction, setLastAction] = useState<ActionType | null>(null);
     const [history, setHistory] = useState<HistoryItem[]>([]);
+    const cache = useRef<Map<string, string>>(new Map());
 
     useEffect(() => {
         // Garante que a aplicação inicie com um estado limpo, removendo qualquer texto salvo anteriormente.
@@ -125,6 +124,34 @@ const App: React.FC = () => {
         setError('');
         setLastAction(action);
 
+        const cacheKey = `${action}:${text}`;
+        if (cache.current.has(cacheKey)) {
+            const cachedResult = cache.current.get(cacheKey)!;
+            setResult(cachedResult);
+            
+            const newHistoryItem: HistoryItem = {
+                id: Date.now(),
+                actionType: action,
+                fullInputText: text,
+                inputTextSnippet: text.substring(0, 80) + (text.length > 80 ? '...' : ''),
+                fullResult: cachedResult,
+                timestamp: new Date().toISOString(),
+            };
+
+            setHistory(prevHistory => {
+                const updatedHistory = [newHistoryItem, ...prevHistory].slice(0, 50);
+                try {
+                    localStorage.setItem('actionHistory', JSON.stringify(updatedHistory));
+                } catch (error) {
+                    console.error("Failed to save history from cached result", error);
+                }
+                return updatedHistory;
+            });
+
+            setIsLoading(false);
+            return;
+        }
+
         try {
             const prompt = getPromptForAction(action, text);
             
@@ -143,6 +170,7 @@ const App: React.FC = () => {
             const data = await apiResponse.json();
 
             if (data.status === 'success') {
+                cache.current.set(cacheKey, data.response);
                 setResult(data.response);
                 const newHistoryItem: HistoryItem = {
                     id: Date.now(),
