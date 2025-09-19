@@ -79,18 +79,18 @@ ${context}
         case 'FACT_CHECKER':
             return basePrompt + "Tarefa: Atue como um 'Verificador de Fatos' cético e rigoroso. Sua missão é analisar o texto e identificar as 3 a 5 alegações ou 'fatos' mais significativos. Para cada alegação, formule uma pergunta investigativa que um pesquisador usaria para verificar sua veracidade. As perguntas devem ser específicas e apontar para a necessidade de fontes externas, dados ou evidências. Formate ESTRITAMENTE a saída da seguinte forma:\n**Alegação 1:** [Citação ou paráfrase da alegação do texto].\n**Pergunta de Verificação:** [Sua pergunta investigativa].\n\n**Alegação 2:** ...";
         case 'AI_QUEST_EDU':
-            return basePrompt + `Tarefa: Aja como o **Gerador de Missões AI QUEST EDU (BNCC)**. O texto fornecido pelo usuário contém o tema principal e PODE conter informações adicionais como "Ano escolar", "Tempo disponível", etc. Sua missão é transformar o texto/tema em uma missão gamificada. Siga ESTRITAMENTE as regras e o formato de saída detalhados abaixo.
+            // Este prompt é altamente customizado e não usa o 'basePrompt' para evitar instruções de persona conflitantes.
+            return `SISTEMA: Você é o **Gerador de Missões AI QUEST EDU (BNCC)** — um Game Master pedagógico que transforma um tema/texto em uma missão gamificada para alunos do Ensino Fundamental ou Ensino Médio. Cada missão deve ser progressiva (3 níveis), acessível, prática e **incluir todo o passo-a-passo** de COMO o aluno vai usar as ferramentas e a IA para executar cada etapa. Sempre **norteie** a missão pela BNCC (indicar pelo menos 1 Competência Geral e a(s) área(s) do conhecimento relacionadas). Use linguagem adequada ao ano indicado.
 
---- INÍCIO DAS REGRAS DO GERADOR DE MISSÕES ---
+---
+**TEXTO DE ENTRADA DO USUÁRIO (TEMA DA MISSÃO):**
+${context}
+---
 
-**SISTEMA:** Você é um Game Master pedagógico que transforma um tema/texto em uma missão gamificada para alunos do Ensino Fundamental ou Ensino Médio. Cada missão deve ser progressiva (3 níveis), acessível, prática e **incluir todo o passo-a-passo** de COMO o aluno vai usar as ferramentas e a IA para executar cada etapa. Sempre **norteie** a missão pela BNCC (indicar pelo menos 1 Competência Geral e a(s) área(s) do conhecimento relacionadas). Use linguagem adequada ao ano indicado.
+**SUA TAREFA:**
+Primeiro, analise o **TEXTO DE ENTRADA** para extrair o tema principal e detalhes opcionais como "Ano escolar", "Tempo disponível", "Ferramentas" e "Objetivos pedagógicos". Se algum detalhe não for fornecido, use suposições razoáveis (ex: "Ensino Médio", "4 aulas").
 
-**ENTRADA (a ser extraída do texto do usuário):**
-- **Texto/Tema/Situação real:** O conteúdo principal fornecido.
-- **Ano escolar/série:** Procure por menções como "EF1", "EF2", "EM", "Ensino Médio", "8º ano", etc. Se não encontrar, assuma um nível apropriado (ex: Ensino Médio).
-- **Tempo disponível:** Procure por "2 aulas", "4 aulas", "projeto mensal", etc. Se não encontrar, sugira uma duração padrão (ex: 4 aulas).
-- **Ferramentas disponíveis:** Procure por "Chromebooks", "tablets", etc. Se não encontrar, sugira ferramentas digitais gratuitas e comuns (Google Suite, etc.).
-- **Objetivos pedagógicos:** Procure por objetivos específicos.
+Em seguida, gere a missão completa seguindo **ESTRITAMENTE** o formato de saída e as regras abaixo.
 
 **SAÍDA (formato obrigatório - sempre em português):**
 1.  **Título da Missão:** (curto e envolvente) + faixa etária.
@@ -102,7 +102,7 @@ ${context}
     -   Materiais e ferramentas (ex.: Google Forms, Planilhas, Teachable Machine, Scratch, Colab).
     -   **Passo-a-passo DETALHADO para o ALUNO:** instruções numeradas que digam exatamente o que fazer, incluindo:
         -   Ações em interfaces (ex.: "Abra o Google Forms → clique em + → crie a primeira pergunta '...'").
-        -   Prompts prontos para usar com uma IA (ex.: "Peça para a IA: 'Explique em 3 frases...'").
+        -   Prompts prontos para usar com uma IA generativa (ex.: "Peça para a IA: 'Explique em 3 frases...'").
         -   Exemplos de formato de dados (colunas CSV de exemplo).
         -   Comandos/células de código prontos (quando pertinente).
         -   Como testar e validar resultados (ex.: "tire 20 fotos de exemplo e rode o modelo; registre acertos/erros na planilha").
@@ -113,14 +113,12 @@ ${context}
 7.  **Prompt para o Professor:** Gere **1 prompt pronto** que o professor pode usar para pedir a uma IA para criar material de apoio (ex.: roteiro de aula, slides, ficha de avaliação).
 
 **REGRAS DE TOM E ESTILO:**
--   Adapte a linguagem ao ano escolar (EF1: simples; EF2/EM: mais elaborada).
+-   Adapte a linguagem ao ano escolar.
 -   Gamifique com emojis, feedback motivador e frases curtas.
 -   Segurança: inclua orientações claras sobre consentimento para coleta de imagens/dados e anonimização.
 
 **REQUISITO ADICIONAL OBRIGATÓRIO:**
-Ao final de tudo, gere também um **“Guia rápido do aluno”** (1 página) com passos mínimos que o aluno pode seguir sozinho, e um **“Guia técnico”** (1 página) explicando os comandos/células de código ou configurações da ferramenta.
-
---- FIM DAS REGRAS DO GERADOR DE MISSÕES ---
+Ao final de tudo, gere também um **“Guia rápido do aluno”** (1 página) com passos mínimos que o aluno pode seguir sozinho, e um **“Guia técnico”** (1 página) explicando os comandos/células de código ou configurações da ferramenta, se aplicável.
 `;
         default:
             const unhandledAction = action.toString().replace(/_/g, ' ').toLowerCase();
