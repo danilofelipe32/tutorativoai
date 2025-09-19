@@ -1,7 +1,7 @@
 import React from 'react';
 import { ActionType } from '../types';
 import MindMapRenderer from './MindMapRenderer';
-import { LoadingIcon } from './icons';
+import { LoadingIcon, SparkleIcon } from './icons';
 import FormattedResponse from './FormattedResponse';
 import ShareButtons from './ShareButtons';
 
@@ -10,9 +10,10 @@ interface ResultsViewProps {
     result: string;
     error: string;
     actionType: ActionType | null;
+    onOpenRefineModal: () => void;
 }
 
-const ResultsView: React.FC<ResultsViewProps> = ({ isLoading, result, error, actionType }) => {
+const ResultsView: React.FC<ResultsViewProps> = ({ isLoading, result, error, actionType, onOpenRefineModal }) => {
     if (isLoading) {
         return (
             <div className="flex flex-col items-center justify-center h-full text-center text-slate-400">
@@ -49,7 +50,16 @@ const ResultsView: React.FC<ResultsViewProps> = ({ isLoading, result, error, act
             </div>
             
             {result && (
-                 <div className="flex-shrink-0 p-4 border-t border-slate-700/50">
+                 <div className="flex-shrink-0 p-4 border-t border-slate-700/50 flex items-center justify-between">
+                    <button
+                        onClick={onOpenRefineModal}
+                        className="flex items-center space-x-2 px-3 py-2 text-sm font-semibold rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-sky-400"
+                        disabled={isLoading}
+                        title="Refinar resultado"
+                    >
+                        <SparkleIcon className="h-4 w-4" />
+                        <span>Assim mas...</span>
+                    </button>
                     <ShareButtons textToShare={result} actionType={actionType} />
                 </div>
             )}

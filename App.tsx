@@ -4,6 +4,7 @@ import Header from './components/Header';
 import MainView from './components/MainView';
 import ResultsView from './components/ResultsView';
 import HelpModal from './components/HelpModal';
+import RefineModal from './components/RefineModal';
 import { actionConfig } from './constants';
 
 // No API setup needed for ApiFreeLLM
@@ -80,6 +81,26 @@ ${context}
     }
 }
 
+function getPromptForRefinement(originalText: string, previousResult: string, instruction: string): string {
+    return `Você é um "Tutor Inteligente", uma IA assistente de estudos. Você gerou uma resposta anteriormente, e agora o usuário quer que você a refine.
+
+Sua tarefa é usar o texto original, a resposta anterior e a nova instrução do usuário para gerar uma resposta nova e aprimorada. Mantenha o mais alto padrão de qualidade, seguindo seu processo de raciocínio interno (Cadeia de Pensamento, Auto-Reflexão), mas apresente APENAS a resposta final polida para o usuário.
+
+--- INÍCIO DO TEXTO ORIGINAL ---
+${originalText}
+--- FIM DO TEXTO ORIGINAL ---
+
+--- INÍCIO DA RESPOSTA ANTERIOR ---
+${previousResult}
+--- FIM DA RESPOSTA ANTERIOR ---
+
+--- INSTRUÇÃO DE REFINAMENTO DO USUÁRIO ---
+${instruction}
+--- FIM DA INSTRUÇÃO DE REFINAMENTO DO USUÁRIO ---
+
+Agora, gere a nova resposta refinada com base na instrução.`;
+}
+
 
 const App: React.FC = () => {
     const [view, setView] = useState<View>(View.MAIN);
@@ -88,6 +109,7 @@ const App: React.FC = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>('');
     const [isHelpVisible, setIsHelpVisible] = useState<boolean>(false);
+    const [isRefineModalVisible, setIsRefineModalVisible] = useState<boolean>(false);
     const [lastAction, setLastAction] = useState<ActionType | null>(null);
     const [history, setHistory] = useState<HistoryItem[]>([]);
     const cache = useRef<Map<string, string>>(new Map());
@@ -117,14 +139,21 @@ const App: React.FC = () => {
         localStorage.removeItem('inputText');
     };
 
-    const callGenerativeAI = useCallback(async (action: ActionType, text: string) => {
+    const callGenerativeAI = useCallback(async (
+        action: ActionType,
+        text: string,
+        refinement?: { previousResult: string; instruction: string }
+    ) => {
         setView(View.RESULTS);
         setIsLoading(true);
         setResult('');
         setError('');
         setLastAction(action);
 
-        const cacheKey = `${action}:${text}`;
+        const cacheKey = refinement
+            ? `${action}:${text}:${refinement.instruction}`
+            : `${action}:${text}`;
+
         if (cache.current.has(cacheKey)) {
             const cachedResult = cache.current.get(cacheKey)!;
             setResult(cachedResult);
@@ -153,7 +182,9 @@ const App: React.FC = () => {
         }
 
         try {
-            const prompt = getPromptForAction(action, text);
+             const prompt = refinement
+                ? getPromptForRefinement(text, refinement.previousResult, refinement.instruction)
+                : getPromptForAction(action, text);
             
             const apiResponse = await fetch('https://apifreellm.com/api/chat', {
                 method: 'POST',
@@ -206,7 +237,7 @@ const App: React.FC = () => {
         } finally {
             setIsLoading(false);
         }
-    }, []);
+    }, [result]);
 
     const handleActionSelect = (action: ActionType) => {
         if (!inputText.trim()) return;
@@ -230,6 +261,16 @@ const App: React.FC = () => {
         setLastAction(item.actionType);
         setView(View.RESULTS);
         setError('');
+    };
+
+    const handleOpenRefineModal = () => setIsRefineModalVisible(true);
+    const handleCloseRefineModal = () => setIsRefineModalVisible(false);
+
+    const handleRefineSubmit = (instruction: string) => {
+        handleCloseRefineModal();
+        if (lastAction && inputText && result) {
+            callGenerativeAI(lastAction, inputText, { previousResult: result, instruction });
+        }
     };
 
     const headerTitle = view === View.MAIN ? 'Tutor Ativo AI' : (lastAction ? actionConfig[lastAction].title : 'Resultado');
@@ -261,6 +302,7 @@ const App: React.FC = () => {
                         result={result}
                         error={error}
                         actionType={lastAction}
+                        onOpenRefineModal={handleOpenRefineModal}
                     />
                 )}
             </main>
@@ -270,6 +312,11 @@ const App: React.FC = () => {
             </footer>
 
             <HelpModal isVisible={isHelpVisible} onClose={() => setIsHelpVisible(false)} />
+            <RefineModal
+                isVisible={isRefineModalVisible}
+                onClose={handleCloseRefineModal}
+                onSubmit={handleRefineSubmit}
+            />
         </div>
     );
 };
