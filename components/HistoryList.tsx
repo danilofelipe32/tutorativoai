@@ -1,8 +1,8 @@
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { HistoryItem } from '../types';
 import { actionConfig } from '../constants';
-import { HistoryIcon, TrashIcon, PencilIcon } from './icons';
+import { HistoryIcon, TrashIcon, PencilIcon, SearchIcon } from './icons';
 
 interface HistoryListProps {
     history: HistoryItem[];
@@ -17,6 +17,7 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onDelet
     const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
     const [editingItemId, setEditingItemId] = useState<number | null>(null);
     const [renameValue, setRenameValue] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
     const inputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
@@ -25,6 +26,21 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onDelet
             inputRef.current.select();
         }
     }, [editingItemId]);
+
+    const filteredHistory = useMemo(() => {
+        if (!searchTerm.trim()) {
+            return history;
+        }
+        const lowerCaseSearch = searchTerm.toLowerCase();
+        return history.filter(item => {
+            const title = item.customTitle ?? actionConfig[item.actionType].title;
+            const snippet = item.inputTextSnippet;
+            return (
+                title.toLowerCase().includes(lowerCaseSearch) ||
+                snippet.toLowerCase().includes(lowerCaseSearch)
+            );
+        });
+    }, [history, searchTerm]);
 
     const handleLoadMore = () => {
         setVisibleCount(prevCount => prevCount + ITEMS_PER_PAGE);
@@ -59,13 +75,13 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onDelet
     };
 
     const handleDeleteClick = (itemId: number) => {
-        if (window.confirm('Tem certeza que deseja excluir este item do histórico?')) {
+        if (window.confirm('Tem certeza de que deseja excluir este item do histórico?')) {
             onDeleteItem(itemId);
         }
     };
 
-    const visibleHistory = history.slice(0, visibleCount);
-    const canLoadMore = history.length > visibleCount;
+    const visibleHistory = filteredHistory.slice(0, visibleCount);
+    const canLoadMore = filteredHistory.length > visibleCount;
 
     return (
         <div className="mt-8">
@@ -74,9 +90,29 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onDelet
                 Histórico de Atividades
             </h2>
 
+            {history.length > 0 && (
+                <div className="relative my-4">
+                    <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                        <SearchIcon className="h-5 w-5 text-slate-500" />
+                    </span>
+                    <input
+                        type="search"
+                        placeholder="Pesquisar por título ou trecho..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full bg-slate-800 text-slate-300 p-2 pl-10 rounded-lg border border-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-500 transition-colors"
+                        aria-label="Pesquisar no histórico"
+                    />
+                </div>
+            )}
+
             {history.length === 0 ? (
                 <div className="text-center py-8 px-4 bg-slate-900/50 rounded-lg border border-dashed border-slate-700">
                     <p className="text-slate-500">Seu histórico de atividades aparecerá aqui.</p>
+                </div>
+            ) : filteredHistory.length === 0 ? (
+                <div className="text-center py-8 px-4 bg-slate-900/50 rounded-lg">
+                    <p className="text-slate-500">Nenhum resultado encontrado para &ldquo;{searchTerm}&rdquo;.</p>
                 </div>
             ) : (
                 <>
