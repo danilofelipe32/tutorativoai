@@ -72,6 +72,12 @@ export const actionConfig: ActionConfig = {
         icon: ConnectionsIcon,
         className: 'bg-orange-500 hover:bg-orange-600',
     },
+    [ActionType.DEEPER_QUESTIONS]: {
+        title: 'Perguntas de Aprofundamento',
+        description: 'Gera perguntas que desafiam premissas e exploram implicações.',
+        icon: SocraticOpponentIcon,
+        className: 'bg-zinc-500 hover:bg-zinc-600',
+    },
     [ActionType.LESSON_PLAN]: {
         title: 'Esboçar Plano de Aula',
         description: 'Estrutura um plano de aula sobre o tópico.',

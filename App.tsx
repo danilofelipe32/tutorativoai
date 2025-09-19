@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { ActionType, View, HistoryItem } from './types';
 import Header from './components/Header';
@@ -45,6 +46,8 @@ ${context}
             return basePrompt + "Tarefa: Se o texto descreve um processo, evento histórico ou uma sequência de passos, detalhe-o em um formato 'passo a passo' claro e numerado. Se não houver um processo claro, explique a estrutura lógica do texto de forma sequencial.";
         case 'CONNECTIONS':
             return basePrompt + "Tarefa: Descreva como os principais conceitos do texto se conectam com o mundo real ou outras áreas do conhecimento (como história, ciência, arte, tecnologia, etc.). Forneça 2 a 3 exemplos práticos e claros, usando bullet points (iniciando com um hífen '-').";
+        case 'DEEPER_QUESTIONS':
+            return basePrompt + "Tarefa: Gere de 3 a 5 perguntas de aprofundamento que vão além da compreensão superficial do texto. As perguntas devem incentivar o pensamento crítico, desafiar premissas, explorar as implicações das ideias e conectar o conteúdo a conceitos mais amplos. Evite perguntas que possam ser respondidas diretamente com uma simples citação do texto. Numere as perguntas.";
         case 'SOCRATIC_OPPONENT':
             return basePrompt + "Tarefa: Atue como um 'Oponente Socrático'. Seu objetivo é desafiar as premissas e a lógica do texto fornecido. Formule 3 a 5 perguntas críticas e profundas que questionem os argumentos centrais, identifiquem possíveis falácias ou explorem perspectivas alternativas. Suas perguntas não devem ser para testar o conhecimento, mas para estimular um pensamento mais profundo e um debate rigoroso. Numere as perguntas.";
         case 'LESSON_PLAN':
