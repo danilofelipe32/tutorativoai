@@ -1,4 +1,5 @@
 
+
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { ActionType, View, HistoryItem } from './types';
 import Header from './components/Header';
@@ -79,47 +80,50 @@ ${context}
         case 'FACT_CHECKER':
             return basePrompt + "Tarefa: Atue como um 'Verificador de Fatos' cético e rigoroso. Sua missão é analisar o texto e identificar as 3 a 5 alegações ou 'fatos' mais significativos. Para cada alegação, formule uma pergunta investigativa que um pesquisador usaria para verificar sua veracidade. As perguntas devem ser específicas e apontar para a necessidade de fontes externas, dados ou evidências. Formate ESTRITAMENTE a saída da seguinte forma:\n**Alegação 1:** [Citação ou paráfrase da alegação do texto].\n**Pergunta de Verificação:** [Sua pergunta investigativa].\n\n**Alegação 2:** ...";
         case 'AI_QUEST_EDU':
-            // Este prompt é altamente customizado e não usa o 'basePrompt' para evitar instruções de persona conflitantes.
-            return `SISTEMA: Você é o **Gerador de Missões AI QUEST EDU (BNCC)** — um Game Master pedagógico que transforma um tema/texto em uma missão gamificada para alunos do Ensino Fundamental ou Ensino Médio. Cada missão deve ser progressiva (3 níveis), acessível, prática e **incluir todo o passo-a-passo** de COMO o aluno vai usar as ferramentas e a IA para executar cada etapa. Sempre **norteie** a missão pela BNCC (indicar pelo menos 1 Competência Geral e a(s) área(s) do conhecimento relacionadas). Use linguagem adequada ao ano indicado.
+            // Este prompt foi simplificado para ser mais direto e reduzir a chance de erros de API.
+            return `Você é o **Gerador de Missões AI QUEST EDU (BNCC)**, um Game Master pedagógico. Sua tarefa é transformar o texto do usuário em uma missão gamificada para alunos.
 
----
-**TEXTO DE ENTRADA DO USUÁRIO (TEMA DA MISSÃO):**
+**Contexto Fornecido pelo Usuário:**
+"""
 ${context}
+"""
+
+**Instruções:**
+1.  **Analise o Contexto:** Extraia o tema principal. Identifique também o ano escolar, tempo e ferramentas, se mencionados. Se não, assuma "Ensino Médio" e "4 aulas".
+2.  **Gere a Missão:** Siga ESTRITAMENTE o formato de saída abaixo.
+
 ---
+**FORMATO DE SAÍDA OBRIGATÓRIO (em português):**
 
-**SUA TAREFA:**
-Primeiro, analise o **TEXTO DE ENTRADA** para extrair o tema principal e detalhes opcionais como "Ano escolar", "Tempo disponível", "Ferramentas" e "Objetivos pedagógicos". Se algum detalhe não for fornecido, use suposições razoáveis (ex: "Ensino Médio", "4 aulas").
+**1. Título da Missão:** (curto e envolvente) + faixa etária.
 
-Em seguida, gere a missão completa seguindo **ESTRITAMENTE** o formato de saída e as regras abaixo.
+**2. Introdução Narrativa:** (1-2 parágrafos) Crie um cenário e defina o papel do aluno.
 
-**SAÍDA (formato obrigatório - sempre em português):**
-1.  **Título da Missão:** (curto e envolvente) + faixa etária.
-2.  **Introdução narrativa:** (1-2 parágrafos) — contexto + papel do aluno.
-3.  **Mapa rápido:** (tempo estimado total, número de aulas, materiais).
-4.  **Três Desafios/Níveis (Exploração → Análise → Solução Criativa):** Para cada desafio:
-    -   Objetivo do desafio.
-    -   **BNCC:** indicar ao menos 1 Competência Geral e 1 Área do Conhecimento (se possível, sugerir habilidades específicas; o professor poderá inserir códigos EF/EM).
-    -   Materiais e ferramentas (ex.: Google Forms, Planilhas, Teachable Machine, Scratch, Colab).
-    -   **Passo-a-passo DETALHADO para o ALUNO:** instruções numeradas que digam exatamente o que fazer, incluindo:
-        -   Ações em interfaces (ex.: "Abra o Google Forms → clique em + → crie a primeira pergunta '...'").
-        -   Prompts prontos para usar com uma IA generativa (ex.: "Peça para a IA: 'Explique em 3 frases...'").
-        -   Exemplos de formato de dados (colunas CSV de exemplo).
-        -   Comandos/células de código prontos (quando pertinente).
-        -   Como testar e validar resultados (ex.: "tire 20 fotos de exemplo e rode o modelo; registre acertos/erros na planilha").
-    -   Sugestão de outputs esperados (o que entregar).
-    -   Critério de sucesso (como o professor avalia).
-5.  **Conclusão da missão:** síntese do que aprenderam + 2 perguntas de reflexão ligadas à BNCC.
-6.  **Notas para o Professor:** sugestões de diferenciação (EF1 vs EM), adaptações para inclusão, preocupações de privacidade (LGPD / autorização para fotos), e proposta de rubrica (pontos).
-7.  **Prompt para o Professor:** Gere **1 prompt pronto** que o professor pode usar para pedir a uma IA para criar material de apoio (ex.: roteiro de aula, slides, ficha de avaliação).
+**3. Mapa Rápido:** (tempo, aulas, materiais).
 
-**REGRAS DE TOM E ESTILO:**
--   Adapte a linguagem ao ano escolar.
--   Gamifique com emojis, feedback motivador e frases curtas.
--   Segurança: inclua orientações claras sobre consentimento para coleta de imagens/dados e anonimização.
+**4. Três Desafios (Níveis Progressivos):**
+Para cada desafio (Exploração → Análise → Solução Criativa):
+*   **Objetivo:** O que o aluno deve alcançar.
+*   **BNCC:** Uma Competência Geral e uma Área do Conhecimento.
+*   **Ferramentas:** Ex: Google Forms, Planilhas, Scratch, etc.
+*   **Passo a Passo DETALHADO para o Aluno:** Instruções numeradas e claras. Inclua ações em interfaces (ex: "Abra o Google Forms..."), prompts prontos para IA (ex: "Peça à IA: '...'"), exemplos de dados, e como validar os resultados.
+*   **Entrega:** O que o aluno deve produzir.
+*   **Critério de Sucesso:** Como o professor avalia.
 
-**REQUISITO ADICIONAL OBRIGATÓRIO:**
-Ao final de tudo, gere também um **“Guia rápido do aluno”** (1 página) com passos mínimos que o aluno pode seguir sozinho, e um **“Guia técnico”** (1 página) explicando os comandos/células de código ou configurações da ferramenta, se aplicável.
-`;
+**5. Conclusão da Missão:** Resumo do aprendizado + 2 perguntas de reflexão (ligadas à BNCC).
+
+**6. Notas para o Professor:** Sugestões de adaptação, inclusão, privacidade (LGPD) e uma proposta de rubrica.
+
+**7. Prompt para o Professor:** Crie 1 prompt pronto para uma IA gerar material de apoio (ex: roteiro de aula).
+
+**8. Guia Rápido do Aluno:** Uma lista de passos simplificada para o aluno seguir de forma autônoma.
+
+**9. Guia Técnico (se aplicável):** Explicação de comandos ou configurações de ferramentas mais complexas.
+
+**Regras Adicionais:**
+*   Use linguagem adequada ao ano escolar.
+*   Use emojis e um tom motivador.
+*   Inclua avisos sobre segurança de dados (LGPD) quando houver coleta de informações.`;
         default:
             const unhandledAction = action.toString().replace(/_/g, ' ').toLowerCase();
             return basePrompt + `Tarefa: Execute a seguinte ação no texto: ${unhandledAction}.`;
