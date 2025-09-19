@@ -1,4 +1,5 @@
 
+
 export enum ActionType {
     SUMMARIZE = 'SUMMARIZE',
     KEYWORDS = 'KEYWORDS',
@@ -38,4 +39,5 @@ export interface HistoryItem {
     fullInputText: string;
     fullResult: string;
     timestamp: string; // ISO String
+    customTitle?: string;
 }

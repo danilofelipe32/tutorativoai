@@ -13,6 +13,8 @@ interface MainViewProps {
     onClearText: () => void;
     history: HistoryItem[];
     onHistoryItemClick: (item: HistoryItem) => void;
+    onDeleteItem: (itemId: number) => void;
+    onRenameItem: (itemId: number, newTitle: string) => void;
 }
 
 const ActionButton: React.FC<{ action: ActionType; onClick: () => void; isDisabled: boolean }> = ({ action, onClick, isDisabled }) => {
@@ -34,7 +36,7 @@ const ActionButton: React.FC<{ action: ActionType; onClick: () => void; isDisabl
 };
 
 
-const MainView: React.FC<MainViewProps> = ({ onActionSelect, inputText, onTextChange, onClearText, history, onHistoryItemClick }) => {
+const MainView: React.FC<MainViewProps> = ({ onActionSelect, inputText, onTextChange, onClearText, history, onHistoryItemClick, onDeleteItem, onRenameItem }) => {
     const isTextProvided = inputText.trim().length > 0;
     
     return (
@@ -79,7 +81,12 @@ const MainView: React.FC<MainViewProps> = ({ onActionSelect, inputText, onTextCh
                 ))}
             </div>
 
-            <HistoryList history={history} onItemClick={onHistoryItemClick} />
+            <HistoryList
+                history={history}
+                onItemClick={onHistoryItemClick}
+                onDeleteItem={onDeleteItem}
+                onRenameItem={onRenameItem}
+            />
         </div>
     );
 };

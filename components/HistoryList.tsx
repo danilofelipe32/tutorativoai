@@ -1,18 +1,30 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { HistoryItem } from '../types';
 import { actionConfig } from '../constants';
-import { HistoryIcon } from './icons';
+import { HistoryIcon, TrashIcon, PencilIcon } from './icons';
 
 interface HistoryListProps {
     history: HistoryItem[];
     onItemClick: (item: HistoryItem) => void;
+    onDeleteItem: (itemId: number) => void;
+    onRenameItem: (itemId: number, newTitle: string) => void;
 }
 
 const ITEMS_PER_PAGE = 10;
 
-const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick }) => {
+const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onDeleteItem, onRenameItem }) => {
     const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
+    const [editingItemId, setEditingItemId] = useState<number | null>(null);
+    const [renameValue, setRenameValue] = useState('');
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        if (editingItemId !== null && inputRef.current) {
+            inputRef.current.focus();
+            inputRef.current.select();
+        }
+    }, [editingItemId]);
 
     const handleLoadMore = () => {
         setVisibleCount(prevCount => prevCount + ITEMS_PER_PAGE);
@@ -27,6 +39,29 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick }) => {
             hour: '2-digit',
             minute: '2-digit',
         });
+    };
+
+    const handleRenameClick = (item: HistoryItem) => {
+        setEditingItemId(item.id);
+        setRenameValue(item.customTitle ?? actionConfig[item.actionType].title);
+    };
+
+    const handleCancelRename = () => {
+        setEditingItemId(null);
+        setRenameValue('');
+    };
+
+    const handleSaveRename = (itemId: number) => {
+        if (renameValue.trim()) {
+            onRenameItem(itemId, renameValue);
+        }
+        handleCancelRename();
+    };
+
+    const handleDeleteClick = (itemId: number) => {
+        if (window.confirm('Tem certeza que deseja excluir este item do histórico?')) {
+            onDeleteItem(itemId);
+        }
     };
 
     const visibleHistory = history.slice(0, visibleCount);
@@ -50,24 +85,68 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick }) => {
                             const config = actionConfig[item.actionType];
                             const Icon = config.icon;
                             return (
-                                <li key={item.id}>
-                                    <button
-                                        onClick={() => onItemClick(item)}
-                                        className="w-full text-left p-3 bg-slate-900/70 rounded-lg border border-slate-700 hover:bg-slate-800/90 hover:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500 transition-all duration-200"
-                                    >
-                                        <div className="flex items-center mb-2">
-                                            <div className={`flex-shrink-0 h-8 w-8 rounded-md flex items-center justify-center mr-3 ${config.className}`}>
-                                                <Icon className="h-5 w-5 text-white" />
-                                            </div>
-                                            <div className="flex-grow">
-                                                <h3 className="font-bold text-slate-200">{config.title}</h3>
-                                                <p className="text-xs text-slate-500">{formatDate(item.timestamp)}</p>
+                                <li key={item.id} className="bg-slate-900/70 rounded-lg border border-slate-700 hover:border-sky-500 focus-within:border-sky-500 focus-within:ring-1 focus-within:ring-sky-500 transition-all duration-200">
+                                    {editingItemId === item.id ? (
+                                        // EDIT MODE
+                                        <div className="p-3">
+                                            <input
+                                                ref={inputRef}
+                                                type="text"
+                                                value={renameValue}
+                                                onChange={(e) => setRenameValue(e.target.value)}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter') handleSaveRename(item.id);
+                                                    if (e.key === 'Escape') handleCancelRename();
+                                                }}
+                                                className="w-full bg-slate-800 text-slate-100 p-2 rounded-md border border-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                                                aria-label="Novo nome para o item do histórico"
+                                            />
+                                            <div className="flex items-center justify-end space-x-2 mt-2">
+                                                <button onClick={handleCancelRename} className="text-xs font-semibold py-1 px-3 rounded-md bg-slate-600 hover:bg-slate-500 transition-colors">Cancelar</button>
+                                                <button onClick={() => handleSaveRename(item.id)} className="text-xs font-semibold py-1 px-3 rounded-md bg-sky-600 hover:bg-sky-500 transition-colors">Salvar</button>
                                             </div>
                                         </div>
-                                        <p className="text-xs text-slate-400 italic bg-slate-800 p-2 rounded">
-                                            &ldquo;{item.inputTextSnippet}&rdquo;
-                                        </p>
-                                    </button>
+                                    ) : (
+                                        // DISPLAY MODE
+                                        <div className="p-3">
+                                            <div className="flex items-start mb-2">
+                                                <div className={`flex-shrink-0 h-8 w-8 rounded-md flex items-center justify-center mr-3 ${config.className}`}>
+                                                    <Icon className="h-5 w-5 text-white" />
+                                                </div>
+                                                <div
+                                                    className="flex-grow cursor-pointer"
+                                                    onClick={() => onItemClick(item)}
+                                                >
+                                                    <h3 className="font-bold text-slate-200">{item.customTitle ?? config.title}</h3>
+                                                    <p className="text-xs text-slate-500">{formatDate(item.timestamp)}</p>
+                                                </div>
+                                                <div className="flex items-center space-x-0 -mr-2">
+                                                    <button
+                                                        onClick={() => handleRenameClick(item)}
+                                                        className="p-2 rounded-full hover:bg-slate-700 text-slate-400 hover:text-sky-400 transition-colors"
+                                                        title="Renomear"
+                                                    >
+                                                        <PencilIcon className="h-4 w-4" />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDeleteClick(item.id)}
+                                                        className="p-2 rounded-full hover:bg-slate-700 text-slate-400 hover:text-rose-500 transition-colors"
+                                                        title="Excluir"
+                                                    >
+                                                        <TrashIcon className="h-4 w-4" />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div
+                                                className="cursor-pointer"
+                                                onClick={() => onItemClick(item)}
+                                            >
+                                                <p className="text-xs text-slate-400 italic bg-slate-800 p-2 rounded">
+                                                    &ldquo;{item.inputTextSnippet}&rdquo;
+                                                </p>
+                                            </div>
+                                        </div>
+                                    )}
                                 </li>
                             );
                         })}

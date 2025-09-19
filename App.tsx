@@ -273,6 +273,20 @@ const App: React.FC = () => {
         }
     };
 
+    const handleDeleteItem = (itemId: number) => {
+        const newHistory = history.filter(item => item.id !== itemId);
+        setHistory(newHistory);
+        localStorage.setItem('actionHistory', JSON.stringify(newHistory));
+    };
+
+    const handleRenameItem = (itemId: number, newTitle: string) => {
+        const newHistory = history.map(item =>
+            item.id === itemId ? { ...item, customTitle: newTitle.trim() } : item
+        );
+        setHistory(newHistory);
+        localStorage.setItem('actionHistory', JSON.stringify(newHistory));
+    };
+
     const headerTitle = view === View.MAIN ? 'Tutor Ativo AI' : (lastAction ? actionConfig[lastAction].title : 'Resultado');
     
     return (
@@ -295,6 +309,8 @@ const App: React.FC = () => {
                         onClearText={handleClearText}
                         history={history}
                         onHistoryItemClick={handleHistoryItemClick}
+                        onDeleteItem={handleDeleteItem}
+                        onRenameItem={handleRenameItem}
                     />
                 ) : (
                     <ResultsView
