@@ -50,10 +50,10 @@ const ResultsView: React.FC<ResultsViewProps> = ({ isLoading, result, error, act
             </div>
             
             {result && (
-                 <div className="flex-shrink-0 p-4 border-t border-slate-700/50 flex items-center justify-between">
+                 <div className="flex-shrink-0 p-3 border-t border-slate-700/50 flex items-center justify-end space-x-2">
                     <button
                         onClick={onOpenRefineModal}
-                        className="flex items-center space-x-2 px-3 py-2 text-sm font-semibold rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-sky-400"
+                        className="flex items-center space-x-2 px-3 py-2 text-sm font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-emerald-400"
                         disabled={isLoading}
                         title="Refinar resultado"
                     >
