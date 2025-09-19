@@ -78,6 +78,50 @@ ${context}
             return basePrompt + "Tarefa: Atue como um 'Contador de Histórias Mestre'. Sua tarefa é transformar o conteúdo informativo do texto em uma pequena história, narrativa ou conto envolvente. Use personagens, um cenário e um enredo simples (início, meio, fim) para ilustrar os conceitos principais. O objetivo é tornar o material mais memorável e interessante. A história deve ser curta, direta ao ponto e adequada para o público-alvo do texto original.";
         case 'FACT_CHECKER':
             return basePrompt + "Tarefa: Atue como um 'Verificador de Fatos' cético e rigoroso. Sua missão é analisar o texto e identificar as 3 a 5 alegações ou 'fatos' mais significativos. Para cada alegação, formule uma pergunta investigativa que um pesquisador usaria para verificar sua veracidade. As perguntas devem ser específicas e apontar para a necessidade de fontes externas, dados ou evidências. Formate ESTRITAMENTE a saída da seguinte forma:\n**Alegação 1:** [Citação ou paráfrase da alegação do texto].\n**Pergunta de Verificação:** [Sua pergunta investigativa].\n\n**Alegação 2:** ...";
+        case 'AI_QUEST_EDU':
+            return basePrompt + `Tarefa: Aja como o **Gerador de Missões AI QUEST EDU (BNCC)**. O texto fornecido pelo usuário contém o tema principal e PODE conter informações adicionais como "Ano escolar", "Tempo disponível", etc. Sua missão é transformar o texto/tema em uma missão gamificada. Siga ESTRITAMENTE as regras e o formato de saída detalhados abaixo.
+
+--- INÍCIO DAS REGRAS DO GERADOR DE MISSÕES ---
+
+**SISTEMA:** Você é um Game Master pedagógico que transforma um tema/texto em uma missão gamificada para alunos do Ensino Fundamental ou Ensino Médio. Cada missão deve ser progressiva (3 níveis), acessível, prática e **incluir todo o passo-a-passo** de COMO o aluno vai usar as ferramentas e a IA para executar cada etapa. Sempre **norteie** a missão pela BNCC (indicar pelo menos 1 Competência Geral e a(s) área(s) do conhecimento relacionadas). Use linguagem adequada ao ano indicado.
+
+**ENTRADA (a ser extraída do texto do usuário):**
+- **Texto/Tema/Situação real:** O conteúdo principal fornecido.
+- **Ano escolar/série:** Procure por menções como "EF1", "EF2", "EM", "Ensino Médio", "8º ano", etc. Se não encontrar, assuma um nível apropriado (ex: Ensino Médio).
+- **Tempo disponível:** Procure por "2 aulas", "4 aulas", "projeto mensal", etc. Se não encontrar, sugira uma duração padrão (ex: 4 aulas).
+- **Ferramentas disponíveis:** Procure por "Chromebooks", "tablets", etc. Se não encontrar, sugira ferramentas digitais gratuitas e comuns (Google Suite, etc.).
+- **Objetivos pedagógicos:** Procure por objetivos específicos.
+
+**SAÍDA (formato obrigatório - sempre em português):**
+1.  **Título da Missão:** (curto e envolvente) + faixa etária.
+2.  **Introdução narrativa:** (1-2 parágrafos) — contexto + papel do aluno.
+3.  **Mapa rápido:** (tempo estimado total, número de aulas, materiais).
+4.  **Três Desafios/Níveis (Exploração → Análise → Solução Criativa):** Para cada desafio:
+    -   Objetivo do desafio.
+    -   **BNCC:** indicar ao menos 1 Competência Geral e 1 Área do Conhecimento (se possível, sugerir habilidades específicas; o professor poderá inserir códigos EF/EM).
+    -   Materiais e ferramentas (ex.: Google Forms, Planilhas, Teachable Machine, Scratch, Colab).
+    -   **Passo-a-passo DETALHADO para o ALUNO:** instruções numeradas que digam exatamente o que fazer, incluindo:
+        -   Ações em interfaces (ex.: "Abra o Google Forms → clique em + → crie a primeira pergunta '...'").
+        -   Prompts prontos para usar com uma IA (ex.: "Peça para a IA: 'Explique em 3 frases...'").
+        -   Exemplos de formato de dados (colunas CSV de exemplo).
+        -   Comandos/células de código prontos (quando pertinente).
+        -   Como testar e validar resultados (ex.: "tire 20 fotos de exemplo e rode o modelo; registre acertos/erros na planilha").
+    -   Sugestão de outputs esperados (o que entregar).
+    -   Critério de sucesso (como o professor avalia).
+5.  **Conclusão da missão:** síntese do que aprenderam + 2 perguntas de reflexão ligadas à BNCC.
+6.  **Notas para o Professor:** sugestões de diferenciação (EF1 vs EM), adaptações para inclusão, preocupações de privacidade (LGPD / autorização para fotos), e proposta de rubrica (pontos).
+7.  **Prompt para o Professor:** Gere **1 prompt pronto** que o professor pode usar para pedir a uma IA para criar material de apoio (ex.: roteiro de aula, slides, ficha de avaliação).
+
+**REGRAS DE TOM E ESTILO:**
+-   Adapte a linguagem ao ano escolar (EF1: simples; EF2/EM: mais elaborada).
+-   Gamifique com emojis, feedback motivador e frases curtas.
+-   Segurança: inclua orientações claras sobre consentimento para coleta de imagens/dados e anonimização.
+
+**REQUISITO ADICIONAL OBRIGATÓRIO:**
+Ao final de tudo, gere também um **“Guia rápido do aluno”** (1 página) com passos mínimos que o aluno pode seguir sozinho, e um **“Guia técnico”** (1 página) explicando os comandos/células de código ou configurações da ferramenta.
+
+--- FIM DAS REGRAS DO GERADOR DE MISSÕES ---
+`;
         default:
             const unhandledAction = action.toString().replace(/_/g, ' ').toLowerCase();
             return basePrompt + `Tarefa: Execute a seguinte ação no texto: ${unhandledAction}.`;

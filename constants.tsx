@@ -168,4 +168,10 @@ export const actionConfig: ActionConfig = {
         icon: FactCheckerIcon,
         className: 'bg-red-600 hover:bg-red-700',
     },
+    [ActionType.AI_QUEST_EDU]: {
+        title: 'AI QUEST EDU',
+        description: 'Transforma um tema em uma missão de projeto gamificada (BNCC).',
+        icon: ProjectIdeasIcon,
+        className: 'bg-fuchsia-600 hover:bg-fuchsia-700',
+    },
 };

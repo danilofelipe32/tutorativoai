@@ -26,6 +26,7 @@ export enum ActionType {
     REAL_WORLD_EXAMPLES = 'REAL_WORLD_EXAMPLES',
     STORYTELLER = 'STORYTELLER',
     FACT_CHECKER = 'FACT_CHECKER',
+    AI_QUEST_EDU = 'AI_QUEST_EDU',
 }
 
 export enum View {
