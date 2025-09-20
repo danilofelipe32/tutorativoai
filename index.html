@@ -18,19 +18,33 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* A custom scrollbar for a cleaner look */
+        /* Custom scrollbar for the new glass aesthetic */
         ::-webkit-scrollbar {
-            width: 6px;
+            width: 8px;
         }
         ::-webkit-scrollbar-track {
-            background: #f1f5f9;
+            background: rgba(15, 23, 42, 0.1);
         }
         ::-webkit-scrollbar-thumb {
-            background: #94a3b8;
-            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: #64748b;
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0px); }
+            50% { transform: translate(0, 20px); }
+            100% { transform: translate(0, -0px); }
+        }
+
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.6;
+            z-index: -1;
         }
     </style>
 <script type="importmap">
@@ -43,7 +57,12 @@
 }
 </script>
 </head>
-<body class="bg-slate-100">
+<body class="bg-slate-900 text-slate-100 font-sans h-screen overflow-hidden">
+    <div id="app-background">
+        <div class="orb" style="top: 5%; left: 10%; width: 350px; height: 350px; background-color: rgba(14, 165, 233, 0.4); animation: float 8s ease-in-out infinite alternate;"></div>
+        <div class="orb" style="top: 50%; left: 75%; width: 450px; height: 450px; background-color: rgba(132, 114, 246, 0.4); animation: float 10s ease-in-out infinite reverse;"></div>
+        <div class="orb" style="top: 30%; left: 40%; width: 300px; height: 300px; background-color: rgba(34, 211, 238, 0.3); animation: float 7s ease-in-out infinite;"></div>
+    </div>
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
 </body>

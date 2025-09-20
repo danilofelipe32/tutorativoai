@@ -1,5 +1,6 @@
 
 
+
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { ActionType, View, HistoryItem } from './types';
 import Header from './components/Header';
@@ -339,7 +340,7 @@ const App: React.FC = () => {
     const headerTitle = view === View.MAIN ? 'Tutor Ativo AI' : (lastAction ? actionConfig[lastAction].title : 'Resultado');
     
     return (
-        <div className="flex flex-col h-screen bg-slate-800 text-slate-100 font-sans">
+        <div className="flex flex-col h-screen bg-transparent">
             <Header
                 title={headerTitle}
                 showBackButton={view === View.RESULTS}
@@ -349,7 +350,7 @@ const App: React.FC = () => {
                 isRefreshable={view === View.RESULTS && !!lastAction && !isLoading}
             />
 
-            <main className="flex-grow p-4 overflow-y-auto" style={{ scrollbarGutter: 'stable' }}>
+            <main className="flex-grow p-4 overflow-y-auto w-full max-w-5xl mx-auto" style={{ scrollbarGutter: 'stable' }}>
                 {view === View.MAIN ? (
                     <MainView
                         onActionSelect={handleActionSelect}
@@ -372,7 +373,7 @@ const App: React.FC = () => {
                 )}
             </main>
 
-            <footer className="flex-shrink-0 text-center p-3 border-t border-slate-700/50 text-xs text-slate-500">
+            <footer className="flex-shrink-0 text-center p-3 bg-black/20 backdrop-blur-lg border-t border-white/10 text-xs text-slate-400">
                 Produzido por <a href="mailto:danilofelip862@educar.rn.gov.br" className="text-sky-400 hover:underline">Danilo Arruda</a>.
             </footer>
 

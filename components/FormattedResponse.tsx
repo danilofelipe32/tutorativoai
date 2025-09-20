@@ -1,3 +1,4 @@
+
 import React, { useMemo } from 'react';
 import { ActionType } from '../types';
 import { actionConfig } from '../constants';
@@ -27,9 +28,9 @@ const TableRenderer: React.FC<{ tableLines: string[] }> = ({ tableLines }) => {
     const bodyRows = tableLines.slice(2); // Skip header and separator
 
     return (
-        <div className="overflow-x-auto my-4 rounded-lg border border-slate-700">
+        <div className="overflow-x-auto my-4 rounded-lg border border-white/10">
             <table className="w-full text-sm text-left text-slate-300">
-                <thead className="bg-slate-700 text-xs text-slate-200 uppercase">
+                <thead className="bg-white/5 text-xs text-slate-200 uppercase">
                     <tr>
                         {headers.map((header, index) => (
                             <th key={index} scope="col" className="px-4 py-3">
@@ -44,7 +45,7 @@ const TableRenderer: React.FC<{ tableLines: string[] }> = ({ tableLines }) => {
                         // Make sure the number of cells matches the number of headers
                         if (cells.length !== headers.length) return null; 
                         return (
-                            <tr key={rowIndex} className="bg-slate-800/50 even:bg-slate-800/80 border-b border-slate-700">
+                            <tr key={rowIndex} className="bg-transparent even:bg-white/5 border-b border-white/10 last:border-b-0">
                                 {cells.map((cell, cellIndex) => (
                                     <td key={cellIndex} className="px-4 py-3">
                                         {renderBoldText(cell)}
@@ -117,7 +118,7 @@ const FormattedResponse: React.FC<FormattedResponseProps> = ({ text, actionType 
             } else if (line.toLowerCase().startsWith('**gabarito:**')) {
                  isList = false;
                  elements.push(
-                    <div key={`gabarito-${i}`} className="mt-6 bg-slate-800 border-l-4 border-emerald-500 p-4 rounded-r-lg">
+                    <div key={`gabarito-${i}`} className="mt-6 bg-emerald-900/50 border-l-4 border-emerald-400 p-4 rounded-r-lg">
                         <p className="text-emerald-300 font-bold">{renderBoldText(line)}</p>
                     </div>
                  );
@@ -127,7 +128,7 @@ const FormattedResponse: React.FC<FormattedResponseProps> = ({ text, actionType 
             } else if (/^[a-d]\)\s/.test(line)) { // Quiz Option
                 isList = false;
                  elements.push(
-                    <p key={`p-quiz-${i}`} className="ml-4 my-1 p-2 bg-slate-800/50 rounded-md border border-slate-700">
+                    <p key={`p-quiz-${i}`} className="ml-4 my-1 p-2 bg-white/5 rounded-md border border-white/10 hover:bg-white/10 transition-colors">
                         {renderBoldText(line)}
                     </p>
                 );

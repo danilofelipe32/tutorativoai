@@ -47,17 +47,17 @@ const ResultsView: React.FC<ResultsViewProps> = ({ isLoading, result, error, act
 
     if (isLoading) {
         return (
-            <div className="flex flex-col items-center justify-center h-full text-center text-slate-400">
+            <div className="flex flex-col items-center justify-center h-full text-center text-slate-300">
                 <LoadingIcon className="h-10 w-10 animate-spin text-sky-400" />
                 <p className="mt-4 text-lg font-semibold">Analisando o texto...</p>
-                <p className="text-sm">A IA está trabalhando para gerar sua resposta.</p>
+                <p className="text-sm text-slate-400">A IA está trabalhando para gerar sua resposta.</p>
             </div>
         );
     }
 
     if (error) {
         return (
-            <div className="bg-rose-900/50 border border-rose-700 text-rose-200 p-4 rounded-lg">
+            <div className="bg-rose-500/10 backdrop-blur-sm border border-rose-400/20 text-rose-200 p-4 rounded-lg">
                 <h3 className="font-bold mb-2">Ocorreu um Erro</h3>
                 <p className="text-sm">{error}</p>
             </div>
@@ -75,16 +75,16 @@ const ResultsView: React.FC<ResultsViewProps> = ({ isLoading, result, error, act
     };
 
     return (
-        <div className="bg-slate-900/70 rounded-xl h-full flex flex-col">
+        <div className="bg-black/20 backdrop-blur-xl rounded-2xl border border-white/10 h-full flex flex-col">
             <div className="flex-grow p-4 overflow-y-auto">
                 {renderContent()}
             </div>
             
             {result && (
-                 <div className="flex-shrink-0 p-3 border-t border-slate-700/50 flex items-stretch justify-between gap-2">
+                 <div className="flex-shrink-0 p-3 border-t border-white/10 flex items-stretch justify-between gap-2">
                     <button
                         onClick={onOpenRefineModal}
-                        className="flex-1 flex items-center justify-center space-x-1.5 px-2 py-2 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-emerald-400"
+                        className="flex-1 flex items-center justify-center space-x-1.5 px-2 py-2 text-xs font-semibold rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/50 text-white transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-emerald-400"
                         disabled={isLoading}
                         title="Refinar resultado"
                     >
@@ -96,8 +96,8 @@ const ResultsView: React.FC<ResultsViewProps> = ({ isLoading, result, error, act
                         onClick={handleCopy}
                         className={`flex-1 flex items-center justify-center space-x-1.5 px-2 py-2 text-xs font-semibold rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 ${
                             copyStatus === 'copied'
-                                ? 'bg-emerald-600 text-white cursor-default'
-                                : 'bg-slate-700 hover:bg-slate-600 text-slate-200 focus:ring-slate-500'
+                                ? 'bg-emerald-500/30 border border-emerald-400/50 text-white cursor-default'
+                                : 'bg-white/10 hover:bg-white/20 border border-white/20 text-slate-200 focus:ring-slate-500'
                         }`}
                         disabled={copyStatus === 'copied'}
                         aria-live="polite"
@@ -113,7 +113,7 @@ const ResultsView: React.FC<ResultsViewProps> = ({ isLoading, result, error, act
                     {isShareSupported && (
                         <button
                             onClick={handleShare}
-                            className="flex-1 flex items-center justify-center space-x-1.5 px-2 py-2 text-xs font-semibold rounded-lg bg-sky-600 hover:bg-sky-500 text-white transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-sky-400"
+                            className="flex-1 flex items-center justify-center space-x-1.5 px-2 py-2 text-xs font-semibold rounded-lg bg-sky-500/20 hover:bg-sky-500/30 border border-sky-400/50 text-white transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-sky-400"
                         >
                             <ShareIcon className="h-4 w-4 flex-shrink-0" />
                             <span className="truncate">Compartilhar</span>

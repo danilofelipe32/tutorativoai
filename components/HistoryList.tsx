@@ -1,4 +1,5 @@
 
+
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { HistoryItem } from '../types';
 import { actionConfig } from '../constants';
@@ -100,18 +101,18 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onDelet
                         placeholder="Pesquisar por título ou trecho..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full bg-slate-800 text-slate-300 p-2 pl-10 rounded-lg border border-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-500 transition-colors"
+                        className="w-full bg-slate-900/50 text-slate-300 p-2 pl-10 rounded-lg border border-white/10 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-sky-500 transition-colors"
                         aria-label="Pesquisar no histórico"
                     />
                 </div>
             )}
 
             {history.length === 0 ? (
-                <div className="text-center py-8 px-4 bg-slate-900/50 rounded-lg border border-dashed border-slate-700">
+                <div className="text-center py-8 px-4 bg-black/20 rounded-lg border border-dashed border-white/10">
                     <p className="text-slate-500">Seu histórico de atividades aparecerá aqui.</p>
                 </div>
             ) : filteredHistory.length === 0 ? (
-                <div className="text-center py-8 px-4 bg-slate-900/50 rounded-lg">
+                <div className="text-center py-8 px-4 bg-black/20 rounded-lg">
                     <p className="text-slate-500">Nenhum resultado encontrado para &ldquo;{searchTerm}&rdquo;.</p>
                 </div>
             ) : (
@@ -121,7 +122,7 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onDelet
                             const config = actionConfig[item.actionType];
                             const Icon = config.icon;
                             return (
-                                <li key={item.id} className="bg-slate-900/70 rounded-lg border border-slate-700 hover:border-sky-500 focus-within:border-sky-500 focus-within:ring-1 focus-within:ring-sky-500 transition-all duration-200">
+                                <li key={item.id} className="bg-white/5 backdrop-blur-md rounded-lg border border-white/10 hover:border-sky-400/50 focus-within:border-sky-400/50 transition-all duration-200">
                                     {editingItemId === item.id ? (
                                         // EDIT MODE
                                         <div className="p-3">
@@ -134,7 +135,7 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onDelet
                                                     if (e.key === 'Enter') handleSaveRename(item.id);
                                                     if (e.key === 'Escape') handleCancelRename();
                                                 }}
-                                                className="w-full bg-slate-800 text-slate-100 p-2 rounded-md border border-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                                                className="w-full bg-slate-800/70 text-slate-100 p-2 rounded-md border border-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500"
                                                 aria-label="Novo nome para o item do histórico"
                                             />
                                             <div className="flex items-center justify-end space-x-2 mt-2">
@@ -154,19 +155,19 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onDelet
                                                     onClick={() => onItemClick(item)}
                                                 >
                                                     <h3 className="font-bold text-slate-200">{item.customTitle ?? config.title}</h3>
-                                                    <p className="text-xs text-slate-500">{formatDate(item.timestamp)}</p>
+                                                    <p className="text-xs text-slate-400">{formatDate(item.timestamp)}</p>
                                                 </div>
                                                 <div className="flex items-center space-x-0 -mr-2">
                                                     <button
                                                         onClick={() => handleRenameClick(item)}
-                                                        className="p-2 rounded-full hover:bg-slate-700 text-slate-400 hover:text-sky-400 transition-colors"
+                                                        className="p-2 rounded-full hover:bg-white/10 text-slate-400 hover:text-sky-400 transition-colors"
                                                         title="Renomear"
                                                     >
                                                         <PencilIcon className="h-4 w-4" />
                                                     </button>
                                                     <button
                                                         onClick={() => handleDeleteClick(item.id)}
-                                                        className="p-2 rounded-full hover:bg-slate-700 text-slate-400 hover:text-rose-500 transition-colors"
+                                                        className="p-2 rounded-full hover:bg-white/10 text-slate-400 hover:text-rose-500 transition-colors"
                                                         title="Excluir"
                                                     >
                                                         <TrashIcon className="h-4 w-4" />
@@ -177,7 +178,7 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onDelet
                                                 className="cursor-pointer"
                                                 onClick={() => onItemClick(item)}
                                             >
-                                                <p className="text-xs text-slate-400 italic bg-slate-800 p-2 rounded">
+                                                <p className="text-xs text-slate-400 italic bg-black/20 p-2 rounded">
                                                     &ldquo;{item.inputTextSnippet}&rdquo;
                                                 </p>
                                             </div>
@@ -191,7 +192,7 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onDelet
                         <div className="mt-4 text-center">
                             <button
                                 onClick={handleLoadMore}
-                                className="w-full sm:w-auto bg-slate-700 hover:bg-slate-600 text-slate-200 font-semibold py-2 px-6 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-sky-500"
+                                className="w-full sm:w-auto bg-slate-700/50 hover:bg-slate-600/50 border border-white/10 text-slate-200 font-semibold py-2 px-6 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-sky-500"
                             >
                                 Carregar Mais
                             </button>
