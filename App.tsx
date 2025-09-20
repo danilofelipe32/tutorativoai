@@ -1,6 +1,7 @@
 
 
 
+
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { ActionType, View, HistoryItem } from './types';
 import Header from './components/Header';
@@ -125,6 +126,14 @@ Para cada desafio (Exploração → Análise → Solução Criativa):
 *   Use linguagem adequada ao ano escolar.
 *   Use emojis e um tom motivador.
 *   Inclua avisos sobre segurança de dados (LGPD) quando houver coleta de informações.`;
+        case 'POSSIBILITIES_ENGINE':
+            return basePrompt + "Tarefa: Atue como um 'Motor de Possibilidades'. Com base no conceito central do texto, gere 3 a 5 explicações ou metáforas alternativas e criativas. Cada explicação deve abordar o mesmo conceito de uma perspectiva diferente para atender a diversos estilos de aprendizagem. Numere cada possibilidade.";
+        case 'CO_DESIGNER':
+            return basePrompt + "Tarefa: Atue como um 'Co-Designer de Aprendizagem'. Com base no texto, ajude a planejar uma atividade de aprendizado personalizada. Sugira 3 opções de atividades (ex: criar um vídeo, escrever um post de blog, montar um debate) que se alinhem com o conteúdo. Para cada opção, descreva o objetivo, os passos principais e como ela pode ser adaptada para diferentes níveis de habilidade. Use bullet points.";
+        case 'COLLABORATION_COACH':
+            return basePrompt + "Tarefa: Atue como um 'Coach de Colaboração'. Imagine que um grupo de alunos está trabalhando em um projeto sobre o tema do texto. Sua tarefa é ajudá-los a encontrar informações. Formule 5 perguntas-chave que o grupo deveria pesquisar para aprofundar seu projeto. Além disso, sugira 3 a 5 termos de busca eficazes para usar em mecanismos de pesquisa como o Google. Formate como: **Perguntas de Pesquisa:** e **Termos de Busca:**.";
+        case 'EXPLORATORIUM':
+            return basePrompt + "Tarefa: Atue como um 'Exploratorium' de dados. Analise o texto e identifique os principais dados, estatísticas ou fatos apresentados. Em seguida, crie 3 a 5 'desafios de exploração' em forma de perguntas que incentivem a investigação e a visualização desses dados. Por exemplo: 'Como você criaria um gráfico para mostrar a tendência mencionada no texto?' ou 'Que outra fonte de dados poderia confirmar ou refutar a estatística X?'. Numere os desafios.";
         default:
             const unhandledAction = action.toString().replace(/_/g, ' ').toLowerCase();
             return basePrompt + `Tarefa: Execute a seguinte ação no texto: ${unhandledAction}.`;

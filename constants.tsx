@@ -5,7 +5,7 @@ import {
     SummarizeIcon, KeywordsIcon, ReflectIcon, TestIcon, SimplifyIcon, MindmapIcon, AnalogyIcon, 
     StepByStepIcon, ConnectionsIcon, LessonPlanIcon, RubricIcon, SparkleIcon, SocraticOpponentIcon,
     ProjectIdeasIcon, ChoiceBoardIcon, MisconceptionsIcon, InformationalTextIcon,
-    StorytellerIcon, FactCheckerIcon
+    StorytellerIcon, FactCheckerIcon, SearchIcon
 } from './components/icons';
 
 type ActionConfig = {
@@ -173,5 +173,29 @@ export const actionConfig: ActionConfig = {
         description: 'Transforma um tema em uma missão de projeto gamificada (BNCC).',
         icon: ProjectIdeasIcon,
         className: 'bg-fuchsia-900/30 border border-fuchsia-500/50 hover:bg-fuchsia-500/30 hover:shadow-lg hover:shadow-fuchsia-500/40 backdrop-blur',
+    },
+    [ActionType.POSSIBILITIES_ENGINE]: {
+        title: 'Motor de Possibilidades',
+        description: 'Gera formas alternativas para explicar um conceito.',
+        icon: SparkleIcon,
+        className: 'bg-fuchsia-900/30 border border-fuchsia-400/50 hover:bg-fuchsia-500/30 hover:shadow-lg hover:shadow-fuchsia-500/40 backdrop-blur',
+    },
+    [ActionType.CO_DESIGNER]: {
+        title: 'Co-Designer',
+        description: 'Ajuda a planejar atividades de aprendizado personalizadas.',
+        icon: LessonPlanIcon,
+        className: 'bg-lime-900/30 border border-lime-400/50 hover:bg-lime-500/30 hover:shadow-lg hover:shadow-lime-500/40 backdrop-blur',
+    },
+    [ActionType.COLLABORATION_COACH]: {
+        title: 'Coach de Colaboração',
+        description: 'Auxilia grupos em projetos com ideias de pesquisa.',
+        icon: ReflectIcon,
+        className: 'bg-orange-900/30 border border-orange-400/50 hover:bg-orange-500/30 hover:shadow-lg hover:shadow-orange-500/40 backdrop-blur',
+    },
+    [ActionType.EXPLORATORIUM]: {
+        title: 'Exploratorium',
+        description: 'Facilita a exploração de dados e promove a curiosidade.',
+        icon: SearchIcon,
+        className: 'bg-red-900/30 border border-red-400/50 hover:bg-red-500/30 hover:shadow-lg hover:shadow-red-500/40 backdrop-blur',
     },
 };
