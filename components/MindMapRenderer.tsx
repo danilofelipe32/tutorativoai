@@ -20,7 +20,7 @@ const ChevronIcon: React.FC<{ isCollapsed: boolean }> = ({ isCollapsed }) => (
 
 
 // Componente para renderizar um único nó e seus filhos (recursivamente)
-const Node: React.FC<{ node: MindMapNode }> = ({ node }) => {
+const Node: React.FC<{ node: MindMapNode; onNodeClick: (topic: string) => void; }> = ({ node, onNodeClick }) => {
     // Recolhe todos os nós que não são de nível superior por padrão
     const [isCollapsed, setIsCollapsed] = useState(node.level > 0);
     const hasChildren = node.children.length > 0;
@@ -47,7 +47,7 @@ const Node: React.FC<{ node: MindMapNode }> = ({ node }) => {
             <div className="flex items-center relative z-10">
                 <div className="flex items-center justify-center w-6 h-6 mr-1">
                     {hasChildren ? (
-                        <button onClick={toggleCollapse} className="p-1 rounded-full hover:bg-slate-700">
+                        <button onClick={toggleCollapse} className="p-1 rounded-full hover:bg-slate-700" aria-label={isCollapsed ? 'Expandir' : 'Recolher'}>
                             <ChevronIcon isCollapsed={isCollapsed} />
                         </button>
                     ) : (
@@ -55,7 +55,12 @@ const Node: React.FC<{ node: MindMapNode }> = ({ node }) => {
                         <div className="w-1.5 h-1.5 bg-slate-600 rounded-full" />
                     )}
                 </div>
-                <span className={`pl-1 ${colorClass}`}>{node.text}</span>
+                 <button 
+                    onClick={() => onNodeClick(node.text)} 
+                    className={`pl-1 text-left rounded focus:outline-none focus:ring-1 focus:ring-sky-500 hover:underline ${colorClass}`}
+                >
+                    {node.text}
+                </button>
             </div>
 
             {hasChildren && (
@@ -65,7 +70,7 @@ const Node: React.FC<{ node: MindMapNode }> = ({ node }) => {
                         {/* Linha horizontal conectora */}
                         <div className="absolute left-3 -top-0.5 h-7 w-4 border-b border-l border-slate-700 rounded-bl-lg" />
                         {node.children.map((child, index) => (
-                            <Node key={index} node={child} />
+                            <Node key={index} node={child} onNodeClick={onNodeClick} />
                         ))}
                     </ul>
                 </div>
@@ -75,7 +80,7 @@ const Node: React.FC<{ node: MindMapNode }> = ({ node }) => {
 };
 
 // Componente principal que parseia o texto e renderiza a árvore
-const MindMapRenderer: React.FC<{ text: string }> = ({ text }) => {
+const MindMapRenderer: React.FC<{ text: string; onNodeClick: (topic: string) => void; }> = ({ text, onNodeClick }) => {
     const tree = useMemo(() => {
         const lines = text.split('\n').filter(line => line.trim() !== '');
         if (lines.length === 0) return [];
@@ -125,7 +130,7 @@ const MindMapRenderer: React.FC<{ text: string }> = ({ text }) => {
         <div className="font-sans text-sm">
             <ul className="space-y-2">
                 {tree.map((node, index) => (
-                    <Node key={index} node={node} />
+                    <Node key={index} node={node} onNodeClick={onNodeClick} />
                 ))}
             </ul>
         </div>

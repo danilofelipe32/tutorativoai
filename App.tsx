@@ -1,7 +1,3 @@
-
-
-
-
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { ActionType, View, HistoryItem } from './types';
 import Header from './components/Header';
@@ -9,6 +5,7 @@ import MainView from './components/MainView';
 import ResultsView from './components/ResultsView';
 import HelpModal from './components/HelpModal';
 import RefineModal from './components/RefineModal';
+import ExplanationModal from './components/ExplanationModal';
 import { actionConfig } from './constants';
 
 // No API setup needed for ApiFreeLLM
@@ -160,6 +157,22 @@ ${instruction}
 Agora, gere a nova resposta refinada com base na instrução.`;
 }
 
+function getPromptForExplanation(context: string, topic: string): string {
+    return `Você é um "Tutor Inteligente", uma IA assistente de estudos. Sua tarefa é explicar um tópico específico que foi extraído de um texto maior.
+
+Siga seu processo de raciocínio interno (Cadeia de Pensamento, Auto-Reflexão), mas apresente APENAS a resposta final polida. Não inclua títulos como "Explicação". Comece a resposta diretamente.
+
+--- INÍCIO DO TEXTO ORIGINAL COMPLETO ---
+${context}
+--- FIM DO TEXTO ORIGINAL COMPLETO ---
+
+--- TÓPICO PARA EXPLICAR ---
+${topic}
+--- FIM DO TÓPICO PARA EXPLICAR ---
+
+Tarefa: Forneça uma explicação clara e concisa sobre o tópico "${topic}" com base no contexto do texto original. A explicação deve ser fácil de entender para alguém que está estudando o assunto. Use parágrafos curtos e formate termos importantes com **negrito**.`;
+}
+
 
 const App: React.FC = () => {
     const [view, setView] = useState<View>(View.MAIN);
@@ -171,6 +184,10 @@ const App: React.FC = () => {
     const [isRefineModalVisible, setIsRefineModalVisible] = useState<boolean>(false);
     const [lastAction, setLastAction] = useState<ActionType | null>(null);
     const [history, setHistory] = useState<HistoryItem[]>([]);
+    const [isExplanationModalVisible, setIsExplanationModalVisible] = useState<boolean>(false);
+    const [explanationTopic, setExplanationTopic] = useState<string>('');
+    const [explanationResult, setExplanationResult] = useState<string>('');
+    const [isExplanationLoading, setIsExplanationLoading] = useState<boolean>(false);
     const cache = useRef<Map<string, string>>(new Map());
 
     useEffect(() => {
@@ -332,6 +349,58 @@ const App: React.FC = () => {
         }
     };
 
+    const handleExplainTopic = useCallback(async (topic: string) => {
+        if (!inputText) return;
+
+        setIsExplanationModalVisible(true);
+        setExplanationTopic(topic);
+        setExplanationResult('');
+        setIsExplanationLoading(true);
+
+        const cacheKey = `explain:${topic}:${inputText}`;
+        if (cache.current.has(cacheKey)) {
+            setExplanationResult(cache.current.get(cacheKey)!);
+            setIsExplanationLoading(false);
+            return;
+        }
+
+        try {
+            const prompt = getPromptForExplanation(inputText, topic);
+            
+            const apiResponse = await fetch('https://apifreellm.com/api/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message: prompt }),
+            });
+
+            if (!apiResponse.ok) {
+                throw new Error(`Erro de rede: ${apiResponse.status} ${apiResponse.statusText}`);
+            }
+            
+            const data = await apiResponse.json();
+
+            if (data.status === 'success') {
+                cache.current.set(cacheKey, data.response);
+                setExplanationResult(data.response);
+            } else {
+                let userErrorMessage = data.error || 'Ocorreu um erro desconhecido na API.';
+                if (data.status === 'rate_limited' && data.retry_after) {
+                    userErrorMessage = `Limite de solicitações atingido. Tente novamente em ${data.retry_after} segundos.`;
+                }
+                setExplanationResult(`Falha ao gerar explicação: ${userErrorMessage}`);
+            }
+        } catch (e: any) {
+            console.error(e);
+            const errorMessage = e.message || 'Ocorreu um erro desconhecido.';
+            setExplanationResult(`Falha ao se comunicar com a API. ${errorMessage}`);
+        } finally {
+            setIsExplanationLoading(false);
+        }
+    }, [inputText]);
+
+
     const handleDeleteItem = (itemId: number) => {
         const newHistory = history.filter(item => item.id !== itemId);
         setHistory(newHistory);
@@ -378,6 +447,7 @@ const App: React.FC = () => {
                         error={error}
                         actionType={lastAction}
                         onOpenRefineModal={handleOpenRefineModal}
+                        onExplainTopic={handleExplainTopic}
                     />
                 )}
             </main>
@@ -391,6 +461,13 @@ const App: React.FC = () => {
                 isVisible={isRefineModalVisible}
                 onClose={handleCloseRefineModal}
                 onSubmit={handleRefineSubmit}
+            />
+            <ExplanationModal
+                isVisible={isExplanationModalVisible}
+                onClose={() => setIsExplanationModalVisible(false)}
+                topic={explanationTopic}
+                explanation={explanationResult}
+                isLoading={isExplanationLoading}
             />
         </div>
     );

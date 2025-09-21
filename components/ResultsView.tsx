@@ -11,9 +11,10 @@ interface ResultsViewProps {
     error: string;
     actionType: ActionType | null;
     onOpenRefineModal: () => void;
+    onExplainTopic: (topic: string) => void;
 }
 
-const ResultsView: React.FC<ResultsViewProps> = ({ isLoading, result, error, actionType, onOpenRefineModal }) => {
+const ResultsView: React.FC<ResultsViewProps> = ({ isLoading, result, error, actionType, onOpenRefineModal, onExplainTopic }) => {
     const [copyStatus, setCopyStatus] = useState<'idle' | 'copied'>('idle');
     const isShareSupported = typeof navigator.share === 'function';
 
@@ -68,7 +69,7 @@ const ResultsView: React.FC<ResultsViewProps> = ({ isLoading, result, error, act
         if (!result) return null;
 
         if (actionType === ActionType.MINDMAP) {
-            return <MindMapRenderer text={result} />;
+            return <MindMapRenderer text={result} onNodeClick={onExplainTopic} />;
         }
         
         return <FormattedResponse text={result} actionType={actionType} />;
