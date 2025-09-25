@@ -59,6 +59,7 @@ const actionGroups = [
       ActionType.POSSIBILITIES_ENGINE,
       ActionType.EXPLORATORIUM,
       ActionType.DISCUSSION_PROMPTS,
+      ActionType.IDENTIFY_PERSPECTIVE,
     ],
   },
   {
@@ -86,6 +87,7 @@ const actionGroups = [
       ActionType.DOK_QUESTIONS,
       ActionType.EXEMPLARS,
       ActionType.CHOICE_BOARD,
+      ActionType.FEEDBACK_GENERATOR,
     ],
   },
 ];

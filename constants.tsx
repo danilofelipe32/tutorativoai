@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { ActionType } from './types';
 import { 
@@ -8,7 +7,7 @@ import {
     StorytellerIcon, FactCheckerIcon, DeeperQuestionsIcon, DifferentiationIcon, 
     DOKQuestionsIcon, WorksheetsIcon, ExemplarsIcon, DiscussionPromptsIcon, 
     RealWorldExamplesIcon, AIQuestEduIcon, PossibilitiesEngineIcon, CoDesignerIcon, 
-    CollaborationCoachIcon, ExploratoriumIcon
+    CollaborationCoachIcon, ExploratoriumIcon, IdentifyPerspectiveIcon, FeedbackGeneratorIcon
 } from './components/icons';
 
 type ActionConfig = {
@@ -200,5 +199,17 @@ export const actionConfig: ActionConfig = {
         description: 'Facilita a exploração de dados e promove a curiosidade.',
         icon: ExploratoriumIcon,
         className: 'bg-red-900/30 border border-red-400/50 hover:bg-red-500/30 hover:shadow-lg hover:shadow-red-500/40 backdrop-blur',
+    },
+    [ActionType.IDENTIFY_PERSPECTIVE]: {
+        title: 'Identificar Perspectiva',
+        description: 'Analisa o texto para identificar o ponto de vista e possíveis vieses.',
+        icon: IdentifyPerspectiveIcon,
+        className: 'bg-stone-900/30 border border-stone-500/50 hover:bg-stone-500/30 hover:shadow-lg hover:shadow-stone-500/40 backdrop-blur',
+    },
+    [ActionType.FEEDBACK_GENERATOR]: {
+        title: 'Gerador de Feedback',
+        description: 'Cria exemplos de feedback construtivo para os alunos.',
+        icon: FeedbackGeneratorIcon,
+        className: 'bg-gray-900/30 border border-gray-500/50 hover:bg-gray-500/30 hover:shadow-lg hover:shadow-gray-500/40 backdrop-blur',
     },
 };

@@ -55,3 +55,5 @@ export const PossibilitiesEngineIcon = createIcon('lni lni-infinite');
 export const CoDesignerIcon = createIcon('lni lni-ruler-pencil');
 export const CollaborationCoachIcon = createIcon('lni lni-handshake');
 export const ExploratoriumIcon = createIcon('lni lni-map-marker');
+export const IdentifyPerspectiveIcon = createIcon('lni lni-target-audience');
+export const FeedbackGeneratorIcon = createIcon('lni lni-comments-reply');

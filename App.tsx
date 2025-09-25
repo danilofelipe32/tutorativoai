@@ -134,6 +134,10 @@ Para cada desafio (Exploração → Análise → Solução Criativa):
             return basePrompt + "Tarefa: Atue como um 'Coach de Colaboração'. Imagine que um grupo de alunos está trabalhando em um projeto sobre o tema do texto. Sua tarefa é ajudá-los a encontrar informações. Formule 5 perguntas-chave que o grupo deveria pesquisar para aprofundar seu projeto. Além disso, sugira 3 a 5 termos de busca eficazes para usar em mecanismos de pesquisa como o Google. Formate como: **Perguntas de Pesquisa:** e **Termos de Busca:**.";
         case 'EXPLORATORIUM':
             return basePrompt + "Tarefa: Atue como um 'Exploratorium' de dados. Analise o texto e identifique os principais dados, estatísticas ou fatos apresentados. Em seguida, crie 3 a 5 'desafios de exploração' em forma de perguntas que incentivem a investigação e a visualização desses dados. Por exemplo: 'Como você criaria um gráfico para mostrar a tendência mencionada no texto?' ou 'Que outra fonte de dados poderia confirmar ou refutar a estatística X?'. Numere os desafios.";
+        case 'IDENTIFY_PERSPECTIVE':
+            return basePrompt + "Tarefa: Atue como um analista crítico. Analise o texto para identificar o ponto de vista do autor, o tom geral (ex: informativo, persuasivo, crítico) e quaisquer possíveis vieses ou suposições implícitas. Estruture sua resposta em três seções: **Ponto de Vista**, **Tom** e **Análise de Vieses**.";
+        case 'FEEDBACK_GENERATOR':
+            return basePrompt + "Tarefa: Atue como um professor experiente. Com base no conteúdo do texto, crie 3 exemplos de feedback construtivo que poderiam ser dados a um aluno que escreveu uma resposta sobre este tópico. Inclua um 'Elogio Específico' (o que o aluno fez bem) e uma 'Sugestão para Melhoria' (um próximo passo claro) para cada exemplo. Numere os exemplos.";
         default:
             const unhandledAction = action.toString().replace(/_/g, ' ').toLowerCase();
             return basePrompt + `Tarefa: Execute a seguinte ação no texto: ${unhandledAction}.`;
