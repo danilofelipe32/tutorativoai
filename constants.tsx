@@ -5,11 +5,10 @@ import {
     SummarizeIcon, KeywordsIcon, ReflectIcon, TestIcon, SimplifyIcon, MindmapIcon, AnalogyIcon, 
     StepByStepIcon, ConnectionsIcon, LessonPlanIcon, RubricIcon, SocraticOpponentIcon,
     ProjectIdeasIcon, ChoiceBoardIcon, MisconceptionsIcon, InformationalTextIcon,
-    StorytellerIcon, FactCheckerIcon,
-    // New specific icons
-    DeeperQuestionsIcon, DifferentiationIcon, DOKQuestionsIcon, WorksheetsIcon,
-    ExemplarsIcon, DiscussionPromptsIcon, RealWorldExamplesIcon, AIQuestEduIcon,
-    PossibilitiesEngineIcon, CoDesignerIcon, CollaborationCoachIcon, ExploratoriumIcon
+    StorytellerIcon, FactCheckerIcon, DeeperQuestionsIcon, DifferentiationIcon, 
+    DOKQuestionsIcon, WorksheetsIcon, ExemplarsIcon, DiscussionPromptsIcon, 
+    RealWorldExamplesIcon, AIQuestEduIcon, PossibilitiesEngineIcon, CoDesignerIcon, 
+    CollaborationCoachIcon, ExploratoriumIcon
 } from './components/icons';
 
 type ActionConfig = {

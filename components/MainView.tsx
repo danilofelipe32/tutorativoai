@@ -1,6 +1,3 @@
-
-
-
 import React from 'react';
 import { ActionType, HistoryItem } from '../types';
 import { actionConfig } from '../constants';
@@ -36,6 +33,63 @@ const ActionButton: React.FC<{ action: ActionType; onClick: () => void; isDisabl
     );
 };
 
+const actionGroups = [
+  {
+    title: 'Análise e Compreensão',
+    description: 'Ações para extrair, simplificar e entender as informações centrais do texto.',
+    actions: [
+      ActionType.SUMMARIZE,
+      ActionType.KEYWORDS,
+      ActionType.SIMPLIFY,
+      ActionType.INFORMATIONAL_TEXT,
+      ActionType.REAL_WORLD_EXAMPLES,
+      ActionType.MISCONCEPTIONS,
+      ActionType.FACT_CHECKER,
+      ActionType.CONNECTIONS,
+    ],
+  },
+  {
+    title: 'Pensamento Crítico e Exploração',
+    description: 'Ferramentas para questionar, aprofundar e explorar as ideias do texto por diferentes ângulos.',
+    actions: [
+      ActionType.REFLECT,
+      ActionType.DEEPER_QUESTIONS,
+      ActionType.SOCRATIC_OPPONENT,
+      ActionType.ANALOGY,
+      ActionType.POSSIBILITIES_ENGINE,
+      ActionType.EXPLORATORIUM,
+      ActionType.DISCUSSION_PROMPTS,
+    ],
+  },
+  {
+    title: 'Criação e Aplicação',
+    description: 'Use o conteúdo como base para criar novos materiais, projetos e narrativas.',
+    actions: [
+      ActionType.MINDMAP,
+      ActionType.STEP_BY_STEP,
+      ActionType.STORYTELLER,
+      ActionType.PROJECT_IDEAS,
+      ActionType.WORKSHEETS,
+      ActionType.AI_QUEST_EDU,
+      ActionType.CO_DESIGNER,
+      ActionType.COLLABORATION_COACH,
+    ],
+  },
+  {
+    title: 'Avaliação e Planejamento Pedagógico',
+    description: 'Recursos específicos para educadores criarem avaliações, planos de aula e atividades.',
+    actions: [
+      ActionType.TEST,
+      ActionType.LESSON_PLAN,
+      ActionType.RUBRIC,
+      ActionType.DIFFERENTIATION,
+      ActionType.DOK_QUESTIONS,
+      ActionType.EXEMPLARS,
+      ActionType.CHOICE_BOARD,
+    ],
+  },
+];
+
 
 const MainView: React.FC<MainViewProps> = ({ onActionSelect, inputText, onTextChange, onClearText, history, onHistoryItemClick, onDeleteItem, onRenameItem }) => {
     const isTextProvided = inputText.trim().length > 0;
@@ -67,18 +121,28 @@ const MainView: React.FC<MainViewProps> = ({ onActionSelect, inputText, onTextCh
                 aria-label="Área de texto para análise"
             />
 
-            <div className="mb-4">
-                 <p className="text-slate-300 font-semibold text-center">Agora, escolha uma ação:</p>
+            <div className="mb-6">
+                 <p className="text-slate-300 font-semibold text-center text-lg">Agora, escolha uma ação:</p>
             </div>
 
-            <div className="grid grid-cols-3 gap-3 md:gap-4">
-                {Object.values(ActionType).map((action) => (
-                    <ActionButton 
-                        key={action} 
-                        action={action} 
-                        onClick={() => onActionSelect(action)} 
-                        isDisabled={!isTextProvided}
-                    />
+            <div className="space-y-8">
+                {actionGroups.map((group) => (
+                    <section key={group.title} aria-labelledby={group.title.replace(/\s+/g, '-').toLowerCase()}>
+                        <div className="mb-4 border-l-4 border-sky-500/50 pl-4">
+                            <h3 id={group.title.replace(/\s+/g, '-').toLowerCase()} className="text-xl font-bold text-slate-100">{group.title}</h3>
+                            <p className="text-slate-400 text-sm">{group.description}</p>
+                        </div>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
+                            {group.actions.map((action) => (
+                                <ActionButton
+                                    key={action}
+                                    action={action}
+                                    onClick={() => onActionSelect(action)}
+                                    isDisabled={!isTextProvided}
+                                />
+                            ))}
+                        </div>
+                    </section>
                 ))}
             </div>
 
