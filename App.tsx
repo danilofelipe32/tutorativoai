@@ -8,6 +8,7 @@ import HelpModal from './components/HelpModal';
 import RefineModal from './components/RefineModal';
 import ExplanationModal from './components/ExplanationModal';
 import { actionConfig } from './constants';
+import OnboardingModal from './components/OnboardingModal';
 
 // Setup Gemini API with the provided key
 const ai = new GoogleGenAI({ apiKey: "AIzaSyC66emimXFo6BVctXpbYlheIueYSgP3ExE" });
@@ -58,7 +59,7 @@ ${context}
         case 'RUBRIC':
             return basePrompt + "Tarefa: Crie uma rubrica de avaliação analítica com base no conteúdo principal do texto. A rubrica deve ter pelo menos 3 critérios de avaliação e 3 níveis de desempenho (ex: 'Iniciante', 'Proficiente', 'Exemplar'). Formate a rubrica final ESTRITAMENTE como uma tabela Markdown.";
         case 'DIFFERENTIATION':
-            return basePrompt + "Tarefa: Gere uma lista de 3 a 5 estratégias de diferenciação instrucional com base no tópico do texto. Para cada estratégia, descreva como ela pode ser aplicada para apoiar: 1) alunos com dificuldades, 2) alunos na média e 3) alunos avançados. Use bullet points.";
+            return basePrompt + "Tarefa: Gere uma lista de 3 a 5 estratégias de diferenciação instrucional com base no tópico do texto. Para cada estrategia, descreva como ela pode ser aplicada para apoiar: 1) alunos com dificuldades, 2) alunos na média e 3) alunos avançados. Use bullet points.";
         case 'DOK_QUESTIONS':
             return basePrompt + "Tarefa: Elabore uma série de perguntas sobre o texto, organizadas pelos quatro níveis da Profundidade de Conhecimento (DOK) de Webb. Forneça 2 perguntas para cada nível:\n**DOK 1 (Recordar):**\n**DOK 2 (Habilidades e Conceitos):**\n**DOK 3 (Pensamento Estratégico):**\n**DOK 4 (Pensamento Estendido):**";
         case 'WORKSHEETS':
@@ -195,11 +196,23 @@ const App: React.FC = () => {
     const [explanationTopic, setExplanationTopic] = useState<string>('');
     const [explanationResult, setExplanationResult] = useState<string>('');
     const [isExplanationLoading, setIsExplanationLoading] = useState<boolean>(false);
+    const [isOnboardingVisible, setIsOnboardingVisible] = useState<boolean>(false);
     const cache = useRef<Map<string, string>>(new Map());
 
     useEffect(() => {
+        // Onboarding check
+        try {
+            const hasSeenOnboarding = localStorage.getItem('hasSeenOnboarding');
+            if (!hasSeenOnboarding) {
+                setIsOnboardingVisible(true);
+            }
+        } catch (error) {
+            console.error("Failed to read from localStorage for onboarding", error);
+        }
+
         // Garante que a aplicação inicie com um estado limpo, removendo qualquer texto salvo anteriormente.
         localStorage.removeItem('inputText');
+        
         // Load history from localStorage
         try {
             const storedHistory = localStorage.getItem('actionHistory');
@@ -211,6 +224,15 @@ const App: React.FC = () => {
             setHistory([]);
         }
     }, []);
+
+    const handleCloseOnboarding = () => {
+        try {
+            localStorage.setItem('hasSeenOnboarding', 'true');
+        } catch (error) {
+            console.error("Failed to write to localStorage for onboarding", error);
+        }
+        setIsOnboardingVisible(false);
+    };
 
     const handleTextChange = (text: string) => {
         setInputText(text);
@@ -453,6 +475,10 @@ const App: React.FC = () => {
                 topic={explanationTopic}
                 explanation={explanationResult}
                 isLoading={isExplanationLoading}
+            />
+            <OnboardingModal 
+                isVisible={isOnboardingVisible}
+                onClose={handleCloseOnboarding}
             />
         </div>
     );
