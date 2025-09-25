@@ -27,7 +27,7 @@ const HelpModal: React.FC<HelpModalProps> = ({ isVisible, onClose }) => {
                     className="absolute top-3 right-3 p-2 rounded-full text-slate-400 hover:bg-white/10 hover:text-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500"
                     aria-label="Fechar modal"
                 >
-                    <CloseIcon className="h-6 w-6" />
+                    <CloseIcon className="text-2xl" />
                 </button>
                 <h2 className="text-xl font-bold text-white mb-3">Como usar o Tutor Ativo AI</h2>
                 <p className="text-slate-300 mb-5">

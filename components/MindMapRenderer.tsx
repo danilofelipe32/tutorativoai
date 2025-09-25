@@ -1,23 +1,11 @@
 import React, { useState, useMemo } from 'react';
+import { ChevronRightIcon } from './icons';
 
 interface MindMapNode {
     text: string;
     level: number;
     children: MindMapNode[];
 }
-
-const ChevronIcon: React.FC<{ isCollapsed: boolean }> = ({ isCollapsed }) => (
-    <svg
-        className={`w-4 h-4 text-slate-500 transition-transform duration-200 ${isCollapsed ? 'rotate-0' : 'rotate-90'
-            }`}
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-    >
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-    </svg>
-);
-
 
 // Componente para renderizar um único nó e seus filhos (recursivamente)
 const Node: React.FC<{ node: MindMapNode; onNodeClick: (topic: string) => void; }> = ({ node, onNodeClick }) => {
@@ -48,7 +36,7 @@ const Node: React.FC<{ node: MindMapNode; onNodeClick: (topic: string) => void; 
                 <div className="flex items-center justify-center w-6 h-6 mr-1">
                     {hasChildren ? (
                         <button onClick={toggleCollapse} className="p-1 rounded-full hover:bg-slate-700" aria-label={isCollapsed ? 'Expandir' : 'Recolher'}>
-                            <ChevronIcon isCollapsed={isCollapsed} />
+                            <ChevronRightIcon className={`text-slate-500 transition-transform duration-200 ${isCollapsed ? 'rotate-0' : 'rotate-90'}`} />
                         </button>
                     ) : (
                         // Ponto conector para nós sem filhos
@@ -89,7 +77,8 @@ const MindMapRenderer: React.FC<{ text: string; onNodeClick: (topic: string) => 
         if (firstNodeIndex === -1) firstNodeIndex = 0;
         const mapLines = lines.slice(firstNodeIndex);
 
-        const indentationLevels = [...new Set(mapLines.map(line => line.search(/\S|$/)))].sort((a, b) => a - b);
+        // Fix: Explicitly type the sort function parameters as numbers.
+        const indentationLevels = [...new Set(mapLines.map(line => line.search(/\S|$/)))].sort((a: number, b: number) => a - b);
         const getLevel = (indentation: number) => {
             const level = indentationLevels.indexOf(indentation);
             return level === -1 ? 0 : level;

@@ -49,7 +49,7 @@ const ResultsView: React.FC<ResultsViewProps> = ({ isLoading, result, error, act
     if (isLoading) {
         return (
             <div className="flex flex-col items-center justify-center h-full text-center text-slate-300">
-                <LoadingIcon className="h-10 w-10 animate-spin text-sky-400" />
+                <LoadingIcon className="text-4xl animate-spin text-sky-400" />
                 <p className="mt-4 text-lg font-semibold">Analisando o texto...</p>
                 <p className="text-sm text-slate-400">A IA está trabalhando para gerar sua resposta.</p>
             </div>
@@ -89,7 +89,7 @@ const ResultsView: React.FC<ResultsViewProps> = ({ isLoading, result, error, act
                         disabled={isLoading}
                         title="Refinar resultado"
                     >
-                        <SparkleIcon className="h-4 w-4 flex-shrink-0" />
+                        <SparkleIcon className="text-base flex-shrink-0" />
                         <span className="truncate">Assim mas...</span>
                     </button>
 
@@ -104,9 +104,9 @@ const ResultsView: React.FC<ResultsViewProps> = ({ isLoading, result, error, act
                         aria-live="polite"
                     >
                         {copyStatus === 'copied' ? (
-                            <CheckIcon className="h-4 w-4 flex-shrink-0" />
+                            <CheckIcon className="text-base flex-shrink-0" />
                         ) : (
-                            <CopyIcon className="h-4 w-4 flex-shrink-0" />
+                            <CopyIcon className="text-base flex-shrink-0" />
                         )}
                         <span className="truncate">{copyStatus === 'copied' ? 'Copiado!' : 'Copiar'}</span>
                     </button>
@@ -116,7 +116,7 @@ const ResultsView: React.FC<ResultsViewProps> = ({ isLoading, result, error, act
                             onClick={handleShare}
                             className="flex-1 flex items-center justify-center space-x-1.5 px-2 py-2 text-xs font-semibold rounded-lg bg-sky-500/20 hover:bg-sky-500/30 border border-sky-400/50 text-white transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-sky-400"
                         >
-                            <ShareIcon className="h-4 w-4 flex-shrink-0" />
+                            <ShareIcon className="text-base flex-shrink-0" />
                             <span className="truncate">Compartilhar</span>
                         </button>
                     )}

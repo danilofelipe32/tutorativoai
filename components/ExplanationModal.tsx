@@ -30,7 +30,7 @@ const ExplanationModal: React.FC<ExplanationModalProps> = ({ isVisible, onClose,
                     className="absolute top-3 right-3 p-2 rounded-full text-slate-400 hover:bg-white/10 hover:text-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500"
                     aria-label="Fechar modal"
                 >
-                    <CloseIcon className="h-6 w-6" />
+                    <CloseIcon className="text-2xl" />
                 </button>
                 <h2 className="text-xl font-bold text-sky-300 mb-4 pr-8" id="explanation-modal-title">
                     Explicando: <span className="text-white">{topic}</span>
@@ -38,7 +38,7 @@ const ExplanationModal: React.FC<ExplanationModalProps> = ({ isVisible, onClose,
                 <div className="flex-grow overflow-y-auto pr-2">
                     {isLoading ? (
                         <div className="flex flex-col items-center justify-center h-full text-center text-slate-300 py-10">
-                            <LoadingIcon className="h-8 w-8 animate-spin text-sky-400" />
+                            <LoadingIcon className="text-3xl animate-spin text-sky-400" />
                             <p className="mt-4 text-md font-semibold">Gerando explicação...</p>
                         </div>
                     ) : (

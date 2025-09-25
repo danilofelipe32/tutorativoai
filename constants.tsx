@@ -3,9 +3,13 @@ import React from 'react';
 import { ActionType } from './types';
 import { 
     SummarizeIcon, KeywordsIcon, ReflectIcon, TestIcon, SimplifyIcon, MindmapIcon, AnalogyIcon, 
-    StepByStepIcon, ConnectionsIcon, LessonPlanIcon, RubricIcon, SparkleIcon, SocraticOpponentIcon,
+    StepByStepIcon, ConnectionsIcon, LessonPlanIcon, RubricIcon, SocraticOpponentIcon,
     ProjectIdeasIcon, ChoiceBoardIcon, MisconceptionsIcon, InformationalTextIcon,
-    StorytellerIcon, FactCheckerIcon, SearchIcon
+    StorytellerIcon, FactCheckerIcon,
+    // New specific icons
+    DeeperQuestionsIcon, DifferentiationIcon, DOKQuestionsIcon, WorksheetsIcon,
+    ExemplarsIcon, DiscussionPromptsIcon, RealWorldExamplesIcon, AIQuestEduIcon,
+    PossibilitiesEngineIcon, CoDesignerIcon, CollaborationCoachIcon, ExploratoriumIcon
 } from './components/icons';
 
 type ActionConfig = {
@@ -75,7 +79,7 @@ export const actionConfig: ActionConfig = {
     [ActionType.DEEPER_QUESTIONS]: {
         title: 'Perguntas de Aprofundamento',
         description: 'Gera perguntas que desafiam premissas e exploram implicações.',
-        icon: SocraticOpponentIcon,
+        icon: DeeperQuestionsIcon,
         className: 'bg-zinc-900/30 border border-zinc-500/50 hover:bg-zinc-500/30 hover:shadow-lg hover:shadow-zinc-500/40 backdrop-blur',
     },
     [ActionType.LESSON_PLAN]: {
@@ -93,19 +97,19 @@ export const actionConfig: ActionConfig = {
     [ActionType.DIFFERENTIATION]: {
         title: 'Estratégias de Diferenciação',
         description: 'Cria estratégias para diferentes níveis de alunos.',
-        icon: SparkleIcon,
+        icon: DifferentiationIcon,
         className: 'bg-fuchsia-900/30 border border-fuchsia-500/50 hover:bg-fuchsia-500/30 hover:shadow-lg hover:shadow-fuchsia-500/40 backdrop-blur',
     },
     [ActionType.DOK_QUESTIONS]: {
         title: 'Criar Perguntas DOK',
         description: 'Elabora perguntas com base na Profundidade de Conhecimento.',
-        icon: SparkleIcon,
+        icon: DOKQuestionsIcon,
         className: 'bg-lime-900/30 border border-lime-500/50 hover:bg-lime-500/30 hover:shadow-lg hover:shadow-lime-500/40 backdrop-blur',
     },
     [ActionType.WORKSHEETS]: {
         title: 'Criar Planilhas de Atividades',
         description: 'Gera planilhas de atividades envolventes.',
-        icon: SparkleIcon,
+        icon: WorksheetsIcon,
         className: 'bg-violet-900/30 border border-violet-500/50 hover:bg-violet-500/30 hover:shadow-lg hover:shadow-violet-500/40 backdrop-blur',
     },
     [ActionType.SOCRATIC_OPPONENT]: {
@@ -123,7 +127,7 @@ export const actionConfig: ActionConfig = {
     [ActionType.EXEMPLARS]: {
         title: 'Exemplos e Não-Exemplos',
         description: 'Cria um exemplo forte e um fraco de uma tarefa.',
-        icon: SparkleIcon,
+        icon: ExemplarsIcon,
         className: 'bg-rose-900/30 border border-rose-400/50 hover:bg-rose-500/30 hover:shadow-lg hover:shadow-rose-500/40 backdrop-blur',
     },
     [ActionType.CHOICE_BOARD]: {
@@ -141,7 +145,7 @@ export const actionConfig: ActionConfig = {
     [ActionType.DISCUSSION_PROMPTS]: {
         title: 'Perguntas para Discussão',
         description: 'Cria perguntas que geram debate e engajamento.',
-        icon: SparkleIcon,
+        icon: DiscussionPromptsIcon,
         className: 'bg-indigo-900/30 border border-indigo-400/50 hover:bg-indigo-500/30 hover:shadow-lg hover:shadow-indigo-500/40 backdrop-blur',
     },
     [ActionType.INFORMATIONAL_TEXT]: {
@@ -153,7 +157,7 @@ export const actionConfig: ActionConfig = {
     [ActionType.REAL_WORLD_EXAMPLES]: {
         title: 'Exemplos do Mundo Real',
         description: 'Brainstorm de aplicações práticas e exemplos reais.',
-        icon: SparkleIcon,
+        icon: RealWorldExamplesIcon,
         className: 'bg-amber-900/30 border border-amber-400/50 hover:bg-amber-500/30 hover:shadow-lg hover:shadow-amber-500/40 backdrop-blur',
     },
     [ActionType.STORYTELLER]: {
@@ -171,31 +175,31 @@ export const actionConfig: ActionConfig = {
     [ActionType.AI_QUEST_EDU]: {
         title: 'AI QUEST EDU',
         description: 'Transforma um tema em uma missão de projeto gamificada (BNCC).',
-        icon: ProjectIdeasIcon,
+        icon: AIQuestEduIcon,
         className: 'bg-fuchsia-900/30 border border-fuchsia-500/50 hover:bg-fuchsia-500/30 hover:shadow-lg hover:shadow-fuchsia-500/40 backdrop-blur',
     },
     [ActionType.POSSIBILITIES_ENGINE]: {
         title: 'Motor de Possibilidades',
         description: 'Gera formas alternativas para explicar um conceito.',
-        icon: SparkleIcon,
+        icon: PossibilitiesEngineIcon,
         className: 'bg-fuchsia-900/30 border border-fuchsia-400/50 hover:bg-fuchsia-500/30 hover:shadow-lg hover:shadow-fuchsia-500/40 backdrop-blur',
     },
     [ActionType.CO_DESIGNER]: {
         title: 'Co-Designer',
         description: 'Ajuda a planejar atividades de aprendizado personalizadas.',
-        icon: LessonPlanIcon,
+        icon: CoDesignerIcon,
         className: 'bg-lime-900/30 border border-lime-400/50 hover:bg-lime-500/30 hover:shadow-lg hover:shadow-lime-500/40 backdrop-blur',
     },
     [ActionType.COLLABORATION_COACH]: {
         title: 'Coach de Colaboração',
         description: 'Auxilia grupos em projetos com ideias de pesquisa.',
-        icon: ReflectIcon,
+        icon: CollaborationCoachIcon,
         className: 'bg-orange-900/30 border border-orange-400/50 hover:bg-orange-500/30 hover:shadow-lg hover:shadow-orange-500/40 backdrop-blur',
     },
     [ActionType.EXPLORATORIUM]: {
         title: 'Exploratorium',
         description: 'Facilita a exploração de dados e promove a curiosidade.',
-        icon: SearchIcon,
+        icon: ExploratoriumIcon,
         className: 'bg-red-900/30 border border-red-400/50 hover:bg-red-500/30 hover:shadow-lg hover:shadow-red-500/40 backdrop-blur',
     },
 };

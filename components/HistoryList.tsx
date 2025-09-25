@@ -1,5 +1,6 @@
 
 
+
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { HistoryItem } from '../types';
 import { actionConfig } from '../constants';
@@ -87,14 +88,14 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onDelet
     return (
         <div className="mt-8">
             <h2 className="text-xl font-bold text-slate-100 mb-3 flex items-center">
-                <HistoryIcon className="h-6 w-6 mr-2 text-slate-400" />
+                <HistoryIcon className="text-2xl mr-2 text-slate-400" />
                 Histórico de Atividades
             </h2>
 
             {history.length > 0 && (
                 <div className="relative my-4">
                     <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                        <SearchIcon className="h-5 w-5 text-slate-500" />
+                        <SearchIcon className="text-xl text-slate-500" />
                     </span>
                     <input
                         type="search"
@@ -148,7 +149,7 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onDelet
                                         <div className="p-3">
                                             <div className="flex items-start mb-2">
                                                 <div className={`flex-shrink-0 h-8 w-8 rounded-md flex items-center justify-center mr-3 ${config.className}`}>
-                                                    <Icon className="h-5 w-5 text-white" />
+                                                    <Icon className="text-xl text-white" />
                                                 </div>
                                                 <div
                                                     className="flex-grow cursor-pointer"
@@ -163,14 +164,14 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onDelet
                                                         className="p-2 rounded-full hover:bg-white/10 text-slate-400 hover:text-sky-400 transition-colors"
                                                         title="Renomear"
                                                     >
-                                                        <PencilIcon className="h-4 w-4" />
+                                                        <PencilIcon className="text-base" />
                                                     </button>
                                                     <button
                                                         onClick={() => handleDeleteClick(item.id)}
                                                         className="p-2 rounded-full hover:bg-white/10 text-slate-400 hover:text-rose-500 transition-colors"
                                                         title="Excluir"
                                                     >
-                                                        <TrashIcon className="h-4 w-4" />
+                                                        <TrashIcon className="text-base" />
                                                     </button>
                                                 </div>
                                             </div>

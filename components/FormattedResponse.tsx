@@ -1,4 +1,5 @@
 
+
 import React, { useMemo } from 'react';
 import { ActionType } from '../types';
 import { actionConfig } from '../constants';
@@ -73,7 +74,8 @@ const FormattedResponse: React.FC<FormattedResponseProps> = ({ text, actionType 
 
     const content = useMemo(() => {
         const lines = text.split('\n');
-        const elements: JSX.Element[] = [];
+        // Fix: Replace JSX.Element with React.ReactElement to resolve "Cannot find namespace 'JSX'" error.
+        const elements: React.ReactElement[] = [];
         let isList = false;
 
         for (let i = 0; i < lines.length; i++) {

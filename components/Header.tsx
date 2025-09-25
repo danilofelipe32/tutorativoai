@@ -18,7 +18,7 @@ const Header: React.FC<HeaderProps> = ({ title, showBackButton, onBack, onHelp, 
                 <div className="flex items-center space-x-2 w-1/3">
                     {showBackButton && (
                         <button onClick={onBack} className="p-2 rounded-full hover:bg-white/10 transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500" title="Voltar">
-                            <BackIcon className="h-5 w-5" />
+                            <BackIcon className="text-xl" />
                         </button>
                     )}
                 </div>
@@ -30,14 +30,14 @@ const Header: React.FC<HeaderProps> = ({ title, showBackButton, onBack, onHelp, 
                         className="p-2 rounded-full hover:bg-white/10 transition-colors disabled:opacity-30 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-sky-500"
                         title="Refazer"
                     >
-                        <RefreshIcon className="h-5 w-5" />
+                        <RefreshIcon className="text-xl" />
                     </button>
                     <button
                         onClick={onHelp}
                         className="p-2 rounded-full hover:bg-white/10 transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500"
                         title="Ajuda"
                     >
-                        <HelpIcon className="h-5 w-5" />
+                        <HelpIcon className="text-xl" />
                     </button>
                 </div>
             </div>

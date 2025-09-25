@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
+import { GoogleGenAI } from '@google/genai';
 import { ActionType, View, HistoryItem } from './types';
 import Header from './components/Header';
 import MainView from './components/MainView';
@@ -8,7 +9,11 @@ import RefineModal from './components/RefineModal';
 import ExplanationModal from './components/ExplanationModal';
 import { actionConfig } from './constants';
 
-// No API setup needed for ApiFreeLLM
+// Setup Gemini API
+// IMPORTANT: The API key is sourced from environment variables (e.g., Netlify build settings)
+// and should NOT be hardcoded in the source code.
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY! });
+
 
 function getPromptForAction(action: ActionType, context: string): string {
     // Prompt avançado instruindo a IA a usar um processo de raciocínio estruturado.
@@ -257,59 +262,54 @@ const App: React.FC = () => {
             return;
         }
 
+        if (!process.env.API_KEY) {
+            setError("A chave da API do Google Gemini não está configurada. Verifique as variáveis de ambiente.");
+            setIsLoading(false);
+            return;
+        }
+
         try {
              const prompt = refinement
                 ? getPromptForRefinement(text, refinement.previousResult, refinement.instruction)
                 : getPromptForAction(action, text);
             
-            const apiResponse = await fetch('https://apifreellm.com/api/chat', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ message: prompt }),
+            const response = await ai.models.generateContent({
+                model: 'gemini-2.5-flash',
+                contents: prompt,
             });
 
-            if (!apiResponse.ok) {
-                throw new Error(`Erro de rede: ${apiResponse.status} ${apiResponse.statusText}`);
+            const generatedText = response.text;
+            
+            if (!generatedText) {
+                throw new Error("A API não retornou uma resposta de texto.");
             }
 
-            const data = await apiResponse.json();
+            cache.current.set(cacheKey, generatedText);
+            setResult(generatedText);
 
-            if (data.status === 'success') {
-                cache.current.set(cacheKey, data.response);
-                setResult(data.response);
-                const newHistoryItem: HistoryItem = {
-                    id: Date.now(),
-                    actionType: action,
-                    fullInputText: text,
-                    inputTextSnippet: text.substring(0, 80) + (text.length > 80 ? '...' : ''),
-                    fullResult: data.response,
-                    timestamp: new Date().toISOString(),
-                };
+            const newHistoryItem: HistoryItem = {
+                id: Date.now(),
+                actionType: action,
+                fullInputText: text,
+                inputTextSnippet: text.substring(0, 80) + (text.length > 80 ? '...' : ''),
+                fullResult: generatedText,
+                timestamp: new Date().toISOString(),
+            };
 
-                setHistory(prevHistory => {
-                    const updatedHistory = [newHistoryItem, ...prevHistory].slice(0, 50); // Keep max 50 items
-                    try {
-                        localStorage.setItem('actionHistory', JSON.stringify(updatedHistory));
-                    } catch (error) {
-                        console.error("Failed to save history to localStorage", error);
-                    }
-                    return updatedHistory;
-                });
-
-            } else {
-                let userErrorMessage = data.error || 'Ocorreu um erro desconhecido na API.';
-                if (data.status === 'rate_limited' && data.retry_after) {
-                    userErrorMessage = `Limite de solicitações atingido. Por favor, aguarde ${data.retry_after} segundos antes de tentar novamente.`;
+            setHistory(prevHistory => {
+                const updatedHistory = [newHistoryItem, ...prevHistory].slice(0, 50); // Keep max 50 items
+                try {
+                    localStorage.setItem('actionHistory', JSON.stringify(updatedHistory));
+                } catch (error) {
+                    console.error("Failed to save history to localStorage", error);
                 }
-                setError(`Falha ao gerar resposta da IA: ${userErrorMessage}`);
-            }
+                return updatedHistory;
+            });
 
         } catch (e: any) {
             console.error(e);
             const errorMessage = e.message || 'Ocorreu um erro desconhecido.';
-            setError(`Falha ao se comunicar com a API. ${errorMessage} Verifique sua conexão com a internet.`);
+            setError(`Falha ao se comunicar com a API do Gemini. ${errorMessage} Verifique sua chave de API e conexão com a internet.`);
         } finally {
             setIsLoading(false);
         }
@@ -363,38 +363,33 @@ const App: React.FC = () => {
             setIsExplanationLoading(false);
             return;
         }
+        
+        if (!process.env.API_KEY) {
+            setExplanationResult("A chave da API do Google Gemini não está configurada.");
+            setIsExplanationLoading(false);
+            return;
+        }
 
         try {
             const prompt = getPromptForExplanation(inputText, topic);
             
-            const apiResponse = await fetch('https://apifreellm.com/api/chat', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ message: prompt }),
+            const response = await ai.models.generateContent({
+                model: 'gemini-2.5-flash',
+                contents: prompt,
             });
 
-            if (!apiResponse.ok) {
-                throw new Error(`Erro de rede: ${apiResponse.status} ${apiResponse.statusText}`);
-            }
+            const generatedText = response.text;
             
-            const data = await apiResponse.json();
-
-            if (data.status === 'success') {
-                cache.current.set(cacheKey, data.response);
-                setExplanationResult(data.response);
-            } else {
-                let userErrorMessage = data.error || 'Ocorreu um erro desconhecido na API.';
-                if (data.status === 'rate_limited' && data.retry_after) {
-                    userErrorMessage = `Limite de solicitações atingido. Tente novamente em ${data.retry_after} segundos.`;
-                }
-                setExplanationResult(`Falha ao gerar explicação: ${userErrorMessage}`);
+            if (!generatedText) {
+                 throw new Error("A API não retornou uma resposta de texto.");
             }
+
+            cache.current.set(cacheKey, generatedText);
+            setExplanationResult(generatedText);
         } catch (e: any) {
             console.error(e);
             const errorMessage = e.message || 'Ocorreu um erro desconhecido.';
-            setExplanationResult(`Falha ao se comunicar com a API. ${errorMessage}`);
+            setExplanationResult(`Falha ao se comunicar com a API do Gemini. ${errorMessage}`);
         } finally {
             setIsExplanationLoading(false);
         }

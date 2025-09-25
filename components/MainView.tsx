@@ -27,7 +27,7 @@ const ActionButton: React.FC<{ action: ActionType; onClick: () => void; isDisabl
             className={`p-3 rounded-xl flex flex-col items-start justify-between text-white shadow-lg transition-all duration-200 ease-in-out hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-white disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 ${config.className}`}
             aria-disabled={isDisabled}
         >
-            <config.icon className="h-7 w-7 mb-2" />
+            <config.icon className="text-3xl mb-2" />
             <div className="text-left">
                 <h3 className="font-bold text-xs md:text-sm">{config.title}</h3>
                 <p className="text-[10px] opacity-80 mt-1">{config.description}</p>
@@ -53,7 +53,7 @@ const MainView: React.FC<MainViewProps> = ({ onActionSelect, inputText, onTextCh
                         className="bg-white/5 hover:bg-white/10 text-slate-200 font-semibold py-2 px-4 rounded-lg transition-colors text-sm flex items-center space-x-2 border border-white/10"
                         title="Limpar texto"
                     >
-                        <TrashIcon className="h-4 w-4" />
+                        <TrashIcon className="text-base" />
                         <span>Limpar</span>
                     </button>
                 )}
