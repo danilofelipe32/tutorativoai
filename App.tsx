@@ -9,10 +9,8 @@ import RefineModal from './components/RefineModal';
 import ExplanationModal from './components/ExplanationModal';
 import { actionConfig } from './constants';
 
-// Setup Gemini API
-// IMPORTANT: The API key is sourced from environment variables (e.g., Netlify build settings)
-// and should NOT be hardcoded in the source code.
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY! });
+// Setup Gemini API with the provided key
+const ai = new GoogleGenAI({ apiKey: "AIzaSyC66emimXFo6BVctXpbYlheIueYSgP3ExE" });
 
 
 function getPromptForAction(action: ActionType, context: string): string {
@@ -262,12 +260,6 @@ const App: React.FC = () => {
             return;
         }
 
-        if (!process.env.API_KEY) {
-            setError("A chave da API do Google Gemini não está configurada. Verifique as variáveis de ambiente.");
-            setIsLoading(false);
-            return;
-        }
-
         try {
              const prompt = refinement
                 ? getPromptForRefinement(text, refinement.previousResult, refinement.instruction)
@@ -360,12 +352,6 @@ const App: React.FC = () => {
         const cacheKey = `explain:${topic}:${inputText}`;
         if (cache.current.has(cacheKey)) {
             setExplanationResult(cache.current.get(cacheKey)!);
-            setIsExplanationLoading(false);
-            return;
-        }
-        
-        if (!process.env.API_KEY) {
-            setExplanationResult("A chave da API do Google Gemini não está configurada.");
             setIsExplanationLoading(false);
             return;
         }
