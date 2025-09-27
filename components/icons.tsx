@@ -57,3 +57,5 @@ export const CollaborationCoachIcon = createIcon('lni lni-handshake');
 export const ExploratoriumIcon = createIcon('lni lni-map-marker');
 export const IdentifyPerspectiveIcon = createIcon('lni lni-target-audience');
 export const FeedbackGeneratorIcon = createIcon('lni lni-comments-reply');
+export const ParetoPrincipleIcon = createIcon('lni lni-target');
+export const FeynmanTechniqueIcon = createIcon('lni lni-graduation');

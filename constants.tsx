@@ -7,7 +7,8 @@ import {
     StorytellerIcon, FactCheckerIcon, DeeperQuestionsIcon, DifferentiationIcon, 
     DOKQuestionsIcon, WorksheetsIcon, ExemplarsIcon, DiscussionPromptsIcon, 
     RealWorldExamplesIcon, AIQuestEduIcon, PossibilitiesEngineIcon, CoDesignerIcon, 
-    CollaborationCoachIcon, ExploratoriumIcon, IdentifyPerspectiveIcon, FeedbackGeneratorIcon
+    CollaborationCoachIcon, ExploratoriumIcon, IdentifyPerspectiveIcon, FeedbackGeneratorIcon,
+    ParetoPrincipleIcon, FeynmanTechniqueIcon
 } from './components/icons';
 
 type ActionConfig = {
@@ -211,5 +212,17 @@ export const actionConfig: ActionConfig = {
         description: 'Cria exemplos de feedback construtivo para os alunos.',
         icon: FeedbackGeneratorIcon,
         className: 'bg-gray-900/30 border border-gray-500/50 hover:bg-gray-500/30 hover:shadow-lg hover:shadow-gray-500/40 backdrop-blur',
+    },
+    [ActionType.PARETO_PRINCIPLE]: {
+        title: 'Princípio de Pareto (80/20)',
+        description: 'Identifica os 20% do conteúdo que geram 80% do resultado.',
+        icon: ParetoPrincipleIcon,
+        className: 'bg-green-900/30 border border-green-500/50 hover:bg-green-500/30 hover:shadow-lg hover:shadow-green-500/40 backdrop-blur',
+    },
+    [ActionType.FEYNMAN_TECHNIQUE]: {
+        title: 'Técnica de Feynman',
+        description: 'Explica um conceito de forma super simples, como se ensinasse a uma criança.',
+        icon: FeynmanTechniqueIcon,
+        className: 'bg-pink-900/30 border border-pink-400/50 hover:bg-pink-500/30 hover:shadow-lg hover:shadow-pink-500/40 backdrop-blur',
     },
 };

@@ -56,6 +56,8 @@ const actionGroups = [
       ActionType.DEEPER_QUESTIONS,
       ActionType.SOCRATIC_OPPONENT,
       ActionType.ANALOGY,
+      ActionType.PARETO_PRINCIPLE,
+      ActionType.FEYNMAN_TECHNIQUE,
       ActionType.POSSIBILITIES_ENGINE,
       ActionType.EXPLORATORIUM,
       ActionType.DISCUSSION_PROMPTS,
