@@ -22,6 +22,7 @@ export const CheckIcon = createIcon('lni lni-checkmark');
 export const LoadingIcon = createIcon('lni lni-spinner-alt');
 export const ChevronRightIcon = createIcon('lni lni-chevron-right');
 export const SparkleIcon = createIcon('lni lni-sparkles');
+export const CameraIcon = createIcon('lni lni-camera');
 
 
 // Action Icons (30 unique icons for 30 actions)

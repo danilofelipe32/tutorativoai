@@ -108,7 +108,8 @@ const FormattedResponse: React.FC<FormattedResponseProps> = ({ text, actionType 
                 }
                 const lastElement = elements[elements.length - 1];
                 if (lastElement.type === 'ul') {
-                    const newChildren = React.Children.toArray(lastElement.props.children);
+                    // Fix: Explicitly cast props to access children, as the type of props on a generic ReactElement is not known.
+                    const newChildren = React.Children.toArray((lastElement.props as { children?: React.ReactNode }).children);
                     newChildren.push(
                         <li key={`li-${i}`} className="flex items-start">
                            <BulletIcon />

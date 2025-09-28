@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { ActionType, HistoryItem } from '../types';
 import { actionConfig } from '../constants';
 import HistoryList from './HistoryList';
-import { TrashIcon } from './icons';
+import { CameraIcon, LoadingIcon, TrashIcon } from './icons';
 
 interface MainViewProps {
     onActionSelect: (action: ActionType) => void;
@@ -13,6 +13,8 @@ interface MainViewProps {
     onHistoryItemClick: (item: HistoryItem) => void;
     onDeleteItem: (itemId: number) => void;
     onRenameItem: (itemId: number, newTitle: string) => void;
+    onImageUpload: (file: File) => void;
+    isOcrLoading: boolean;
 }
 
 const ActionButton: React.FC<{ action: ActionType; onClick: () => void; isDisabled: boolean }> = ({ action, onClick, isDisabled }) => {
@@ -95,9 +97,33 @@ const actionGroups = [
 ];
 
 
-const MainView: React.FC<MainViewProps> = ({ onActionSelect, inputText, onTextChange, onClearText, history, onHistoryItemClick, onDeleteItem, onRenameItem }) => {
+const MainView: React.FC<MainViewProps> = ({
+    onActionSelect,
+    inputText,
+    onTextChange,
+    onClearText,
+    history,
+    onHistoryItemClick,
+    onDeleteItem,
+    onRenameItem,
+    onImageUpload,
+    isOcrLoading,
+}) => {
     const isTextProvided = inputText.trim().length > 0;
-    
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const handleFabClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            onImageUpload(file);
+        }
+        event.target.value = ''; // Allow uploading the same file again
+    };
+
     return (
         <div className="flex flex-col h-full">
             <div className="flex justify-between items-center mb-4">
@@ -117,13 +143,23 @@ const MainView: React.FC<MainViewProps> = ({ onActionSelect, inputText, onTextCh
                 )}
             </div>
 
-            <textarea
-                value={inputText}
-                onChange={(e) => onTextChange(e.target.value)}
-                placeholder="Cole seu texto aqui para começar..."
-                className="w-full flex-grow bg-slate-900/50 text-slate-300 p-4 rounded-lg mb-4 border border-white/10 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:shadow-[0_0_15px_rgba(59,130,246,0.4)] min-h-[150px] md:min-h-[200px] resize-y transition-shadow"
-                aria-label="Área de texto para análise"
-            />
+            <div className="relative">
+                <textarea
+                    value={inputText}
+                    onChange={(e) => onTextChange(e.target.value)}
+                    placeholder="Cole seu texto aqui ou use a câmera para extrair texto de uma imagem..."
+                    className="w-full flex-grow bg-slate-900/50 text-slate-300 p-4 rounded-lg mb-4 border border-white/10 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:shadow-[0_0_15px_rgba(59,130,246,0.4)] min-h-[150px] md:min-h-[200px] resize-y transition-shadow"
+                    aria-label="Área de texto para análise"
+                    disabled={isOcrLoading}
+                />
+                {isOcrLoading && (
+                    <div className="absolute inset-0 bg-slate-900/70 rounded-lg mb-4 flex flex-col items-center justify-center text-slate-200">
+                        <LoadingIcon className="text-3xl animate-spin text-sky-400" />
+                        <p className="mt-3 font-semibold">Extraindo texto da imagem...</p>
+                    </div>
+                )}
+            </div>
+
 
             <div className="mb-6">
                  <p className="text-slate-300 font-semibold text-center text-lg">Agora, escolha uma ação:</p>
@@ -156,6 +192,25 @@ const MainView: React.FC<MainViewProps> = ({ onActionSelect, inputText, onTextCh
                 onDeleteItem={onDeleteItem}
                 onRenameItem={onRenameItem}
             />
+
+            <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                accept="image/*"
+                className="hidden"
+                aria-hidden="true"
+            />
+            <button
+                onClick={handleFabClick}
+                disabled={isOcrLoading}
+                className="fixed bottom-20 right-4 sm:right-6 md:right-8 w-14 h-14 bg-sky-600 hover:bg-sky-500 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-300 ease-in-out transform hover:scale-110 focus:outline-none focus:ring-4 focus:ring-sky-400/50 disabled:bg-slate-500 disabled:cursor-not-allowed disabled:hover:scale-100 z-30"
+                title="Extrair texto de imagem"
+                aria-label="Extrair texto de imagem"
+            >
+                <CameraIcon className="text-2xl" />
+            </button>
+
         </div>
     );
 };

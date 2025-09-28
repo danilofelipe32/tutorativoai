@@ -185,6 +185,19 @@ ${topic}
 Tarefa: Forneça uma explicação clara e concisa sobre o tópico "${topic}" com base no contexto do texto original. A explicação deve ser fácil de entender para alguém que está estudando o assunto. Use parágrafos curtos e formate termos importantes com **negrito**.`;
 }
 
+// Helper function to convert a File object to a base64 string
+const fileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+            const base64String = (reader.result as string).split(',')[1];
+            resolve(base64String);
+        };
+        reader.onerror = (error) => reject(error);
+    });
+};
+
 
 const App: React.FC = () => {
     const [view, setView] = useState<View>(View.MAIN);
@@ -201,6 +214,7 @@ const App: React.FC = () => {
     const [explanationResult, setExplanationResult] = useState<string>('');
     const [isExplanationLoading, setIsExplanationLoading] = useState<boolean>(false);
     const [isOnboardingVisible, setIsOnboardingVisible] = useState<boolean>(false);
+    const [isOcrLoading, setIsOcrLoading] = useState<boolean>(false);
     const cache = useRef<Map<string, string>>(new Map());
 
     useEffect(() => {
@@ -246,6 +260,47 @@ const App: React.FC = () => {
     const handleClearText = () => {
         setInputText('');
         localStorage.removeItem('inputText');
+    };
+
+    const handleImageUpload = async (file: File) => {
+        if (!file) return;
+
+        setIsOcrLoading(true);
+        setError('');
+        
+        try {
+            const base64Data = await fileToBase64(file);
+            
+            const imagePart = {
+                inlineData: {
+                    mimeType: file.type,
+                    data: base64Data,
+                },
+            };
+            
+            const textPart = {
+                text: 'Extraia todo o texto visível nesta imagem, mantendo a formatação e as quebras de linha o mais fielmente possível. Responda apenas com o texto extraído, sem adicionar comentários ou introduções.'
+            };
+
+            const response = await ai.models.generateContent({
+                model: 'gemini-2.5-flash',
+                contents: { parts: [imagePart, textPart] },
+            });
+            
+            const extractedText = response.text;
+            if (extractedText) {
+                setInputText(prev => prev ? `${prev}\n\n${extractedText}` : extractedText);
+            } else {
+                throw new Error("A API não conseguiu extrair texto da imagem.");
+            }
+
+        } catch (e: any) {
+            console.error(e);
+            const errorMessage = e.message || 'Ocorreu um erro desconhecido.';
+            alert(`Falha ao processar a imagem com OCR. ${errorMessage}`);
+        } finally {
+            setIsOcrLoading(false);
+        }
     };
 
     const callGenerativeAI = useCallback(async (
@@ -450,6 +505,8 @@ const App: React.FC = () => {
                         onHistoryItemClick={handleHistoryItemClick}
                         onDeleteItem={handleDeleteItem}
                         onRenameItem={handleRenameItem}
+                        onImageUpload={handleImageUpload}
+                        isOcrLoading={isOcrLoading}
                     />
                 ) : (
                     <ResultsView
