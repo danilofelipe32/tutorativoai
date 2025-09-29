@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { GoogleGenAI } from '@google/genai';
 import { ActionType, View, HistoryItem, ResultPayload, AISettings, GroundingChunk } from './types';
@@ -14,7 +15,6 @@ import SettingsModal from './components/SettingsModal';
 // Chave de API fornecida pelo usuário
 const API_KEY = "AIzaSyC66emimXFo6BVctXpbYlheIueYSgP3ExE";
 const ai = new GoogleGenAI({ apiKey: API_KEY });
-const YOUTUBE_URL_REGEX = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$/;
 
 
 function getPromptForAction(action: ActionType, context: string): string {
@@ -299,14 +299,6 @@ const App: React.FC = () => {
         }
     };
 
-    const handleSummarizeVideo = useCallback(async () => {
-        // Placeholder for YouTube summarization logic
-        // In a real scenario, this would involve a backend to fetch the transcript
-        const summaryAction = ActionType.SUMMARIZE;
-        const context = `(Conteúdo do vídeo do YouTube: ${inputText})\nPor favor, resuma o conteúdo deste vídeo.`;
-        handleGenerateContent(summaryAction, context);
-    }, [inputText, handleGenerateContent]);
-
     const handleBack = () => setView(View.MAIN);
     const handleClearText = () => setInputText('');
     const handleHistoryItemClick = (item: HistoryItem) => {
@@ -337,8 +329,6 @@ const App: React.FC = () => {
         localStorage.setItem('tutor-ai-onboarded', 'true');
     }
 
-    const isYoutubeUrl = YOUTUBE_URL_REGEX.test(inputText);
-    
     return (
         <div className="flex flex-col h-screen">
             <Header
@@ -363,8 +353,6 @@ const App: React.FC = () => {
                         onRenameItem={handleRenameItem}
                         onImageUpload={handleImageUpload}
                         isOcrLoading={isOcrLoading}
-                        isYoutubeUrl={isYoutubeUrl}
-                        onSummarizeVideo={handleSummarizeVideo}
                     />
                 )}
                 {view === View.RESULTS && (
