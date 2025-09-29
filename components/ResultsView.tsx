@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ActionType } from '../types';
+import { ActionType, ResultPayload } from '../types';
 import MindMapRenderer from './MindMapRenderer';
 import { LoadingIcon, SparkleIcon, CopyIcon, ShareIcon, CheckIcon } from './icons';
 import FormattedResponse from './FormattedResponse';
@@ -7,7 +7,7 @@ import { actionConfig } from '../constants';
 
 interface ResultsViewProps {
     isLoading: boolean;
-    result: string;
+    result: ResultPayload | null;
     error: string;
     actionType: ActionType | null;
     onOpenRefineModal: () => void;
@@ -19,8 +19,9 @@ const ResultsView: React.FC<ResultsViewProps> = ({ isLoading, result, error, act
     const isShareSupported = typeof navigator.share === 'function';
 
     const handleCopy = async () => {
+        if (!result?.text) return;
         try {
-            await navigator.clipboard.writeText(result);
+            await navigator.clipboard.writeText(result.text);
             setCopyStatus('copied');
             setTimeout(() => setCopyStatus('idle'), 2000);
         } catch (err) {
@@ -30,11 +31,12 @@ const ResultsView: React.FC<ResultsViewProps> = ({ isLoading, result, error, act
     };
 
     const handleShare = async () => {
+        if (!result?.text) return;
         const title = actionType ? `Resultado: ${actionConfig[actionType].title}` : 'Resultado da Análise - Tutor Ativo AI';
         try {
             await navigator.share({
                 title: title,
-                text: result,
+                text: result.text,
             });
         } catch (err) {
             // Ignore abort errors
@@ -50,7 +52,7 @@ const ResultsView: React.FC<ResultsViewProps> = ({ isLoading, result, error, act
         return (
             <div className="flex flex-col items-center justify-center h-full text-center text-slate-300">
                 <LoadingIcon className="text-4xl animate-spin text-sky-400" />
-                <p className="mt-4 text-lg font-semibold">Analisando o texto...</p>
+                <p className="mt-4 text-lg font-semibold">Analisando...</p>
                 <p className="text-sm text-slate-400">A IA está trabalhando para gerar sua resposta.</p>
             </div>
         );
@@ -66,22 +68,43 @@ const ResultsView: React.FC<ResultsViewProps> = ({ isLoading, result, error, act
     }
 
     const renderContent = () => {
-        if (!result) return null;
+        if (!result?.text) return null;
 
         if (actionType === ActionType.MINDMAP) {
-            return <MindMapRenderer text={result} onNodeClick={onExplainTopic} />;
+            return <MindMapRenderer text={result.text} onNodeClick={onExplainTopic} />;
         }
         
-        return <FormattedResponse text={result} actionType={actionType} />;
+        return <FormattedResponse text={result.text} actionType={actionType} />;
     };
 
     return (
         <div className="bg-black/20 backdrop-blur-xl rounded-2xl border border-white/10 h-full flex flex-col">
             <div className="flex-grow p-4 overflow-y-auto">
                 {renderContent()}
+                {result?.sources && result.sources.length > 0 && (
+                    <div className="mt-6 pt-4 border-t border-white/20">
+                        <h4 className="text-sm font-bold text-slate-200 mb-3">Fontes Consultadas:</h4>
+                        <ul className="space-y-2">
+                            {result.sources.map((source, index) => (
+                                <li key={index} className="text-xs flex items-start">
+                                    <span className="text-sky-400 mr-2">&#8226;</span>
+                                    <a
+                                        href={source.web.uri}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-sky-400 hover:text-sky-300 underline transition-colors break-words"
+                                        title={source.web.uri}
+                                    >
+                                        {source.web.title || source.web.uri}
+                                    </a>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
             </div>
             
-            {result && (
+            {result?.text && (
                  <div className="flex-shrink-0 p-3 border-t border-white/10 flex items-stretch justify-between gap-2">
                     <button
                         onClick={onOpenRefineModal}

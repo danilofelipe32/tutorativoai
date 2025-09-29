@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import { ActionType, HistoryItem } from '../types';
 import { actionConfig } from '../constants';
 import HistoryList from './HistoryList';
-import { CameraIcon, LoadingIcon, TrashIcon } from './icons';
+import { CameraIcon, LoadingIcon, TrashIcon, VideoIcon } from './icons';
 
 interface MainViewProps {
     onActionSelect: (action: ActionType) => void;
@@ -15,6 +15,8 @@ interface MainViewProps {
     onRenameItem: (itemId: number, newTitle: string) => void;
     onImageUpload: (file: File) => void;
     isOcrLoading: boolean;
+    isYoutubeUrl: boolean;
+    onSummarizeVideo: () => void;
 }
 
 const ActionButton: React.FC<{ action: ActionType; onClick: () => void; isDisabled: boolean }> = ({ action, onClick, isDisabled }) => {
@@ -108,6 +110,8 @@ const MainView: React.FC<MainViewProps> = ({
     onRenameItem,
     onImageUpload,
     isOcrLoading,
+    isYoutubeUrl,
+    onSummarizeVideo,
 }) => {
     const isTextProvided = inputText.trim().length > 0;
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -129,7 +133,7 @@ const MainView: React.FC<MainViewProps> = ({
             <div className="flex justify-between items-center mb-4">
                 <div>
                     <h2 className="text-3xl font-bold text-slate-100">Bem-vindo!</h2>
-                    <p className="text-slate-400">Cole o texto que você deseja analisar abaixo.</p>
+                    <p className="text-slate-400">Cole um texto ou link de vídeo do YouTube abaixo.</p>
                 </div>
                 {isTextProvided && (
                      <button
@@ -147,8 +151,8 @@ const MainView: React.FC<MainViewProps> = ({
                 <textarea
                     value={inputText}
                     onChange={(e) => onTextChange(e.target.value)}
-                    placeholder="Cole seu texto aqui ou use a câmera para extrair texto de uma imagem..."
-                    className="w-full flex-grow bg-slate-900/50 text-slate-300 p-4 rounded-lg mb-4 border border-white/10 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:shadow-[0_0_15px_rgba(59,130,246,0.4)] min-h-[150px] md:min-h-[200px] resize-y transition-shadow"
+                    placeholder="Cole seu texto ou link do YouTube aqui..."
+                    className={`w-full flex-grow bg-slate-900/50 text-slate-300 p-4 rounded-lg mb-4 border backdrop-blur-sm focus:outline-none min-h-[150px] md:min-h-[200px] resize-y transition-all duration-300 ${isYoutubeUrl ? 'border-red-500/50 ring-2 ring-red-500/30 focus:ring-red-500 focus:shadow-[0_0_15px_rgba(239,68,68,0.4)]' : 'border-white/10 focus:ring-2 focus:ring-sky-400 focus:shadow-[0_0_15px_rgba(59,130,246,0.4)]'}`}
                     aria-label="Área de texto para análise"
                     disabled={isOcrLoading}
                 />
@@ -160,31 +164,46 @@ const MainView: React.FC<MainViewProps> = ({
                 )}
             </div>
 
+            {isYoutubeUrl ? (
+                <div className="my-6 text-center animate-fade-in">
+                    <p className="text-red-300 font-semibold text-lg mb-4">Link do YouTube detectado!</p>
+                    <button
+                        onClick={onSummarizeVideo}
+                        disabled={!isTextProvided || isOcrLoading}
+                        className="bg-red-600/80 hover:bg-red-600 border border-red-400/50 text-white font-bold py-3 px-8 rounded-lg text-lg flex items-center justify-center mx-auto space-x-3 transition-all transform hover:scale-105 shadow-lg shadow-red-500/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                    >
+                        <VideoIcon className="text-2xl" />
+                        <span>Resumir Vídeo</span>
+                    </button>
+                </div>
+            ) : (
+                <>
+                    <div className="mb-6">
+                        <p className="text-slate-300 font-semibold text-center text-lg">Agora, escolha uma ação:</p>
+                    </div>
 
-            <div className="mb-6">
-                 <p className="text-slate-300 font-semibold text-center text-lg">Agora, escolha uma ação:</p>
-            </div>
-
-            <div className="space-y-8">
-                {actionGroups.map((group) => (
-                    <section key={group.title} aria-labelledby={group.title.replace(/\s+/g, '-').toLowerCase()}>
-                        <div className="mb-4 border-l-4 border-sky-500/50 pl-4">
-                            <h3 id={group.title.replace(/\s+/g, '-').toLowerCase()} className="text-xl font-bold text-slate-100">{group.title}</h3>
-                            <p className="text-slate-400 text-sm">{group.description}</p>
-                        </div>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
-                            {group.actions.map((action) => (
-                                <ActionButton
-                                    key={action}
-                                    action={action}
-                                    onClick={() => onActionSelect(action)}
-                                    isDisabled={!isTextProvided}
-                                />
-                            ))}
-                        </div>
-                    </section>
-                ))}
-            </div>
+                    <div className="space-y-8">
+                        {actionGroups.map((group) => (
+                            <section key={group.title} aria-labelledby={group.title.replace(/\s+/g, '-').toLowerCase()}>
+                                <div className="mb-4 border-l-4 border-sky-500/50 pl-4">
+                                    <h3 id={group.title.replace(/\s+/g, '-').toLowerCase()} className="text-xl font-bold text-slate-100">{group.title}</h3>
+                                    <p className="text-slate-400 text-sm">{group.description}</p>
+                                </div>
+                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
+                                    {group.actions.map((action) => (
+                                        <ActionButton
+                                            key={action}
+                                            action={action}
+                                            onClick={() => onActionSelect(action)}
+                                            isDisabled={!isTextProvided}
+                                        />
+                                    ))}
+                                </div>
+                            </section>
+                        ))}
+                    </div>
+                </>
+            )}
 
             <HistoryList
                 history={history}

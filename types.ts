@@ -40,12 +40,25 @@ export enum View {
     RESULTS = 'RESULTS',
 }
 
+export interface GroundingChunk {
+    web: {
+        uri: string;
+        title: string;
+    };
+}
+
+export interface ResultPayload {
+    text: string;
+    sources?: GroundingChunk[];
+}
+
+
 export interface HistoryItem {
     id: number;
     actionType: ActionType;
     inputTextSnippet: string;
     fullInputText: string;
-    fullResult: string;
+    fullResult: ResultPayload;
     timestamp: string; // ISO String
     customTitle?: string;
 }

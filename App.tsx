@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { GoogleGenAI } from '@google/genai';
-import { ActionType, View, HistoryItem } from './types';
+import { ActionType, View, HistoryItem, ResultPayload } from './types';
 import Header from './components/Header';
 import MainView from './components/MainView';
 import ResultsView from './components/ResultsView';
@@ -10,8 +10,9 @@ import ExplanationModal from './components/ExplanationModal';
 import { actionConfig } from './constants';
 import OnboardingModal from './components/OnboardingModal';
 
-// Setup Gemini API with the provided key
-const ai = new GoogleGenAI({ apiKey: "AIzaSyC66emimXFo6BVctXpbYlheIueYSgP3ExE" });
+// Setup Gemini API using environment variable
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const YOUTUBE_URL_REGEX = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$/;
 
 
 function getPromptForAction(action: ActionType, context: string): string {
@@ -91,195 +92,276 @@ ${context}
 ${context}
 """
 
-**Instruções:**
-1.  **Analise o Contexto:** Extraia o tema principal. Identifique também o ano escolar, tempo e ferramentas, se mencionados. Se não, assuma "Ensino Médio" e "4 aulas".
-2.  **Gere a Missão:** Siga ESTRITAMENTE o formato de saída abaixo.
-
----
-**FORMATO DE SAÍDA OBRIGATÓRIO (em português):**
-
-**1. Título da Missão:** (curto e envolvente) + faixa etária.
-
-**2. Introdução Narrativa:** (1-2 parágrafos) Crie um cenário e defina o papel do aluno.
-
-**3. Mapa Rápido:** (tempo, aulas, materiais).
-
-**4. Três Desafios (Níveis Progressivos):**
-Para cada desafio (Exploração → Análise → Solução Criativa):
-*   **Objetivo:** O que o aluno deve alcançar.
-*   **BNCC:** Uma Competência Geral e uma Área do Conhecimento.
-*   **Ferramentas:** Ex: Google Forms, Planilhas, Scratch, etc.
-*   **Passo a Passo DETALHADO para o Aluno:** Instruções numeradas e claras. Inclua ações em interfaces (ex: "Abra o Google Forms..."), prompts prontos para IA (ex: "Peça à IA: '...'"), exemplos de dados, e como validar os resultados.
-*   **Entrega:** O que o aluno deve produzir.
-*   **Critério de Sucesso:** Como o professor avalia.
-
-**5. Conclusão da Missão:** Resumo do aprendizado + 2 perguntas de reflexão (ligadas à BNCC).
-
-**6. Notas para o Professor:** Sugestões de adaptação, inclusão, privacidade (LGPD) e uma proposta de rubrica.
-
-**7. Prompt para o Professor:** Crie 1 prompt pronto para uma IA gerar material de apoio (ex: roteiro de aula).
-
-**8. Guia Rápido do Aluno:** Uma lista de passos simplificada para o aluno seguir de forma autônoma.
-
-**9. Guia Técnico (se aplicável):** Explicação de comandos ou configurações de ferramentas mais complexas.
-
-**Regras Adicionais:**
-*   Use linguagem adequada ao ano escolar.
-*   Use emojis e um tom motivador.
-*   Inclua avisos sobre segurança de dados (LGPD) quando houver coleta de informações.`;
+**Instruções: Crie uma missão de projeto. Inclua um **Título Cativante**, **Missão (o desafio)**, **Recursos (o que eles usam)**, **Etapas (o que eles fazem)** e **Avaliação (como são avaliados)**. Aponte 2-3 **Habilidades da BNCC** relevantes.`;
         case 'POSSIBILITIES_ENGINE':
-            return basePrompt + "Tarefa: Atue como um 'Motor de Possibilidades'. Com base no conceito central do texto, gere 3 a 5 explicações ou metáforas alternativas e criativas. Cada explicação deve abordar o mesmo conceito de uma perspectiva diferente para atender a diversos estilos de aprendizagem. Numere cada possibilidade.";
+            return basePrompt + "Tarefa: Atue como um 'Motor de Possibilidades'. Gere 3 a 5 formas alternativas de explicar o conceito central do texto. Cada alternativa deve usar uma abordagem diferente (ex: uma metáfora visual, uma explicação passo a passo, uma conexão histórica, etc.).";
         case 'CO_DESIGNER':
-            return basePrompt + "Tarefa: Atue como um 'Co-Designer de Aprendizagem'. Com base no texto, ajude a planejar uma atividade de aprendizado personalizada. Sugira 3 opções de atividades (ex: criar um vídeo, escrever um post de blog, montar um debate) que se alinhem com o conteúdo. Para cada opção, descreva o objetivo, os passos principais e como ela pode ser adaptada para diferentes níveis de habilidade. Use bullet points.";
+            return basePrompt + "Tarefa: Atue como um 'Co-Designer' de aprendizado. Com base no texto, ajude o usuário a planejar uma atividade de aprendizado personalizada. Faça 3 perguntas-chave para entender os objetivos e interesses do aluno, e então sugira 2 atividades de projeto que se alinhem a essas respostas.";
         case 'COLLABORATION_COACH':
-            return basePrompt + "Tarefa: Atue como um 'Coach de Colaboração'. Imagine que um grupo de alunos está trabalhando em um projeto sobre o tema do texto. Sua tarefa é ajudá-los a encontrar informações. Formule 5 perguntas-chave que o grupo deveria pesquisar para aprofundar seu projeto. Além disso, sugira 3 a 5 termos de busca eficazes para usar em mecanismos de pesquisa como o Google. Formate como: **Perguntas de Pesquisa:** e **Termos de Busca:**.";
+            return basePrompt + "Tarefa: Atue como um 'Coach de Colaboração'. Imagine que um grupo de alunos precisa trabalhar em um projeto sobre este texto. Sugira 3 funções específicas para os membros do grupo (ex: 'Líder de Pesquisa', 'Gerente de Apresentação') e liste 2 ideias de pesquisa iniciais para o grupo começar a investigar.";
         case 'EXPLORATORIUM':
-            return basePrompt + "Tarefa: Atue como um 'Exploratorium' de dados. Analise o texto e identifique os principais dados, estatísticas ou fatos apresentados. Em seguida, crie 3 a 5 'desafios de exploração' em forma de perguntas que incentivem a investigação e a visualização desses dados. Por exemplo: 'Como você criaria um gráfico para mostrar a tendência mencionada no texto?' ou 'Que outra fonte de dados poderia confirmar ou refutar a estatística X?'. Numere os desafios.";
+            return basePrompt + "Tarefa: Atue como um 'Exploratorium'. Facilite a exploração de dados ou informações no texto. Identifique um conjunto de dados ou um ponto de informação chave no texto e gere 3 perguntas que incentivem o aluno a investigar mais a fundo, promovendo a curiosidade e a análise de dados.";
         case 'IDENTIFY_PERSPECTIVE':
-            return basePrompt + "Tarefa: Atue como um analista crítico. Analise o texto para identificar o ponto de vista do autor, o tom geral (ex: informativo, persuasivo, crítico) e quaisquer possíveis vieses ou suposições implícitas. Estruture sua resposta em três seções: **Ponto de Vista**, **Tom** e **Análise de Vieses**.";
+            return basePrompt + "Tarefa: Analise o texto para identificar a perspectiva ou o ponto de vista do autor. Responda: 1) Qual é o principal argumento ou tese do autor? 2) Que evidências o autor usa para apoiar seu ponto de vista? 3) Há algum viés potencial ou perspectiva alternativa que não foi considerada no texto? Justifique suas respostas.";
         case 'FEEDBACK_GENERATOR':
-            return basePrompt + "Tarefa: Atue como um professor experiente. Com base no conteúdo do texto, crie 3 exemplos de feedback construtivo que poderiam ser dados a um aluno que escreveu uma resposta sobre este tópico. Inclua um 'Elogio Específico' (o que o aluno fez bem) e uma 'Sugestão para Melhoria' (um próximo passo claro) para cada exemplo. Numere os exemplos.";
+            return basePrompt + "Tarefa: Atue como um 'Gerador de Feedback'. Imagine que um aluno escreveu um pequeno parágrafo em resposta ao texto. Crie 2 exemplos de feedback: um que seja um elogio ('glow') destacando um ponto forte, e outro que seja uma sugestão de melhoria ('grow') construtiva. O feedback deve ser específico, gentil e acionável.";
         case 'PARETO_PRINCIPLE':
-            return basePrompt + "Tarefa: Atue como um 'Estrategista de Estudos' aplicando o Princípio de Pareto (regra 80/20) ao texto fornecido. Sua tarefa é identificar e destacar os 20% do conteúdo que provavelmente renderão 80% da compreensão ou dos resultados em uma avaliação. Estruture sua resposta da seguinte forma:\n\n**O Coração do Conteúdo (Os 20% Essenciais):**\n- [Liste aqui os 3 a 5 conceitos, temas ou seções mais críticos do texto em bullet points].\n\n**Plano de Foco:**\n[Forneça um parágrafo curto explicando por que esses pontos são cruciais e como um estudante deveria priorizar o estudo deles em detrimento de detalhes mais periféricos mencionados no texto].";
+            return basePrompt + "Tarefa: Aplique o Princípio de Pareto (80/20) ao texto. Identifique os 20% do conteúdo (os conceitos, ideias ou parágrafos mais críticos) que fornecem 80% do valor ou da compreensão do tópico. Liste esses pontos-chave em formato de bullet points.";
         case 'FEYNMAN_TECHNIQUE':
-            return basePrompt + "Tarefa: Aplique a Técnica de Feynman ao conceito central do texto. Sua missão é reescrever o tópico principal como se estivesse explicando para uma criança de 12 anos ou para alguém completamente leigo no assunto. Siga estes passos:\n1. **Identifique o Conceito Central:** Primeiro, determine qual é a ideia mais importante do texto.\n2. **Crie uma Explicação Simples:** Escreva uma explicação curta (2-3 parágrafos) usando linguagem extremamente simples, analogias do dia a dia e evitando jargões técnicos. O objetivo é a clareza máxima.\n3. **Identifique Pontos de Confusão:** Adicione uma seção chamada **Pontos para Revisar:** onde você lista 2-3 termos ou ideias do texto original que foram difíceis de simplificar, sugerindo que um estudante deveria focar neles para um entendimento completo.";
+            return basePrompt + "Tarefa: Aplique a Técnica de Feynman. Explique o conceito principal do texto da forma mais simples possível, como se estivesse ensinando a uma criança de 12 anos. Use analogias simples, evite jargões e foque na ideia central para garantir que seja fácil de entender.";
         default:
-            const unhandledAction = action.toString().replace(/_/g, ' ').toLowerCase();
-            return basePrompt + `Tarefa: Execute a seguinte ação no texto: ${unhandledAction}.`;
+            return context;
     }
 }
 
-function getPromptForRefinement(originalText: string, previousResult: string, instruction: string): string {
-    return `Você é um "Tutor Inteligente", uma IA assistente de estudos. Você gerou uma resposta anteriormente, e agora o usuário quer que você a refine.
-
-Sua tarefa é usar o texto original, a resposta anterior e a nova instrução do usuário para gerar uma resposta nova e aprimorada. Mantenha o mais alto padrão de qualidade, seguindo seu processo de raciocínio interno (Cadeia de Pensamento, Auto-Reflexão), mas apresente APENAS a resposta final polida para o usuário.
-
---- INÍCIO DO TEXTO ORIGINAL ---
-${originalText}
---- FIM DO TEXTO ORIGINAL ---
-
---- INÍCIO DA RESPOSTA ANTERIOR ---
-${previousResult}
---- FIM DA RESPOSTA ANTERIOR ---
-
---- INSTRUÇÃO DE REFINAMENTO DO USUÁRIO ---
-${instruction}
---- FIM DA INSTRUÇÃO DE REFINAMENTO DO USUÁRIO ---
-
-Agora, gere a nova resposta refinada com base na instrução.`;
-}
-
-function getPromptForExplanation(context: string, topic: string): string {
-    return `Você é um "Tutor Inteligente", uma IA assistente de estudos. Sua tarefa é explicar um tópico específico que foi extraído de um texto maior.
-
-Siga seu processo de raciocínio interno (Cadeia de Pensamento, Auto-Reflexão), mas apresente APENAS a resposta final polida. Não inclua títulos como "Explicação". Comece a resposta diretamente.
-
---- INÍCIO DO TEXTO ORIGINAL COMPLETO ---
-${context}
---- FIM DO TEXTO ORIGINAL COMPLETO ---
-
---- TÓPICO PARA EXPLICAR ---
-${topic}
---- FIM DO TÓPICO PARA EXPLICAR ---
-
-Tarefa: Forneça uma explicação clara e concisa sobre o tópico "${topic}" com base no contexto do texto original. A explicação deve ser fácil de entender para alguém que está estudando o assunto. Use parágrafos curtos e formate termos importantes com **negrito**.`;
-}
-
-// Helper function to convert a File object to a base64 string
-const fileToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => {
-            const base64String = (reader.result as string).split(',')[1];
-            resolve(base64String);
-        };
-        reader.onerror = (error) => reject(error);
-    });
-};
-
 
 const App: React.FC = () => {
-    const [view, setView] = useState<View>(View.MAIN);
-    const [inputText, setInputText] = useState<string>('');
-    const [result, setResult] = useState<string>('');
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [error, setError] = useState<string>('');
-    const [isHelpVisible, setIsHelpVisible] = useState<boolean>(false);
-    const [isRefineModalVisible, setIsRefineModalVisible] = useState<boolean>(false);
-    const [lastAction, setLastAction] = useState<ActionType | null>(null);
-    const [history, setHistory] = useState<HistoryItem[]>([]);
-    const [isExplanationModalVisible, setIsExplanationModalVisible] = useState<boolean>(false);
-    const [explanationTopic, setExplanationTopic] = useState<string>('');
-    const [explanationResult, setExplanationResult] = useState<string>('');
-    const [isExplanationLoading, setIsExplanationLoading] = useState<boolean>(false);
-    const [isOnboardingVisible, setIsOnboardingVisible] = useState<boolean>(false);
-    const [isOcrLoading, setIsOcrLoading] = useState<boolean>(false);
-    const cache = useRef<Map<string, string>>(new Map());
+    const [currentView, setCurrentView] = useState<View>(View.MAIN);
+    const [inputText, setInputText] = useState('');
+    const [result, setResult] = useState<ResultPayload | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState('');
+    const [currentAction, setCurrentAction] = useState<ActionType | null>(null);
+    const [history, setHistory] = useState<HistoryItem[]>(() => {
+        try {
+            const savedHistory = localStorage.getItem('studyHistory');
+            return savedHistory ? JSON.parse(savedHistory) : [];
+        } catch (e) {
+            console.error("Failed to parse history from localStorage", e);
+            return [];
+        }
+    });
+
+    const [isHelpVisible, setIsHelpVisible] = useState(false);
+    const [isRefineVisible, setIsRefineVisible] = useState(false);
+    const [isExplanationVisible, setIsExplanationVisible] = useState(false);
+    const [explanationTopic, setExplanationTopic] = useState('');
+    const [explanationResult, setExplanationResult] = useState('');
+    const [isExplanationLoading, setIsExplanationLoading] = useState(false);
+    const [isOcrLoading, setIsOcrLoading] = useState(false);
+    const [isYoutubeUrl, setIsYoutubeUrl] = useState(false);
+    
+    // Onboarding
+    const [isOnboardingVisible, setIsOnboardingVisible] = useState(false);
+
+    const prevInputTextRef = useRef<string>();
 
     useEffect(() => {
-        // Onboarding check
         try {
-            const hasSeenOnboarding = localStorage.getItem('hasSeenOnboarding');
-            if (!hasSeenOnboarding) {
-                setIsOnboardingVisible(true);
-            }
-        } catch (error) {
-            console.error("Failed to read from localStorage for onboarding", error);
+            localStorage.setItem('studyHistory', JSON.stringify(history));
+        } catch (e) {
+            console.error("Failed to save history to localStorage", e);
         }
-
-        // Garante que a aplicação inicie com um estado limpo, removendo qualquer texto salvo anteriormente.
-        localStorage.removeItem('inputText');
-        
-        // Load history from localStorage
-        try {
-            const storedHistory = localStorage.getItem('actionHistory');
-            if (storedHistory) {
-                setHistory(JSON.parse(storedHistory));
-            }
-        } catch (error) {
-            console.error("Failed to load history from localStorage", error);
-            setHistory([]);
+    }, [history]);
+    
+    useEffect(() => {
+        const hasSeenOnboarding = localStorage.getItem('hasSeenOnboarding');
+        if (!hasSeenOnboarding) {
+            setIsOnboardingVisible(true);
+            localStorage.setItem('hasSeenOnboarding', 'true');
         }
     }, []);
 
-    const handleCloseOnboarding = () => {
-        try {
-            localStorage.setItem('hasSeenOnboarding', 'true');
-        } catch (error) {
-            console.error("Failed to write to localStorage for onboarding", error);
-        }
-        setIsOnboardingVisible(false);
-    };
+    useEffect(() => {
+        setIsYoutubeUrl(YOUTUBE_URL_REGEX.test(inputText.trim()));
+    }, [inputText]);
 
-    const handleTextChange = (text: string) => {
-        setInputText(text);
-        localStorage.setItem('inputText', text);
-    };
+    const handleAction = useCallback(async (action: ActionType) => {
+        if (!inputText.trim()) return;
 
-    const handleClearText = () => {
-        setInputText('');
-        localStorage.removeItem('inputText');
-    };
-
-    const handleImageUpload = async (file: File) => {
-        if (!file) return;
-
-        setIsOcrLoading(true);
+        prevInputTextRef.current = inputText;
+        setCurrentView(View.RESULTS);
+        setIsLoading(true);
+        setResult(null);
         setError('');
+        setCurrentAction(action);
+
+        try {
+            const prompt = getPromptForAction(action, inputText);
+            const response = await ai.models.generateContent({
+                model: 'gemini-2.5-flash',
+                contents: prompt,
+            });
+            
+            const newResult: ResultPayload = { text: response.text };
+            setResult(newResult);
+
+            const newItem: HistoryItem = {
+                id: Date.now(),
+                actionType: action,
+                inputTextSnippet: inputText.substring(0, 100) + (inputText.length > 100 ? '...' : ''),
+                fullInputText: inputText,
+                fullResult: newResult,
+                timestamp: new Date().toISOString(),
+            };
+            setHistory(prev => [newItem, ...prev]);
+
+        } catch (e) {
+            console.error(e);
+            setError("Ocorreu um erro ao se comunicar com a API. Por favor, tente novamente.");
+        } finally {
+            setIsLoading(false);
+        }
+    }, [inputText]);
+
+    const handleSummarizeVideo = useCallback(async () => {
+        if (!inputText.trim() || !isYoutubeUrl) return;
+
+        setCurrentView(View.RESULTS);
+        setIsLoading(true);
+        setResult(null);
+        setError('');
+        setCurrentAction(ActionType.SUMMARIZE);
+
+        try {
+            const prompt = `Por favor, resuma o conteúdo do vídeo do YouTube neste link. Forneça um resumo estruturado com os pontos principais. Link: ${inputText}`;
+            const response = await ai.models.generateContent({
+                model: "gemini-2.5-flash",
+                contents: prompt,
+                config: {
+                    tools: [{ googleSearch: {} }],
+                },
+            });
+
+            const newResult: ResultPayload = {
+                text: response.text,
+                sources: response.candidates?.[0]?.groundingMetadata?.groundingChunks,
+            };
+
+            setResult(newResult);
+
+            const videoId = inputText.split('v=')[1]?.split('&')[0] || inputText.split('/').pop();
+            const newItem: HistoryItem = {
+                id: Date.now(),
+                actionType: ActionType.SUMMARIZE,
+                inputTextSnippet: `Vídeo: ${videoId}`,
+                fullInputText: inputText,
+                fullResult: newResult,
+                timestamp: new Date().toISOString(),
+                customTitle: 'Resumo de Vídeo do YouTube'
+            };
+            setHistory(prev => [newItem, ...prev]);
+
+        } catch (e) {
+            console.error(e);
+            setError("Ocorreu um erro ao se comunicar com a API. Por favor, tente novamente.");
+        } finally {
+            setIsLoading(false);
+        }
+    }, [inputText, isYoutubeUrl]);
+
+
+    const handleHistoryItemClick = (item: HistoryItem) => {
+        setInputText(item.fullInputText);
+        setResult(item.fullResult);
+        setCurrentAction(item.actionType);
+        setCurrentView(View.RESULTS);
+    };
+    
+    const handleRefine = useCallback(async (instruction: string) => {
+        setIsRefineVisible(false);
+        if (!result) return;
+
+        const context = `
+--- TEXTO ORIGINAL ---
+${currentAction === ActionType.SUMMARIZE && isYoutubeUrl ? prevInputTextRef.current : inputText}
+
+--- RESULTADO ANTERIOR ---
+${result.text}
+`;
+        const prompt = `Você é um "Tutor Inteligente". O usuário forneceu o resultado anterior e uma instrução para refiná-lo.
+Siga a instrução para gerar uma nova versão.
+
+Instrução do usuário: "${instruction}"
+
+Sua nova resposta deve ser apenas o resultado refinado.
+`;
+
+        setIsLoading(true);
+        setError('');
+        const prevResult = result;
+
+        try {
+            const response = await ai.models.generateContent({
+                model: 'gemini-2.5-flash',
+                contents: prompt,
+            });
+
+            const newResultText = response.text;
+            
+            setResult(prev => prev ? { ...prev, text: newResultText } : { text: newResultText });
+
+            // Update history item
+            const latestHistoryItem = history[0];
+            if (latestHistoryItem) {
+                 const updatedItem = {
+                    ...latestHistoryItem,
+                    fullResult: prevResult ? { ...prevResult, text: newResultText } : { text: newResultText },
+                    customTitle: latestHistoryItem.customTitle ? `${latestHistoryItem.customTitle} (Refinado)` : `${actionConfig[latestHistoryItem.actionType].title} (Refinado)`,
+                };
+                setHistory(prev => [updatedItem, ...prev.slice(1)]);
+            }
+
+        } catch (e) {
+            console.error(e);
+            setError("Ocorreu um erro ao refinar o resultado. Por favor, tente novamente.");
+            setResult(prevResult); // Restore previous result on error
+        } finally {
+            setIsLoading(false);
+        }
+    }, [result, inputText, currentAction, history, isYoutubeUrl]);
+
+    const handleExplainTopic = useCallback(async (topic: string) => {
+        setExplanationTopic(topic);
+        setIsExplanationVisible(true);
+        setIsExplanationLoading(true);
+
+        const prompt = `Você é um "Tutor Inteligente". Por favor, explique o seguinte tópico de forma clara e concisa, como se estivesse ensinando a um estudante. O tópico foi retirado de um contexto maior, então foque em explicá-lo isoladamente.
+        
+Tópico: "${topic}"
+
+Use parágrafos curtos, exemplos ou analogias se ajudar.`;
         
         try {
-            const base64Data = await fileToBase64(file);
-            
+            const response = await ai.models.generateContent({
+                model: 'gemini-2.5-flash',
+                contents: prompt,
+            });
+            setExplanationResult(response.text);
+        } catch (e) {
+            console.error(e);
+            setExplanationResult("Ocorreu um erro ao gerar a explicação.");
+        } finally {
+            setIsExplanationLoading(false);
+        }
+    }, []);
+
+    const handleImageUpload = async (file: File) => {
+        if (!file.type.startsWith('image/')) {
+            alert('Por favor, selecione um arquivo de imagem.');
+            return;
+        }
+
+        setIsOcrLoading(true);
+        setInputText('');
+        
+        const toBase64 = (file: File): Promise<string> => new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve((reader.result as string).split(',')[1]);
+            reader.onerror = error => reject(error);
+        });
+
+        try {
+            const base64Data = await toBase64(file);
             const imagePart = {
                 inlineData: {
                     mimeType: file.type,
                     data: base64Data,
                 },
             };
-            
             const textPart = {
-                text: 'Extraia todo o texto visível nesta imagem, mantendo a formatação e as quebras de linha o mais fielmente possível. Responda apenas com o texto extraído, sem adicionar comentários ou introduções.'
+                text: 'Extraia todo o texto desta imagem. Responda apenas com o texto extraído, sem nenhuma formatação ou comentário adicional.',
             };
 
             const response = await ai.models.generateContent({
@@ -287,260 +369,92 @@ const App: React.FC = () => {
                 contents: { parts: [imagePart, textPart] },
             });
             
-            const extractedText = response.text;
-            if (extractedText) {
-                setInputText(prev => prev ? `${prev}\n\n${extractedText}` : extractedText);
-            } else {
-                throw new Error("A API não conseguiu extrair texto da imagem.");
-            }
+            setInputText(response.text);
 
-        } catch (e: any) {
-            console.error(e);
-            const errorMessage = e.message || 'Ocorreu um erro desconhecido.';
-            alert(`Falha ao processar a imagem com OCR. ${errorMessage}`);
+        } catch (error) {
+            console.error("Error processing image:", error);
+            setError("Não foi possível processar a imagem. Tente novamente.");
         } finally {
             setIsOcrLoading(false);
         }
     };
 
-    const callGenerativeAI = useCallback(async (
-        action: ActionType,
-        text: string,
-        refinement?: { previousResult: string; instruction: string }
-    ) => {
-        setView(View.RESULTS);
-        setIsLoading(true);
-        setResult('');
-        setError('');
-        setLastAction(action);
-
-        const cacheKey = refinement
-            ? `${action}:${text}:${refinement.instruction}`
-            : `${action}:${text}`;
-
-        if (cache.current.has(cacheKey)) {
-            const cachedResult = cache.current.get(cacheKey)!;
-            setResult(cachedResult);
-            
-            const newHistoryItem: HistoryItem = {
-                id: Date.now(),
-                actionType: action,
-                fullInputText: text,
-                inputTextSnippet: text.substring(0, 80) + (text.length > 80 ? '...' : ''),
-                fullResult: cachedResult,
-                timestamp: new Date().toISOString(),
-            };
-
-            setHistory(prevHistory => {
-                const updatedHistory = [newHistoryItem, ...prevHistory].slice(0, 50);
-                try {
-                    localStorage.setItem('actionHistory', JSON.stringify(updatedHistory));
-                } catch (error) {
-                    console.error("Failed to save history from cached result", error);
-                }
-                return updatedHistory;
-            });
-
-            setIsLoading(false);
-            return;
-        }
-
-        try {
-             const prompt = refinement
-                ? getPromptForRefinement(text, refinement.previousResult, refinement.instruction)
-                : getPromptForAction(action, text);
-            
-            const response = await ai.models.generateContent({
-                model: 'gemini-2.5-flash',
-                contents: prompt,
-            });
-
-            const generatedText = response.text;
-            
-            if (!generatedText) {
-                throw new Error("A API não retornou uma resposta de texto.");
-            }
-
-            cache.current.set(cacheKey, generatedText);
-            setResult(generatedText);
-
-            const newHistoryItem: HistoryItem = {
-                id: Date.now(),
-                actionType: action,
-                fullInputText: text,
-                inputTextSnippet: text.substring(0, 80) + (text.length > 80 ? '...' : ''),
-                fullResult: generatedText,
-                timestamp: new Date().toISOString(),
-            };
-
-            setHistory(prevHistory => {
-                const updatedHistory = [newHistoryItem, ...prevHistory].slice(0, 50); // Keep max 50 items
-                try {
-                    localStorage.setItem('actionHistory', JSON.stringify(updatedHistory));
-                } catch (error) {
-                    console.error("Failed to save history to localStorage", error);
-                }
-                return updatedHistory;
-            });
-
-        } catch (e: any) {
-            console.error(e);
-            const errorMessage = e.message || 'Ocorreu um erro desconhecido.';
-            setError(`Falha ao se comunicar com a API do Gemini. ${errorMessage} Verifique sua chave de API e conexão com a internet.`);
-        } finally {
-            setIsLoading(false);
-        }
-    }, [result]);
-
-    const handleActionSelect = (action: ActionType) => {
-        if (!inputText.trim()) return;
-        callGenerativeAI(action, inputText);
-    };
-
     const handleBack = () => {
-        setView(View.MAIN);
+        setCurrentView(View.MAIN);
+        setResult(null);
         setError('');
+        setCurrentAction(null);
     };
 
     const handleRefresh = () => {
-        if (lastAction && inputText) {
-            callGenerativeAI(lastAction, inputText);
-        }
-    };
-    
-    const handleHistoryItemClick = (item: HistoryItem) => {
-        setInputText(item.fullInputText);
-        setResult(item.fullResult);
-        setLastAction(item.actionType);
-        setView(View.RESULTS);
-        setError('');
-    };
-
-    const handleOpenRefineModal = () => setIsRefineModalVisible(true);
-    const handleCloseRefineModal = () => setIsRefineModalVisible(false);
-
-    const handleRefineSubmit = (instruction: string) => {
-        handleCloseRefineModal();
-        if (lastAction && inputText && result) {
-            callGenerativeAI(lastAction, inputText, { previousResult: result, instruction });
+        if(currentAction) {
+            handleAction(currentAction);
         }
     };
 
-    const handleExplainTopic = useCallback(async (topic: string) => {
-        if (!inputText) return;
-
-        setIsExplanationModalVisible(true);
-        setExplanationTopic(topic);
-        setExplanationResult('');
-        setIsExplanationLoading(true);
-
-        const cacheKey = `explain:${topic}:${inputText}`;
-        if (cache.current.has(cacheKey)) {
-            setExplanationResult(cache.current.get(cacheKey)!);
-            setIsExplanationLoading(false);
-            return;
-        }
-
-        try {
-            const prompt = getPromptForExplanation(inputText, topic);
-            
-            const response = await ai.models.generateContent({
-                model: 'gemini-2.5-flash',
-                contents: prompt,
-            });
-
-            const generatedText = response.text;
-            
-            if (!generatedText) {
-                 throw new Error("A API não retornou uma resposta de texto.");
-            }
-
-            cache.current.set(cacheKey, generatedText);
-            setExplanationResult(generatedText);
-        } catch (e: any) {
-            console.error(e);
-            const errorMessage = e.message || 'Ocorreu um erro desconhecido.';
-            setExplanationResult(`Falha ao se comunicar com a API do Gemini. ${errorMessage}`);
-        } finally {
-            setIsExplanationLoading(false);
-        }
-    }, [inputText]);
-
-
-    const handleDeleteItem = (itemId: number) => {
-        const newHistory = history.filter(item => item.id !== itemId);
-        setHistory(newHistory);
-        localStorage.setItem('actionHistory', JSON.stringify(newHistory));
+    const clearText = () => setInputText('');
+    const deleteHistoryItem = (id: number) => setHistory(history.filter(item => item.id !== id));
+    const renameHistoryItem = (id: number, newTitle: string) => {
+        setHistory(history.map(item => item.id === id ? { ...item, customTitle: newTitle } : item));
     };
 
-    const handleRenameItem = (itemId: number, newTitle: string) => {
-        const newHistory = history.map(item =>
-            item.id === itemId ? { ...item, customTitle: newTitle.trim() } : item
-        );
-        setHistory(newHistory);
-        localStorage.setItem('actionHistory', JSON.stringify(newHistory));
-    };
-
-    const headerTitle = view === View.MAIN ? 'Tutor Ativo AI' : (lastAction ? actionConfig[lastAction].title : 'Resultado');
-    
-    return (
-        <div className="flex flex-col h-screen bg-transparent">
-            <Header
-                title={headerTitle}
-                showBackButton={view === View.RESULTS}
-                onBack={handleBack}
-                onHelp={() => setIsHelpVisible(true)}
-                onRefresh={handleRefresh}
-                isRefreshable={view === View.RESULTS && !!lastAction && !isLoading}
-            />
-
-            <main className="flex-grow p-4 overflow-y-auto w-full max-w-5xl mx-auto" style={{ scrollbarGutter: 'stable' }}>
-                {view === View.MAIN ? (
-                    <MainView
-                        onActionSelect={handleActionSelect}
-                        inputText={inputText}
-                        onTextChange={handleTextChange}
-                        onClearText={handleClearText}
-                        history={history}
-                        onHistoryItemClick={handleHistoryItemClick}
-                        onDeleteItem={handleDeleteItem}
-                        onRenameItem={handleRenameItem}
-                        onImageUpload={handleImageUpload}
-                        isOcrLoading={isOcrLoading}
-                    />
-                ) : (
+    const renderView = () => {
+        switch(currentView) {
+            case View.RESULTS:
+                return (
                     <ResultsView
                         isLoading={isLoading}
                         result={result}
                         error={error}
-                        actionType={lastAction}
-                        onOpenRefineModal={handleOpenRefineModal}
+                        actionType={currentAction}
+                        onOpenRefineModal={() => setIsRefineVisible(true)}
                         onExplainTopic={handleExplainTopic}
                     />
-                )}
-            </main>
-
-            <footer className="flex-shrink-0 text-center p-3 bg-black/20 backdrop-blur-lg border-t border-white/10 text-xs text-slate-400">
-                Produzido por <a href="mailto:danilofelip862@educar.rn.gov.br" className="text-sky-400 hover:underline">Danilo Arruda</a>.
-            </footer>
-
-            <HelpModal isVisible={isHelpVisible} onClose={() => setIsHelpVisible(false)} />
-            <RefineModal
-                isVisible={isRefineModalVisible}
-                onClose={handleCloseRefineModal}
-                onSubmit={handleRefineSubmit}
+                );
+            case View.MAIN:
+            default:
+                return (
+                    <MainView
+                        onActionSelect={handleAction}
+                        inputText={inputText}
+                        onTextChange={setInputText}
+                        onClearText={clearText}
+                        history={history}
+                        onHistoryItemClick={handleHistoryItemClick}
+                        onDeleteItem={deleteHistoryItem}
+                        onRenameItem={renameHistoryItem}
+                        onImageUpload={handleImageUpload}
+                        isOcrLoading={isOcrLoading}
+                        isYoutubeUrl={isYoutubeUrl}
+                        onSummarizeVideo={handleSummarizeVideo}
+                    />
+                );
+        }
+    };
+    
+    return (
+        <div className="flex flex-col h-screen">
+            <Header
+                title={currentView === View.RESULTS && currentAction ? actionConfig[currentAction].title : "Tutor Ativo AI"}
+                showBackButton={currentView === View.RESULTS}
+                onBack={handleBack}
+                onHelp={() => setIsHelpVisible(true)}
+                onRefresh={handleRefresh}
+                isRefreshable={currentView === View.RESULTS && !isLoading && currentAction !== null}
             />
-            <ExplanationModal
-                isVisible={isExplanationModalVisible}
-                onClose={() => setIsExplanationModalVisible(false)}
+            <main className="flex-grow overflow-y-auto p-4 md:p-6 w-full max-w-5xl mx-auto">
+                {renderView()}
+            </main>
+            <HelpModal isVisible={isHelpVisible} onClose={() => setIsHelpVisible(false)} />
+            <RefineModal isVisible={isRefineVisible} onClose={() => setIsRefineVisible(false)} onSubmit={handleRefine} />
+            <ExplanationModal 
+                isVisible={isExplanationVisible} 
+                onClose={() => setIsExplanationVisible(false)} 
                 topic={explanationTopic}
                 explanation={explanationResult}
                 isLoading={isExplanationLoading}
             />
-            <OnboardingModal 
-                isVisible={isOnboardingVisible}
-                onClose={handleCloseOnboarding}
-            />
+            <OnboardingModal isVisible={isOnboardingVisible} onClose={() => setIsOnboardingVisible(false)} />
         </div>
     );
 };
