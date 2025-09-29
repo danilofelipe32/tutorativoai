@@ -12,6 +12,9 @@ import { actionConfig } from './constants';
 import OnboardingModal from './components/OnboardingModal';
 import SettingsModal from './components/SettingsModal';
 
+// Declara a biblioteca pdf.js como uma variável global para o TypeScript
+declare const pdfjsLib: any;
+
 // Chave de API fornecida pelo usuário
 const API_KEY = "AIzaSyC66emimXFo6BVctXpbYlheIueYSgP3ExE";
 const ai = new GoogleGenAI({ apiKey: API_KEY });
@@ -141,6 +144,7 @@ const App: React.FC = () => {
     const [isOnboardingModalVisible, setOnboardingModalVisible] = useState(false);
     const [isSettingsModalVisible, setSettingsModalVisible] = useState(false);
     const [isOcrLoading, setOcrLoading] = useState(false);
+    const [isPdfLoading, setPdfLoading] = useState(false);
 
     const initialSettings: AISettings = { temperature: 0.7, topK: 40, topP: 0.95 };
     const [aiSettings, setAiSettings] = useState<AISettings>(initialSettings);
@@ -299,6 +303,40 @@ const App: React.FC = () => {
         }
     };
 
+    const handlePdfUpload = async (file: File) => {
+        setPdfLoading(true);
+        setInputText('');
+        setError('');
+    
+        try {
+            pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js`;
+            
+            const arrayBuffer = await file.arrayBuffer();
+            const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
+            
+            const pagePromises = [];
+            for (let i = 1; i <= pdf.numPages; i++) {
+                pagePromises.push(pdf.getPage(i));
+            }
+            
+            const pages = await Promise.all(pagePromises);
+            const textContentPromises = pages.map(page => page.getTextContent());
+            const textContents = await Promise.all(textContentPromises);
+    
+            const fullText = textContents.map(content => {
+                return content.items.map((item: any) => item.str).join(' ');
+            }).join('\n\n');
+            
+            setInputText(fullText.trim());
+    
+        } catch (e: any) {
+            console.error("PDF Error:", e);
+            setError(`Falha ao processar o PDF: ${e.message}`);
+        } finally {
+            setPdfLoading(false);
+        }
+    };
+
     const handleBack = () => setView(View.MAIN);
     const handleClearText = () => setInputText('');
     const handleHistoryItemClick = (item: HistoryItem) => {
@@ -353,6 +391,8 @@ const App: React.FC = () => {
                         onRenameItem={handleRenameItem}
                         onImageUpload={handleImageUpload}
                         isOcrLoading={isOcrLoading}
+                        onPdfUpload={handlePdfUpload}
+                        isPdfLoading={isPdfLoading}
                     />
                 )}
                 {view === View.RESULTS && (
