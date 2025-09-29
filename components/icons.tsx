@@ -24,6 +24,7 @@ export const ChevronRightIcon = createIcon('lni lni-chevron-right');
 export const SparkleIcon = createIcon('lni lni-sparkles');
 export const CameraIcon = createIcon('lni lni-camera');
 export const VideoIcon = createIcon('lni lni-video');
+export const SettingsIcon = createIcon('lni lni-cog');
 
 
 // Action Icons (30 unique icons for 30 actions)

@@ -62,3 +62,9 @@ export interface HistoryItem {
     timestamp: string; // ISO String
     customTitle?: string;
 }
+
+export interface AISettings {
+    temperature: number;
+    topK: number;
+    topP: number;
+}

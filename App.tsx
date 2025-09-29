@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { GoogleGenAI } from '@google/genai';
-import { ActionType, View, HistoryItem, ResultPayload } from './types';
+import { ActionType, View, HistoryItem, ResultPayload, AISettings } from './types';
 import Header from './components/Header';
 import MainView from './components/MainView';
 import ResultsView from './components/ResultsView';
@@ -9,10 +9,9 @@ import RefineModal from './components/RefineModal';
 import ExplanationModal from './components/ExplanationModal';
 import { actionConfig } from './constants';
 import OnboardingModal from './components/OnboardingModal';
+import SettingsModal from './components/SettingsModal';
 
-// IMPORTANTE: Substitua "YOUR_API_KEY_HERE" pela sua chave de API real do Google AI Studio.
-const API_KEY = "AIzaSyC66emimXFo6BVctXpbYlheIueYSgP3ExE";
-const ai = new GoogleGenAI({ apiKey: API_KEY });
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 const YOUTUBE_URL_REGEX = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$/;
 
 
@@ -115,6 +114,12 @@ ${context}
     }
 }
 
+const DEFAULT_AI_SETTINGS: AISettings = {
+    temperature: 0.7,
+    topK: 40,
+    topP: 0.95,
+};
+
 
 const App: React.FC = () => {
     const [currentView, setCurrentView] = useState<View>(View.MAIN);
@@ -132,6 +137,16 @@ const App: React.FC = () => {
             return [];
         }
     });
+    
+    const [aiSettings, setAiSettings] = useState<AISettings>(() => {
+        try {
+            const savedSettings = localStorage.getItem('aiSettings');
+            return savedSettings ? JSON.parse(savedSettings) : DEFAULT_AI_SETTINGS;
+        } catch (e) {
+            console.error("Failed to parse AI settings from localStorage", e);
+            return DEFAULT_AI_SETTINGS;
+        }
+    });
 
     const [isHelpVisible, setIsHelpVisible] = useState(false);
     const [isRefineVisible, setIsRefineVisible] = useState(false);
@@ -141,6 +156,7 @@ const App: React.FC = () => {
     const [isExplanationLoading, setIsExplanationLoading] = useState(false);
     const [isOcrLoading, setIsOcrLoading] = useState(false);
     const [isYoutubeUrl, setIsYoutubeUrl] = useState(false);
+    const [isSettingsVisible, setIsSettingsVisible] = useState(false);
     
     // Onboarding
     const [isOnboardingVisible, setIsOnboardingVisible] = useState(false);
@@ -155,6 +171,14 @@ const App: React.FC = () => {
         }
     }, [history]);
     
+    useEffect(() => {
+        try {
+            localStorage.setItem('aiSettings', JSON.stringify(aiSettings));
+        } catch (e) {
+            console.error("Failed to save AI settings to localStorage", e);
+        }
+    }, [aiSettings]);
+
     useEffect(() => {
         const hasSeenOnboarding = localStorage.getItem('hasSeenOnboarding');
         if (!hasSeenOnboarding) {
@@ -183,6 +207,7 @@ const App: React.FC = () => {
             const response = await ai.models.generateContent({
                 model: 'gemini-2.5-flash',
                 contents: prompt,
+                config: aiSettings,
             });
             setResult({ text: response.text });
         } catch (e: any) {
@@ -192,7 +217,7 @@ const App: React.FC = () => {
         } finally {
             setIsLoading(false);
         }
-    }, [inputText]);
+    }, [inputText, aiSettings]);
 
     const handleSummarizeVideo = useCallback(async () => {
         if (!YOUTUBE_URL_REGEX.test(inputText.trim())) {
@@ -212,6 +237,7 @@ const App: React.FC = () => {
                 contents: `Crie um resumo estruturado e detalhado do conteúdo do vídeo do YouTube encontrado neste link: ${inputText}. O resumo deve ser fácil de entender e cobrir os pontos principais. Use bullet points para os tópicos-chave.`,
                 config: {
                     tools: [{ googleSearch: {} }],
+                    ...aiSettings,
                 },
             });
 
@@ -229,7 +255,7 @@ const App: React.FC = () => {
         } finally {
             setIsLoading(false);
         }
-    }, [inputText]);
+    }, [inputText, aiSettings]);
     
     const handleBack = useCallback(() => {
         if (result && currentAction) {
@@ -270,7 +296,9 @@ const App: React.FC = () => {
                 ? `Você está refinando um resumo de um vídeo do YouTube. O link do vídeo é: ${originalContext}. O resumo anterior foi: "${result.text}". Agora, por favor, refine o resumo com base nesta instrução do usuário: "${instruction}". Use a busca para obter informações atualizadas se necessário.`
                 : `Você está refinando um texto gerado anteriormente. O texto original fornecido pelo usuário foi: "${originalContext}". O resultado anterior foi: "${result.text}". Agora, por favor, refine o resultado com base nesta instrução do usuário: "${instruction}".`;
             
-            const config = isVideo ? { tools: [{ googleSearch: {} }] } : {};
+            const baseConfig = { ...aiSettings };
+            const config = isVideo ? { ...baseConfig, tools: [{ googleSearch: {} }] } : baseConfig;
+
             const response = await ai.models.generateContent({
                 model: 'gemini-2.5-flash',
                 contents: refinePrompt,
@@ -286,7 +314,7 @@ const App: React.FC = () => {
         } finally {
             setIsLoading(false);
         }
-    }, [result, currentAction]);
+    }, [result, currentAction, aiSettings]);
 
     const handleExplainTopic = useCallback(async (topic: string) => {
         setExplanationTopic(topic);
@@ -298,6 +326,7 @@ const App: React.FC = () => {
             const response = await ai.models.generateContent({
                 model: 'gemini-2.5-flash',
                 contents: prompt,
+                config: aiSettings,
             });
             setExplanationResult(response.text);
         } catch (e: any) {
@@ -306,7 +335,7 @@ const App: React.FC = () => {
         } finally {
             setIsExplanationLoading(false);
         }
-    }, []);
+    }, [aiSettings]);
 
     const fileToBase64 = (file: File): Promise<string> =>
         new Promise((resolve, reject) => {
@@ -327,6 +356,7 @@ const App: React.FC = () => {
             const response = await ai.models.generateContent({
                 model: 'gemini-2.5-flash',
                 contents: { parts: [imagePart, textPart] },
+                // Settings like temperature are not applicable for OCR
             });
             setInputText(response.text);
         } catch (e: any) {
@@ -352,6 +382,12 @@ const App: React.FC = () => {
     const handleRenameItem = (itemId: number, newTitle: string) => {
         setHistory(prev => prev.map(item => item.id === itemId ? { ...item, customTitle: newTitle } : item));
     };
+    
+    const handleSaveSettings = (newSettings: AISettings) => {
+        setAiSettings(newSettings);
+        setIsSettingsVisible(false);
+    };
+
 
     return (
         <div className="flex flex-col h-screen">
@@ -362,6 +398,7 @@ const App: React.FC = () => {
                 onHelp={() => setIsHelpVisible(true)}
                 onRefresh={() => handleRefine('gere uma nova versão da resposta anterior.')}
                 isRefreshable={currentView === View.RESULTS && !!result}
+                onSettings={() => setIsSettingsVisible(true)}
             />
             <main className="flex-grow overflow-y-auto p-4 md:p-6">
                 <div className="w-full max-w-5xl mx-auto h-full">
@@ -408,6 +445,12 @@ const App: React.FC = () => {
              <OnboardingModal 
                 isVisible={isOnboardingVisible} 
                 onClose={() => setIsOnboardingVisible(false)} 
+            />
+            <SettingsModal
+                isVisible={isSettingsVisible}
+                onClose={() => setIsSettingsVisible(false)}
+                currentSettings={aiSettings}
+                onSave={handleSaveSettings}
             />
         </div>
     );

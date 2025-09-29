@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { BackIcon, HelpIcon, RefreshIcon } from './icons';
+import { BackIcon, HelpIcon, RefreshIcon, SettingsIcon } from './icons';
 
 interface HeaderProps {
     title: string;
@@ -9,9 +9,10 @@ interface HeaderProps {
     onHelp: () => void;
     onRefresh: () => void;
     isRefreshable: boolean;
+    onSettings: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ title, showBackButton, onBack, onHelp, onRefresh, isRefreshable }) => {
+const Header: React.FC<HeaderProps> = ({ title, showBackButton, onBack, onHelp, onRefresh, isRefreshable, onSettings }) => {
     return (
         <header className="flex-shrink-0 sticky top-0 z-40 bg-slate-900/60 backdrop-blur-lg border-b border-white/10">
             <div className="flex items-center justify-between p-3 w-full max-w-5xl mx-auto">
@@ -31,6 +32,13 @@ const Header: React.FC<HeaderProps> = ({ title, showBackButton, onBack, onHelp, 
                         title="Refazer"
                     >
                         <RefreshIcon className="text-xl" />
+                    </button>
+                    <button
+                        onClick={onSettings}
+                        className="p-2 rounded-full hover:bg-white/10 transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500"
+                        title="Configurações"
+                    >
+                        <SettingsIcon className="text-xl" />
                     </button>
                     <button
                         onClick={onHelp}
