@@ -10,8 +10,9 @@ import ExplanationModal from './components/ExplanationModal';
 import { actionConfig } from './constants';
 import OnboardingModal from './components/OnboardingModal';
 
-// Setup Gemini API using environment variable
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// IMPORTANTE: Substitua "YOUR_API_KEY_HERE" pela sua chave de API real do Google AI Studio.
+const API_KEY = "AIzaSyC66emimXFo6BVctXpbYlheIueYSgP3ExE";
+const ai = new GoogleGenAI({ apiKey: API_KEY });
 const YOUTUBE_URL_REGEX = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$/;
 
 
@@ -144,7 +145,7 @@ const App: React.FC = () => {
     // Onboarding
     const [isOnboardingVisible, setIsOnboardingVisible] = useState(false);
 
-    const prevInputTextRef = useRef<string>();
+    const originalInputForActionRef = useRef<string>('');
 
     useEffect(() => {
         try {
@@ -167,14 +168,15 @@ const App: React.FC = () => {
     }, [inputText]);
 
     const handleAction = useCallback(async (action: ActionType) => {
-        if (!inputText.trim()) return;
-
-        prevInputTextRef.current = inputText;
-        setCurrentView(View.RESULTS);
+        if (inputText.trim().length === 0) {
+            setError('Por favor, insira um texto para analisar.');
+            return;
+        }
         setIsLoading(true);
-        setResult(null);
         setError('');
         setCurrentAction(action);
+        setCurrentView(View.RESULTS);
+        originalInputForActionRef.current = inputText;
 
         try {
             const prompt = getPromptForAction(action, inputText);
@@ -182,279 +184,231 @@ const App: React.FC = () => {
                 model: 'gemini-2.5-flash',
                 contents: prompt,
             });
-            
-            const newResult: ResultPayload = { text: response.text };
-            setResult(newResult);
-
-            const newItem: HistoryItem = {
-                id: Date.now(),
-                actionType: action,
-                inputTextSnippet: inputText.substring(0, 100) + (inputText.length > 100 ? '...' : ''),
-                fullInputText: inputText,
-                fullResult: newResult,
-                timestamp: new Date().toISOString(),
-            };
-            setHistory(prev => [newItem, ...prev]);
-
-        } catch (e) {
-            console.error(e);
-            setError("Ocorreu um erro ao se comunicar com a API. Por favor, tente novamente.");
+            setResult({ text: response.text });
+        } catch (e: any) {
+            console.error("API Error:", e);
+            setError(`Ocorreu um erro ao processar sua solicitação. Tente novamente. Detalhes: ${e.message}`);
+            setCurrentView(View.MAIN);
         } finally {
             setIsLoading(false);
         }
     }, [inputText]);
 
     const handleSummarizeVideo = useCallback(async () => {
-        if (!inputText.trim() || !isYoutubeUrl) return;
+        if (!YOUTUBE_URL_REGEX.test(inputText.trim())) {
+            setError("Por favor, insira um URL válido do YouTube.");
+            return;
+        }
 
-        setCurrentView(View.RESULTS);
         setIsLoading(true);
-        setResult(null);
         setError('');
         setCurrentAction(ActionType.SUMMARIZE);
+        setCurrentView(View.RESULTS);
+        originalInputForActionRef.current = inputText;
 
         try {
-            const prompt = `Por favor, resuma o conteúdo do vídeo do YouTube neste link. Forneça um resumo estruturado com os pontos principais. Link: ${inputText}`;
             const response = await ai.models.generateContent({
-                model: "gemini-2.5-flash",
-                contents: prompt,
+                model: 'gemini-2.5-flash',
+                contents: `Crie um resumo estruturado e detalhado do conteúdo do vídeo do YouTube encontrado neste link: ${inputText}. O resumo deve ser fácil de entender e cobrir os pontos principais. Use bullet points para os tópicos-chave.`,
                 config: {
                     tools: [{ googleSearch: {} }],
                 },
             });
 
+            const sources = response.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
             const newResult: ResultPayload = {
                 text: response.text,
-                sources: response.candidates?.[0]?.groundingMetadata?.groundingChunks,
+                sources: sources,
             };
 
             setResult(newResult);
-
-            const videoId = inputText.split('v=')[1]?.split('&')[0] || inputText.split('/').pop();
-            const newItem: HistoryItem = {
-                id: Date.now(),
-                actionType: ActionType.SUMMARIZE,
-                inputTextSnippet: `Vídeo: ${videoId}`,
-                fullInputText: inputText,
-                fullResult: newResult,
-                timestamp: new Date().toISOString(),
-                customTitle: 'Resumo de Vídeo do YouTube'
-            };
-            setHistory(prev => [newItem, ...prev]);
-
-        } catch (e) {
-            console.error(e);
-            setError("Ocorreu um erro ao se comunicar com a API. Por favor, tente novamente.");
+        } catch (e: any) {
+            console.error("API Error:", e);
+            setError(`Ocorreu um erro ao buscar o resumo do vídeo. Tente novamente. Detalhes: ${e.message}`);
+            setCurrentView(View.MAIN);
         } finally {
             setIsLoading(false);
         }
-    }, [inputText, isYoutubeUrl]);
-
-
-    const handleHistoryItemClick = (item: HistoryItem) => {
-        setInputText(item.fullInputText);
-        setResult(item.fullResult);
-        setCurrentAction(item.actionType);
-        setCurrentView(View.RESULTS);
-    };
+    }, [inputText]);
     
+    const handleBack = useCallback(() => {
+        if (result && currentAction) {
+            const isVideoSummary = YOUTUBE_URL_REGEX.test(originalInputForActionRef.current);
+            const newHistoryItem: HistoryItem = {
+                id: Date.now(),
+                actionType: currentAction,
+                inputTextSnippet: isVideoSummary
+                    ? `Resumo de: ${originalInputForActionRef.current.substring(0, 50)}...`
+                    : `${originalInputForActionRef.current.substring(0, 50)}...`,
+                fullInputText: originalInputForActionRef.current,
+                fullResult: result,
+                timestamp: new Date().toISOString(),
+            };
+            setHistory(prev => [newHistoryItem, ...prev]);
+
+            if (isVideoSummary) {
+                setInputText(result.text);
+            }
+        }
+        setCurrentView(View.MAIN);
+        setResult(null);
+        setError('');
+        setCurrentAction(null);
+        originalInputForActionRef.current = '';
+    }, [result, currentAction]);
+
     const handleRefine = useCallback(async (instruction: string) => {
-        setIsRefineVisible(false);
-        if (!result) return;
-
-        const context = `
---- TEXTO ORIGINAL ---
-${currentAction === ActionType.SUMMARIZE && isYoutubeUrl ? prevInputTextRef.current : inputText}
-
---- RESULTADO ANTERIOR ---
-${result.text}
-`;
-        const prompt = `Você é um "Tutor Inteligente". O usuário forneceu o resultado anterior e uma instrução para refiná-lo.
-Siga a instrução para gerar uma nova versão.
-
-Instrução do usuário: "${instruction}"
-
-Sua nova resposta deve ser apenas o resultado refinado.
-`;
-
+        if (!result?.text || !currentAction) return;
         setIsLoading(true);
         setError('');
-        const prevResult = result;
+        setIsRefineVisible(false);
 
         try {
+            const originalContext = originalInputForActionRef.current;
+            const isVideo = YOUTUBE_URL_REGEX.test(originalContext);
+            const refinePrompt = isVideo
+                ? `Você está refinando um resumo de um vídeo do YouTube. O link do vídeo é: ${originalContext}. O resumo anterior foi: "${result.text}". Agora, por favor, refine o resumo com base nesta instrução do usuário: "${instruction}". Use a busca para obter informações atualizadas se necessário.`
+                : `Você está refinando um texto gerado anteriormente. O texto original fornecido pelo usuário foi: "${originalContext}". O resultado anterior foi: "${result.text}". Agora, por favor, refine o resultado com base nesta instrução do usuário: "${instruction}".`;
+            
+            const config = isVideo ? { tools: [{ googleSearch: {} }] } : {};
             const response = await ai.models.generateContent({
                 model: 'gemini-2.5-flash',
-                contents: prompt,
+                contents: refinePrompt,
+                config,
             });
-
-            const newResultText = response.text;
             
-            setResult(prev => prev ? { ...prev, text: newResultText } : { text: newResultText });
-
-            // Update history item
-            const latestHistoryItem = history[0];
-            if (latestHistoryItem) {
-                 const updatedItem = {
-                    ...latestHistoryItem,
-                    fullResult: prevResult ? { ...prevResult, text: newResultText } : { text: newResultText },
-                    customTitle: latestHistoryItem.customTitle ? `${latestHistoryItem.customTitle} (Refinado)` : `${actionConfig[latestHistoryItem.actionType].title} (Refinado)`,
-                };
-                setHistory(prev => [updatedItem, ...prev.slice(1)]);
-            }
-
-        } catch (e) {
-            console.error(e);
-            setError("Ocorreu um erro ao refinar o resultado. Por favor, tente novamente.");
-            setResult(prevResult); // Restore previous result on error
+            const sources = isVideo ? response.candidates?.[0]?.groundingMetadata?.groundingChunks || [] : undefined;
+            const newResult: ResultPayload = { text: response.text, sources: sources };
+            setResult(newResult);
+        } catch (e: any) {
+            console.error("API Error:", e);
+            setError(`Ocorreu um erro ao refinar o resultado. Tente novamente. Detalhes: ${e.message}`);
         } finally {
             setIsLoading(false);
         }
-    }, [result, inputText, currentAction, history, isYoutubeUrl]);
+    }, [result, currentAction]);
 
     const handleExplainTopic = useCallback(async (topic: string) => {
         setExplanationTopic(topic);
         setIsExplanationVisible(true);
         setIsExplanationLoading(true);
-
-        const prompt = `Você é um "Tutor Inteligente". Por favor, explique o seguinte tópico de forma clara e concisa, como se estivesse ensinando a um estudante. O tópico foi retirado de um contexto maior, então foque em explicá-lo isoladamente.
-        
-Tópico: "${topic}"
-
-Use parágrafos curtos, exemplos ou analogias se ajudar.`;
-        
+        setExplanationResult('');
         try {
+            const prompt = `Explique o seguinte conceito ou tópico de forma clara e concisa, como se estivesse ensinando a um iniciante. Contexto original: "${originalInputForActionRef.current}". Tópico a ser explicado: "${topic}"`;
             const response = await ai.models.generateContent({
                 model: 'gemini-2.5-flash',
                 contents: prompt,
             });
             setExplanationResult(response.text);
-        } catch (e) {
-            console.error(e);
-            setExplanationResult("Ocorreu um erro ao gerar a explicação.");
+        } catch (e: any) {
+            console.error("API Error:", e);
+            setExplanationResult(`Ocorreu um erro ao gerar a explicação. Detalhes: ${e.message}`);
         } finally {
             setIsExplanationLoading(false);
         }
     }, []);
 
-    const handleImageUpload = async (file: File) => {
-        if (!file.type.startsWith('image/')) {
-            alert('Por favor, selecione um arquivo de imagem.');
-            return;
-        }
-
-        setIsOcrLoading(true);
-        setInputText('');
-        
-        const toBase64 = (file: File): Promise<string> => new Promise((resolve, reject) => {
+    const fileToBase64 = (file: File): Promise<string> =>
+        new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onload = () => resolve((reader.result as string).split(',')[1]);
-            reader.onerror = error => reject(error);
+            reader.onerror = (error) => reject(error);
         });
 
+    const handleImageUpload = useCallback(async (file: File) => {
+        setIsOcrLoading(true);
+        setError('');
+        setInputText('');
         try {
-            const base64Data = await toBase64(file);
-            const imagePart = {
-                inlineData: {
-                    mimeType: file.type,
-                    data: base64Data,
-                },
-            };
-            const textPart = {
-                text: 'Extraia todo o texto desta imagem. Responda apenas com o texto extraído, sem nenhuma formatação ou comentário adicional.',
-            };
-
+            const base64Data = await fileToBase64(file);
+            const imagePart = { inlineData: { mimeType: file.type, data: base64Data } };
+            const textPart = { text: "Extraia todo o texto visível nesta imagem. Responda apenas com o texto extraído." };
             const response = await ai.models.generateContent({
                 model: 'gemini-2.5-flash',
                 contents: { parts: [imagePart, textPart] },
             });
-            
             setInputText(response.text);
-
-        } catch (error) {
-            console.error("Error processing image:", error);
-            setError("Não foi possível processar a imagem. Tente novamente.");
+        } catch (e: any) {
+            console.error("OCR Error:", e);
+            setError(`Ocorreu um erro ao processar a imagem. Tente novamente. Detalhes: ${e.message}`);
         } finally {
             setIsOcrLoading(false);
         }
-    };
-
-    const handleBack = () => {
-        setCurrentView(View.MAIN);
-        setResult(null);
-        setError('');
-        setCurrentAction(null);
-    };
-
-    const handleRefresh = () => {
-        if(currentAction) {
-            handleAction(currentAction);
-        }
-    };
-
-    const clearText = () => setInputText('');
-    const deleteHistoryItem = (id: number) => setHistory(history.filter(item => item.id !== id));
-    const renameHistoryItem = (id: number, newTitle: string) => {
-        setHistory(history.map(item => item.id === id ? { ...item, customTitle: newTitle } : item));
-    };
-
-    const renderView = () => {
-        switch(currentView) {
-            case View.RESULTS:
-                return (
-                    <ResultsView
-                        isLoading={isLoading}
-                        result={result}
-                        error={error}
-                        actionType={currentAction}
-                        onOpenRefineModal={() => setIsRefineVisible(true)}
-                        onExplainTopic={handleExplainTopic}
-                    />
-                );
-            case View.MAIN:
-            default:
-                return (
-                    <MainView
-                        onActionSelect={handleAction}
-                        inputText={inputText}
-                        onTextChange={setInputText}
-                        onClearText={clearText}
-                        history={history}
-                        onHistoryItemClick={handleHistoryItemClick}
-                        onDeleteItem={deleteHistoryItem}
-                        onRenameItem={renameHistoryItem}
-                        onImageUpload={handleImageUpload}
-                        isOcrLoading={isOcrLoading}
-                        isYoutubeUrl={isYoutubeUrl}
-                        onSummarizeVideo={handleSummarizeVideo}
-                    />
-                );
-        }
-    };
+    }, []);
     
+    const handleHistoryItemClick = (item: HistoryItem) => {
+        setInputText(item.fullInputText);
+        setResult(item.fullResult);
+        setCurrentAction(item.actionType);
+        originalInputForActionRef.current = item.fullInputText;
+        setCurrentView(View.RESULTS);
+    };
+
+    const handleDeleteItem = (itemId: number) => {
+        setHistory(prev => prev.filter(item => item.id !== itemId));
+    };
+
+    const handleRenameItem = (itemId: number, newTitle: string) => {
+        setHistory(prev => prev.map(item => item.id === itemId ? { ...item, customTitle: newTitle } : item));
+    };
+
     return (
         <div className="flex flex-col h-screen">
             <Header
-                title={currentView === View.RESULTS && currentAction ? actionConfig[currentAction].title : "Tutor Ativo AI"}
+                title={currentView === View.MAIN ? 'Tutor Ativo AI' : (currentAction ? actionConfig[currentAction].title : 'Resultado')}
                 showBackButton={currentView === View.RESULTS}
                 onBack={handleBack}
                 onHelp={() => setIsHelpVisible(true)}
-                onRefresh={handleRefresh}
-                isRefreshable={currentView === View.RESULTS && !isLoading && currentAction !== null}
+                onRefresh={() => handleRefine('gere uma nova versão da resposta anterior.')}
+                isRefreshable={currentView === View.RESULTS && !!result}
             />
-            <main className="flex-grow overflow-y-auto p-4 md:p-6 w-full max-w-5xl mx-auto">
-                {renderView()}
+            <main className="flex-grow overflow-y-auto p-4 md:p-6">
+                <div className="w-full max-w-5xl mx-auto h-full">
+                    {currentView === View.MAIN ? (
+                        <MainView
+                            onActionSelect={handleAction}
+                            inputText={inputText}
+                            onTextChange={setInputText}
+                            onClearText={() => setInputText('')}
+                            history={history}
+                            onHistoryItemClick={handleHistoryItemClick}
+                            onDeleteItem={handleDeleteItem}
+                            onRenameItem={handleRenameItem}
+                            onImageUpload={handleImageUpload}
+                            isOcrLoading={isOcrLoading}
+                            isYoutubeUrl={isYoutubeUrl}
+                            onSummarizeVideo={handleSummarizeVideo}
+                        />
+                    ) : (
+                        <ResultsView
+                            isLoading={isLoading}
+                            result={result}
+                            error={error}
+                            actionType={currentAction}
+                            onOpenRefineModal={() => setIsRefineVisible(true)}
+                            onExplainTopic={handleExplainTopic}
+                        />
+                    )}
+                </div>
             </main>
             <HelpModal isVisible={isHelpVisible} onClose={() => setIsHelpVisible(false)} />
-            <RefineModal isVisible={isRefineVisible} onClose={() => setIsRefineVisible(false)} onSubmit={handleRefine} />
-            <ExplanationModal 
-                isVisible={isExplanationVisible} 
-                onClose={() => setIsExplanationVisible(false)} 
+            <RefineModal 
+                isVisible={isRefineVisible} 
+                onClose={() => setIsRefineVisible(false)} 
+                onSubmit={handleRefine}
+            />
+            <ExplanationModal
+                isVisible={isExplanationVisible}
+                onClose={() => setIsExplanationVisible(false)}
                 topic={explanationTopic}
                 explanation={explanationResult}
                 isLoading={isExplanationLoading}
             />
-            <OnboardingModal isVisible={isOnboardingVisible} onClose={() => setIsOnboardingVisible(false)} />
+             <OnboardingModal 
+                isVisible={isOnboardingVisible} 
+                onClose={() => setIsOnboardingVisible(false)} 
+            />
         </div>
     );
 };
