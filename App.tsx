@@ -1,4 +1,5 @@
 
+
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { GoogleGenAI } from '@google/genai';
 import { ActionType, View, HistoryItem, ResultPayload, AISettings, GroundingChunk } from './types';
@@ -15,9 +16,8 @@ import SettingsModal from './components/SettingsModal';
 // Declara a biblioteca pdf.js como uma variável global para o TypeScript
 declare const pdfjsLib: any;
 
-// Chave de API fornecida pelo usuário
-const API_KEY = "AIzaSyC66emimXFo6BVctXpbYlheIueYSgP3ExE";
-const ai = new GoogleGenAI({ apiKey: API_KEY });
+// Fix: Initialize the GoogleGenAI client using the API key from environment variables.
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 
 function getPromptForAction(action: ActionType, context: string): string {
