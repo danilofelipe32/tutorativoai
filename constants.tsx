@@ -236,7 +236,7 @@ export const actionConfig: ActionConfig = {
         title: 'Cenários "E Se..."',
         description: 'Explora hipóteses e consequências alternativas.',
         icon: WhatIfScenariosIcon,
-        className: 'bg-zinc-900/30 border border-zinc-400/50 hover:bg-zinc-500/30 hover:shadow-lg hover:shadow-zinc-500/40 backdrop-blur',
+        className: 'bg-indigo-900/30 border border-indigo-500/50 hover:bg-indigo-500/30 hover:shadow-lg hover:shadow-indigo-500/40 backdrop-blur',
     },
     [ActionType.EVIDENCE_HUNT]: {
         title: 'Caça às Evidências',
@@ -248,7 +248,7 @@ export const actionConfig: ActionConfig = {
         title: 'Construtor de Jogos',
         description: 'Gera minijogos didáticos baseados no conteúdo.',
         icon: GameBuilderIcon,
-        className: 'bg-red-900/30 border border-red-400/50 hover:bg-red-500/30 hover:shadow-lg hover:shadow-red-500/40 backdrop-blur',
+        className: 'bg-fuchsia-900/30 border border-fuchsia-500/50 hover:bg-fuchsia-500/30 hover:shadow-lg hover:shadow-fuchsia-500/40 backdrop-blur',
     },
     [ActionType.MAKER_GUIDE]: {
         title: 'Guia Maker (STEAM)',
