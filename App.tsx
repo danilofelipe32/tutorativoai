@@ -16,8 +16,8 @@ import SettingsModal from './components/SettingsModal';
 // Declara a biblioteca pdf.js como uma variável global para o TypeScript
 declare const pdfjsLib: any;
 
-// Fix: Initialize the GoogleGenAI client using the API key from environment variables.
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// A chave de API foi inserida diretamente no código.
+const ai = new GoogleGenAI({ apiKey: "AIzaSyA3e-4Do8arZ4NkqE_qC5eUBWkpt1kYKJs" });
 
 
 function getPromptForAction(action: ActionType, context: string): string {
