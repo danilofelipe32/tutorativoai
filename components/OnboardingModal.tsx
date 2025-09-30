@@ -27,7 +27,6 @@ const steps = [
         content: 'O primeiro passo é simples: cole o texto que deseja analisar na área principal ou use o botão azul para anexar uma imagem ou arquivo PDF.',
     },
     {
-        // Fix: Replaced non-existent LayoutIcon with ChoiceBoardIcon.
         icon: ChoiceBoardIcon,
         title: 'Passo 2: Escolha uma Ação',
         content: 'Abaixo da área de texto, você encontrará dezenas de ações. Quer um resumo, um quiz ou ideias de projetos? Basta clicar em um botão para que a IA faça a mágica acontecer.',
