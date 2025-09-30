@@ -27,8 +27,6 @@ export const SparkleIcon = createIcon('lni lni-sparkles');
 export const CameraIcon = createIcon('lni lni-camera');
 export const PlusIcon = createIcon('lni lni-plus');
 export const SettingsIcon = createIcon('lni lni-cog');
-export const ImageIcon = createIcon('lni lni-image');
-export const PdfIcon = createIcon('lni lni-printer');
 
 
 // Action Icons (30 unique icons for 30 actions)

@@ -1,7 +1,5 @@
 {
   "name": "Tutor Ativo AI",
   "description": "Uma PWA que utiliza IA para aprimorar sua experiência de estudo, permitindo resumir, analisar e interagir com qualquer texto que você fornecer.",
-  "requestFramePermissions": [
-    "camera"
-  ]
+  "requestFramePermissions": []
 }

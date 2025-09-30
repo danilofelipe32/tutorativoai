@@ -1,12 +1,10 @@
 
 
-
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { ActionType, HistoryItem } from '../types';
 import { actionConfig } from '../constants';
 import HistoryList from './HistoryList';
-import { PlusIcon, LoadingIcon, TrashIcon, ImageIcon, PdfIcon, CameraIcon, CloseIcon } from './icons';
-import CameraModal from './CameraModal';
+import { PlusIcon, LoadingIcon, TrashIcon } from './icons';
 
 interface MainViewProps {
     onActionSelect: (action: ActionType) => void;
@@ -125,10 +123,11 @@ const MainView: React.FC<MainViewProps> = ({
 }) => {
     const isTextProvided = inputText.trim().length > 0;
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const [isFabMenuOpen, setFabMenuOpen] = useState(false);
-    const [isCameraModalOpen, setCameraModalOpen] = useState(false);
-
     const isLoading = isOcrLoading || isPdfLoading;
+
+    const handleFabClick = () => {
+        fileInputRef.current?.click();
+    };
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -137,43 +136,12 @@ const MainView: React.FC<MainViewProps> = ({
                 onPdfUpload(file);
             } else if (file.type.startsWith('image/')) {
                 onImageUpload(file);
+            } else {
+                alert('Tipo de arquivo não suportado. Por favor, anexe uma imagem ou PDF.');
             }
         }
         event.target.value = ''; // Allow uploading the same file again
     };
-
-    const handleFabClick = () => {
-        setFabMenuOpen(prev => !prev);
-    };
-
-    const handleOptionClick = (handler: () => void) => {
-        handler();
-        setFabMenuOpen(false);
-    };
-
-    const handleImageClick = () => handleOptionClick(() => {
-        if (fileInputRef.current) {
-            fileInputRef.current.accept = 'image/*';
-            fileInputRef.current.click();
-        }
-    });
-
-    const handlePdfClick = () => handleOptionClick(() => {
-        if (fileInputRef.current) {
-            fileInputRef.current.accept = 'application/pdf';
-            fileInputRef.current.click();
-        }
-    });
-
-    const handleCameraClick = () => handleOptionClick(() => {
-        setCameraModalOpen(true);
-    });
-
-    const handleCapture = (file: File) => {
-        onImageUpload(file);
-        setCameraModalOpen(false);
-    };
-
 
     return (
         <div className="flex flex-col h-full">
@@ -246,60 +214,24 @@ const MainView: React.FC<MainViewProps> = ({
                 onDeleteItem={onDeleteItem}
                 onRenameItem={onRenameItem}
             />
-            
-            {isFabMenuOpen && (
-                <div
-                    className="fixed inset-0 bg-black/50 z-20 animate-fade-in"
-                    onClick={() => setFabMenuOpen(false)}
-                    aria-hidden="true"
-                />
-            )}
-
-            <div className="fixed bottom-20 right-4 sm:right-6 md:right-8 z-30">
-                <div className={`relative ${isFabMenuOpen ? 'fab-menu-open' : ''}`}>
-                    {/* Menu Items */}
-                    <div className="fab-menu-item fab-menu-item-3 flex items-center">
-                        <span className="bg-slate-800 text-white text-xs font-semibold px-3 py-1 rounded-md mr-4 shadow-lg">Abrir Câmera</span>
-                        <button onClick={handleCameraClick} className="w-12 h-12 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 ease-in-out transform hover:scale-110" title="Abrir Câmera"><CameraIcon className="text-xl" /></button>
-                    </div>
-                    <div className="fab-menu-item fab-menu-item-2 flex items-center">
-                        <span className="bg-slate-800 text-white text-xs font-semibold px-3 py-1 rounded-md mr-4 shadow-lg">Anexar PDF</span>
-                        <button onClick={handlePdfClick} className="w-12 h-12 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 ease-in-out transform hover:scale-110" title="Anexar PDF"><PdfIcon className="text-xl" /></button>
-                    </div>
-                     <div className="fab-menu-item fab-menu-item-1 flex items-center">
-                        <span className="bg-slate-800 text-white text-xs font-semibold px-3 py-1 rounded-md mr-4 shadow-lg">Anexar Imagem</span>
-                        <button onClick={handleImageClick} className="w-12 h-12 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 ease-in-out transform hover:scale-110" title="Anexar Imagem"><ImageIcon className="text-xl" /></button>
-                    </div>
-                </div>
-
-                <button
-                    onClick={handleFabClick}
-                    disabled={isLoading}
-                    className="relative w-14 h-14 bg-sky-600 hover:bg-sky-500 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-300 ease-in-out transform hover:scale-110 focus:outline-none focus:ring-4 focus:ring-sky-400/50 disabled:bg-slate-500 disabled:cursor-not-allowed disabled:hover:scale-100"
-                    title="Anexar Arquivo"
-                    aria-label="Anexar Arquivo"
-                    aria-haspopup="true"
-                    aria-expanded={isFabMenuOpen}
-                >
-                    <div className={`transition-transform duration-300 ease-in-out ${isFabMenuOpen ? 'rotate-45' : ''}`}>
-                         <PlusIcon className="text-2xl" />
-                    </div>
-                </button>
-            </div>
 
             <input
                 type="file"
                 ref={fileInputRef}
                 onChange={handleFileChange}
+                accept="image/*,application/pdf"
                 className="hidden"
                 aria-hidden="true"
             />
-
-            <CameraModal 
-                isVisible={isCameraModalOpen}
-                onClose={() => setCameraModalOpen(false)}
-                onCapture={handleCapture}
-            />
+            <button
+                onClick={handleFabClick}
+                disabled={isLoading}
+                className="fixed bottom-20 right-4 sm:right-6 md:right-8 w-14 h-14 bg-sky-600 hover:bg-sky-500 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-300 ease-in-out transform hover:scale-110 focus:outline-none focus:ring-4 focus:ring-sky-400/50 disabled:bg-slate-500 disabled:cursor-not-allowed disabled:hover:scale-100 z-30"
+                title="Anexar Imagem ou PDF"
+                aria-label="Anexar Imagem ou PDF"
+            >
+                <PlusIcon className="text-2xl" />
+            </button>
 
         </div>
     );
