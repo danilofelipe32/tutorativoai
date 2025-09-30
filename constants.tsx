@@ -8,7 +8,8 @@ import {
     DOKQuestionsIcon, WorksheetsIcon, ExemplarsIcon, DiscussionPromptsIcon, 
     RealWorldExamplesIcon, AIQuestEduIcon, PossibilitiesEngineIcon, CoDesignerIcon, 
     CollaborationCoachIcon, ExploratoriumIcon, IdentifyPerspectiveIcon, FeedbackGeneratorIcon,
-    ParetoPrincipleIcon, FeynmanTechniqueIcon
+    ParetoPrincipleIcon, FeynmanTechniqueIcon,
+    SimulatedDebateIcon, WhatIfScenariosIcon, EvidenceHuntIcon, GameBuilderIcon, MakerGuideIcon, CaseStudiesIcon
 } from './components/icons';
 
 type ActionConfig = {
@@ -224,5 +225,41 @@ export const actionConfig: ActionConfig = {
         description: 'Explica um conceito de forma super simples, como se ensinasse a uma criança.',
         icon: FeynmanTechniqueIcon,
         className: 'bg-pink-900/30 border border-pink-400/50 hover:bg-pink-500/30 hover:shadow-lg hover:shadow-pink-500/40 backdrop-blur',
+    },
+    [ActionType.SIMULATED_DEBATE]: {
+        title: 'Debate Simulado',
+        description: 'Cria uma discussão entre perspectivas opostas sobre o tema.',
+        icon: SimulatedDebateIcon,
+        className: 'bg-gray-900/30 border border-gray-400/50 hover:bg-gray-500/30 hover:shadow-lg hover:shadow-gray-500/40 backdrop-blur',
+    },
+    [ActionType.WHAT_IF_SCENARIOS]: {
+        title: 'Cenários "E Se..."',
+        description: 'Explora hipóteses e consequências alternativas.',
+        icon: WhatIfScenariosIcon,
+        className: 'bg-zinc-900/30 border border-zinc-400/50 hover:bg-zinc-500/30 hover:shadow-lg hover:shadow-zinc-500/40 backdrop-blur',
+    },
+    [ActionType.EVIDENCE_HUNT]: {
+        title: 'Caça às Evidências',
+        description: 'Desafia a buscar provas que sustentem ou refutem uma afirmação.',
+        icon: EvidenceHuntIcon,
+        className: 'bg-stone-900/30 border border-stone-400/50 hover:bg-stone-500/30 hover:shadow-lg hover:shadow-stone-500/40 backdrop-blur',
+    },
+    [ActionType.GAME_BUILDER]: {
+        title: 'Construtor de Jogos',
+        description: 'Gera minijogos didáticos baseados no conteúdo.',
+        icon: GameBuilderIcon,
+        className: 'bg-red-900/30 border border-red-400/50 hover:bg-red-500/30 hover:shadow-lg hover:shadow-red-500/40 backdrop-blur',
+    },
+    [ActionType.MAKER_GUIDE]: {
+        title: 'Guia Maker (STEAM)',
+        description: 'Transforma conceitos em projetos práticos de experimentação.',
+        icon: MakerGuideIcon,
+        className: 'bg-orange-900/30 border border-orange-400/50 hover:bg-orange-500/30 hover:shadow-lg hover:shadow-orange-500/40 backdrop-blur',
+    },
+    [ActionType.CASE_STUDIES]: {
+        title: 'Estudos de Caso',
+        description: 'Cria situações-problema contextualizadas para análise.',
+        icon: CaseStudiesIcon,
+        className: 'bg-amber-900/30 border border-amber-400/50 hover:bg-amber-500/30 hover:shadow-lg hover:shadow-amber-500/40 backdrop-blur',
     },
 };

@@ -114,6 +114,18 @@ ${context}
             return basePrompt + "Tarefa: Aplique o Princípio de Pareto (a regra 80/20) a este texto. Identifique os 20% do conteúdo (os conceitos, ideias ou parágrafos mais críticos) que fornecem 80% do valor ou compreensão do tópico. Liste esses pontos-chave em formato de bullet points.";
         case 'FEYNMAN_TECHNIQUE':
             return basePrompt + "Tarefa: Aplique a Técnica de Feynman. Explique o conceito central do texto da forma mais simples possível, como se estivesse ensinando a uma criança de 12 anos. Use analogias simples, evite jargões e foque na ideia principal. Em seguida, identifique uma área onde sua explicação simplificada pode ser fraca ou incompleta, formulando uma pergunta sobre ela para aprofundar seu próprio entendimento.";
+        case 'SIMULATED_DEBATE':
+            return basePrompt + "Tarefa: Atue como um moderador e dois debatedores com pontos de vista opostos sobre o tema principal do texto. Crie um diálogo de debate curto entre 'Debatedor A' e 'Debatedor B'. Cada debatedor deve apresentar um argumento principal e uma réplica ao argumento do outro, baseando-se nas ideias (ou na falta delas) do texto. Formate o debate claramente, identificando quem está falando (ex: **Moderador:**, **Debatedor A:**).";
+        case 'WHAT_IF_SCENARIOS':
+            return basePrompt + "Tarefa: Atue como um 'Explorador de Hipóteses'. Com base no conceito central do texto, crie 3 cenários hipotéticos instigantes no formato 'E se...?'. Para cada cenário, descreva brevemente (2-3 frases) uma possível consequência ou desdobramento, incentivando o pensamento sobre as implicações das ideias do texto. Numere os cenários.";
+        case 'EVIDENCE_HUNT':
+            return basePrompt + "Tarefa: Atue como um 'Detetive de Fatos'. Formule 3 'missões de caça às evidências'. Cada missão deve ser uma afirmação baseada no texto. O desafio para o aluno é encontrar a frase ou o dado específico no texto original que comprova ou refuta a afirmação. Formate ESTRITAMENTE da seguinte forma:\n**Afirmação 1:** [Afirmação a ser verificada].\n**Missão:** Encontre a evidência no texto que apoia ou contradiz esta afirmação.\n\n**Afirmação 2:** ...";
+        case 'GAME_BUILDER':
+            return basePrompt + "Tarefa: Atue como um 'Construtor de Jogos Didáticos'. Descreva as regras para um minijogo simples (de tabuleiro, cartas ou digital) baseado no conteúdo do texto. Sua descrição deve incluir: **Nome do Jogo**, **Objetivo**, **Como Jogar (regras básicas)** e **Condição de Vitória**. O jogo deve ajudar a reforçar os conceitos principais do texto de forma lúdica.";
+        case 'MAKER_GUIDE':
+            return basePrompt + "Tarefa: Atue como um 'Guia Maker (STEAM)'. Transforme um conceito teórico do texto em um projeto prático e de baixo custo. Descreva um guia 'faça você mesmo' com os seguintes tópicos: **Título do Projeto**, **Conceito-Chave Abordado**, **Materiais Necessários** (itens comuns), e um **Passo a Passo Simplificado** para a construção ou experimentação. O objetivo é criar uma representação física ou um experimento que ilustre a ideia do texto.";
+        case 'CASE_STUDIES':
+            return basePrompt + "Tarefa: Crie 2 estudos de caso curtos que apliquem os conceitos do texto a uma situação-problema do mundo real. Cada estudo de caso deve apresentar: **1. O Cenário:** uma breve descrição do contexto. **2. O Dilema:** um problema ou desafio que precisa ser resolvido usando as informações do texto. **3. Pergunta para Análise:** uma questão que guie a aplicação do conhecimento. Formate cada estudo de caso claramente.";
         default:
             return context;
     }

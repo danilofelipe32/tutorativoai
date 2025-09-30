@@ -68,6 +68,9 @@ const actionGroups = [
       ActionType.EXPLORATORIUM,
       ActionType.DISCUSSION_PROMPTS,
       ActionType.IDENTIFY_PERSPECTIVE,
+      ActionType.SIMULATED_DEBATE,
+      ActionType.WHAT_IF_SCENARIOS,
+      ActionType.EVIDENCE_HUNT,
     ],
   },
   {
@@ -82,6 +85,9 @@ const actionGroups = [
       ActionType.AI_QUEST_EDU,
       ActionType.CO_DESIGNER,
       ActionType.COLLABORATION_COACH,
+      ActionType.GAME_BUILDER,
+      ActionType.MAKER_GUIDE,
+      ActionType.CASE_STUDIES,
     ],
   },
   {
