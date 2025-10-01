@@ -19,6 +19,7 @@ interface MainViewProps {
     isOcrLoading: boolean;
     onPdfUpload: (file: File) => void;
     isPdfLoading: boolean;
+    onImportHistory: (importedHistory: HistoryItem[]) => void;
 }
 
 const ActionButton: React.FC<{ action: ActionType; onClick: () => void; isDisabled: boolean }> = ({ action, onClick, isDisabled }) => {
@@ -121,6 +122,7 @@ const MainView: React.FC<MainViewProps> = ({
     isOcrLoading,
     onPdfUpload,
     isPdfLoading,
+    onImportHistory,
 }) => {
     const isTextProvided = inputText.trim().length > 0;
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -214,6 +216,7 @@ const MainView: React.FC<MainViewProps> = ({
                 onItemClick={onHistoryItemClick}
                 onDeleteItem={onDeleteItem}
                 onRenameItem={onRenameItem}
+                onImportHistory={onImportHistory}
             />
 
             <input

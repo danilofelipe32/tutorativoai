@@ -388,7 +388,25 @@ const App: React.FC = () => {
     const handleCloseOnboarding = () => {
         setOnboardingModalVisible(false);
         localStorage.setItem('tutor-ai-onboarded', 'true');
-    }
+    };
+
+    const handleImportHistory = useCallback((importedHistory: HistoryItem[]) => {
+        setHistory(prevHistory => {
+            const existingIds = new Set(prevHistory.map(item => item.id));
+            const newUniqueItems = importedHistory.filter(item => !existingIds.has(item.id));
+    
+            if (newUniqueItems.length === 0) {
+                alert('Nenhum item novo para importar. O histórico pode já conter esses itens.');
+                return prevHistory;
+            }
+    
+            const mergedHistory = [...newUniqueItems, ...prevHistory];
+            mergedHistory.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+            
+            alert(`${newUniqueItems.length} novo(s) item(ns) importado(s) com sucesso!`);
+            return mergedHistory;
+        });
+    }, []);
 
     return (
         <div className="flex flex-col h-screen">
@@ -416,6 +434,7 @@ const App: React.FC = () => {
                         isOcrLoading={isOcrLoading}
                         onPdfUpload={handlePdfUpload}
                         isPdfLoading={isPdfLoading}
+                        onImportHistory={handleImportHistory}
                     />
                 )}
                 {view === View.RESULTS && (

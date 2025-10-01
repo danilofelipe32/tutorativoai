@@ -28,6 +28,7 @@ export const CameraIcon = createIcon('lni lni-camera');
 export const PlusIcon = createIcon('lni lni-plus');
 export const SettingsIcon = createIcon('lni lni-cog');
 export const DownloadIcon = createIcon('lni lni-download');
+export const ImportIcon = createIcon('lni lni-folder-open');
 
 
 // Action Icons (30 unique icons for 30 actions)
