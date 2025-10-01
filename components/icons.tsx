@@ -28,7 +28,7 @@ export const CameraIcon = createIcon('lni lni-camera');
 export const PlusIcon = createIcon('lni lni-plus');
 export const SettingsIcon = createIcon('lni lni-cog');
 export const DownloadIcon = createIcon('lni lni-download');
-export const ImportIcon = createIcon('lni lni-folder-open');
+export const ImportIcon = createIcon('lni lni-enter');
 
 
 // Action Icons (30 unique icons for 30 actions)
@@ -67,8 +67,8 @@ export const FeedbackGeneratorIcon = createIcon('lni lni-comments-reply');
 export const ParetoPrincipleIcon = createIcon('lni lni-target');
 export const FeynmanTechniqueIcon = createIcon('lni lni-graduation');
 export const SimulatedDebateIcon = createIcon('lni lni-bullhorn');
-export const WhatIfScenariosIcon = createIcon('lni lni-fork');
+export const WhatIfScenariosIcon = createIcon('lni lni-shuffle');
 export const EvidenceHuntIcon = createIcon('lni lni-search');
-export const GameBuilderIcon = createIcon('lni lni-puzzle');
+export const GameBuilderIcon = createIcon('lni lni-joystick');
 export const MakerGuideIcon = createIcon('lni lni-construction');
 export const CaseStudiesIcon = createIcon('lni lni-briefcase');
