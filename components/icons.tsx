@@ -1,5 +1,4 @@
 
-
 import React from 'react';
 
 type IconProps = { className?: string };
@@ -69,6 +68,6 @@ export const FeynmanTechniqueIcon = createIcon('lni lni-graduation');
 export const SimulatedDebateIcon = createIcon('lni lni-bullhorn');
 export const WhatIfScenariosIcon = createIcon('lni lni-shuffle');
 export const EvidenceHuntIcon = createIcon('lni lni-search');
-export const GameBuilderIcon = createIcon('lni lni-joystick');
+export const GameBuilderIcon = createIcon('lni lni-bricks');
 export const MakerGuideIcon = createIcon('lni lni-construction');
 export const CaseStudiesIcon = createIcon('lni lni-briefcase');
