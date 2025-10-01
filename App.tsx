@@ -308,6 +308,7 @@ const App: React.FC = () => {
     const handleImageUpload = async (file: File) => {
         setOcrLoading(true);
         setInputText('');
+        setError('');
         try {
             const base64Data = await fileToBase64(file);
             const imagePart = { inlineData: { mimeType: file.type, data: base64Data } };

@@ -153,7 +153,7 @@ const MainView: React.FC<MainViewProps> = ({
                     <h2 className="text-3xl font-bold text-slate-100">Bem-vindo!</h2>
                     <p className="text-slate-400">Cole um texto ou faça uma pergunta abaixo.</p>
                 </div>
-                {isTextProvided && (
+                {isTextProvided && !isLoading && (
                      <button
                         onClick={onClearText}
                         className="bg-white/5 hover:bg-white/10 text-slate-200 font-semibold py-2 px-4 rounded-lg transition-colors text-sm flex items-center space-x-2 border border-white/10"
@@ -202,7 +202,7 @@ const MainView: React.FC<MainViewProps> = ({
                                         key={action}
                                         action={action}
                                         onClick={() => onActionSelect(action)}
-                                        isDisabled={!isTextProvided}
+                                        isDisabled={!isTextProvided || isLoading}
                                     />
                                 ))}
                             </div>
