@@ -10,7 +10,13 @@ import {
     CollaborationCoachIcon, ExploratoriumIcon, IdentifyPerspectiveIcon, FeedbackGeneratorIcon,
     ParetoPrincipleIcon, FeynmanTechniqueIcon,
     SimulatedDebateIcon, WhatIfScenariosIcon, EvidenceHuntIcon, GameBuilderIcon, MakerGuideIcon, CaseStudiesIcon,
-    SearchIcon
+    SearchIcon,
+    ProgressMapIcon,
+    SmartStudyPlanIcon,
+    GapDetectorIcon,
+    PracticalApplicationsIcon,
+    ContextualizedExamplesIcon,
+    InterdisciplinaryExplorationIcon
 } from './components/icons';
 
 type ActionConfig = {
@@ -268,5 +274,41 @@ export const actionConfig: ActionConfig = {
         description: 'Cria situações-problema contextualizadas para análise.',
         icon: CaseStudiesIcon,
         className: 'bg-amber-900/30 border border-amber-400/50 hover:bg-amber-500/30 hover:shadow-lg hover:shadow-amber-500/40 backdrop-blur',
+    },
+    [ActionType.PROGRESS_MAP]: {
+        title: 'Mapa de Progresso',
+        description: 'Gera um caminho de estudo (o que já sei, o que preciso aprender).',
+        icon: ProgressMapIcon,
+        className: 'bg-zinc-900/30 border border-zinc-500/50 hover:bg-zinc-500/30 hover:shadow-lg hover:shadow-zinc-500/40 backdrop-blur',
+    },
+    [ActionType.SMART_STUDY_PLAN]: {
+        title: 'Plano de Estudo Inteligente',
+        description: 'Cria um roteiro de revisão personalizado com base no texto.',
+        icon: SmartStudyPlanIcon,
+        className: 'bg-cyan-900/30 border border-cyan-500/50 hover:bg-cyan-500/30 hover:shadow-lg hover:shadow-cyan-500/40 backdrop-blur',
+    },
+    [ActionType.GAP_DETECTOR]: {
+        title: 'Detector de Lacunas',
+        description: 'Mostra pontos do texto que podem ser estudados mais a fundo.',
+        icon: GapDetectorIcon,
+        className: 'bg-amber-900/30 border border-amber-500/50 hover:bg-amber-500/30 hover:shadow-lg hover:shadow-amber-500/40 backdrop-blur',
+    },
+    [ActionType.PRACTICAL_APPLICATIONS]: {
+        title: 'Aplicações Práticas',
+        description: 'Mostra como o conteúdo pode ser usado no cotidiano ou trabalho.',
+        icon: PracticalApplicationsIcon,
+        className: 'bg-orange-900/30 border border-orange-500/50 hover:bg-orange-500/30 hover:shadow-lg hover:shadow-orange-500/40 backdrop-blur',
+    },
+    [ActionType.CONTEXTUALIZED_EXAMPLES]: {
+        title: 'Exemplos Contextualizados',
+        description: 'Cria cenários reais onde o conhecimento pode ser aplicado.',
+        icon: ContextualizedExamplesIcon,
+        className: 'bg-rose-900/30 border border-rose-500/50 hover:bg-rose-500/30 hover:shadow-lg hover:shadow-rose-500/40 backdrop-blur',
+    },
+    [ActionType.INTERDISCIPLINARY_EXPLORATION]: {
+        title: 'Exploração Interdisciplinar',
+        description: 'Liga o tema do texto a outras matérias (História, Arte, Ciência).',
+        icon: InterdisciplinaryExplorationIcon,
+        className: 'bg-purple-900/30 border border-purple-500/50 hover:bg-purple-500/30 hover:shadow-lg hover:shadow-purple-500/40 backdrop-blur',
     },
 };
