@@ -18,7 +18,7 @@ const Header: React.FC<HeaderProps> = ({ title, showBackButton, onBack, onHelp, 
             <div className="flex items-center justify-between p-3 w-full max-w-5xl mx-auto">
                 <div className="flex items-center space-x-2 w-1/3">
                     {showBackButton && (
-                        <button onClick={onBack} className="p-2 rounded-full hover:bg-white/10 transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500" title="Voltar">
+                        <button onClick={onBack} className="p-2 rounded-full hover:bg-white/10 transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500" title="Voltar" aria-label="Voltar para a tela principal">
                             <BackIcon className="text-xl" />
                         </button>
                     )}
@@ -30,6 +30,7 @@ const Header: React.FC<HeaderProps> = ({ title, showBackButton, onBack, onHelp, 
                         disabled={!isRefreshable}
                         className="p-2 rounded-full hover:bg-white/10 transition-colors disabled:opacity-30 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-sky-500"
                         title="Refazer"
+                        aria-label="Refazer a última ação"
                     >
                         <RefreshIcon className="text-xl" />
                     </button>
@@ -37,6 +38,7 @@ const Header: React.FC<HeaderProps> = ({ title, showBackButton, onBack, onHelp, 
                         onClick={onSettings}
                         className="p-2 rounded-full hover:bg-white/10 transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500"
                         title="Configurações"
+                        aria-label="Abrir configurações da IA"
                     >
                         <SettingsIcon className="text-xl" />
                     </button>
@@ -44,6 +46,7 @@ const Header: React.FC<HeaderProps> = ({ title, showBackButton, onBack, onHelp, 
                         onClick={onHelp}
                         className="p-2 rounded-full hover:bg-white/10 transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500"
                         title="Ajuda"
+                        aria-label="Abrir modal de ajuda"
                     >
                         <HelpIcon className="text-xl" />
                     </button>

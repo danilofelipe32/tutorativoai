@@ -19,8 +19,11 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onDelet
     const [editingItemId, setEditingItemId] = useState<number | null>(null);
     const [renameValue, setRenameValue] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
+    const [isExportMenuOpen, setIsExportMenuOpen] = useState(false);
+    
     const inputRef = useRef<HTMLInputElement>(null);
     const importInputRef = useRef<HTMLInputElement>(null);
+    const exportMenuRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (editingItemId !== null && inputRef.current) {
@@ -28,6 +31,19 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onDelet
             inputRef.current.select();
         }
     }, [editingItemId]);
+
+    // Close export menu on outside click
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (exportMenuRef.current && !exportMenuRef.current.contains(event.target as Node)) {
+                setIsExportMenuOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
 
     const filteredHistory = useMemo(() => {
         if (!searchTerm.trim()) {
@@ -82,18 +98,89 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onDelet
         }
     };
 
-    const handleExportHistory = (format: 'json') => {
+    const handleExportHistory = (format: 'json' | 'xml' | 'pdf') => {
+        setIsExportMenuOpen(false);
         if (history.length === 0) {
             alert('O histórico está vazio. Não há nada para exportar.');
             return;
         }
     
-        try {
-            const dataStr = JSON.stringify(history, null, 2);
-            const mimeType = 'application/json';
-            const fileExtension = 'json';
-            const timestamp = new Date().toISOString().slice(0, 10);
+        const timestamp = new Date().toISOString().slice(0, 10);
     
+        try {
+            if (format === 'pdf') {
+                const title = "Histórico de Análises - Tutor Ativo AI";
+                const escapeHtml = (unsafe: string) => unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+                
+                let htmlContent = `
+                    <html><head><title>${title}</title><style>
+                        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; line-height: 1.6; color: #333; margin: 2rem; }
+                        h1 { color: #1e293b; border-bottom: 2px solid #38bdf8; padding-bottom: 10px; }
+                        article { border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; page-break-inside: avoid; background: #f8fafc; }
+                        h2 { margin: 0 0 10px; font-size: 1.25em; color: #0f172a; }
+                        h3 { font-size: 1.1em; color: #334155; margin-top: 1rem; border-bottom: 1px solid #cbd5e1; padding-bottom: 5px;}
+                        p { margin: 5px 0; }
+                        pre { background-color: #f1f5f9; padding: 10px; border-radius: 4px; white-space: pre-wrap; word-wrap: break-word; border: 1px solid #e2e8f0; }
+                        .meta { font-size: 0.85em; color: #64748b; }
+                    </style></head><body>
+                    <h1>${title}</h1>
+                    <p class="meta">Exportado em: ${new Date().toLocaleString('pt-BR')}</p>
+                `;
+    
+                history.forEach(item => {
+                    htmlContent += `
+                        <article>
+                            <h2>${escapeHtml(item.customTitle || actionConfig[item.actionType].title)}</h2>
+                            <p class="meta"><strong>Ação:</strong> ${escapeHtml(actionConfig[item.actionType].title)}</p>
+                            <p class="meta"><strong>Data:</strong> ${formatDate(item.timestamp)}</p>
+                            <h3>Texto de Entrada:</h3>
+                            <pre>${escapeHtml(item.fullInputText)}</pre>
+                            <h3>Resultado Gerado:</h3>
+                            <pre>${escapeHtml(item.fullResult.text)}</pre>
+                        </article>
+                    `;
+                });
+    
+                htmlContent += `</body></html>`;
+    
+                const printWindow = window.open('', '_blank');
+                if (printWindow) {
+                    printWindow.document.write(htmlContent);
+                    printWindow.document.close();
+                    printWindow.focus();
+                    setTimeout(() => printWindow.print(), 500);
+                } else {
+                    alert('Por favor, habilite pop-ups para exportar como PDF.');
+                }
+                return;
+            }
+            
+            let dataStr: string;
+            let mimeType: string;
+            let fileExtension: 'json' | 'xml' = 'json';
+
+            if (format === 'json') {
+                dataStr = JSON.stringify(history, null, 2);
+                mimeType = 'application/json';
+                fileExtension = 'json';
+            } else { // xml
+                const itemsXml = history.map(item => `
+    <item id="${item.id}">
+        <actionType>${item.actionType}</actionType>
+        <timestamp>${item.timestamp}</timestamp>
+        <customTitle><![CDATA[${item.customTitle || ''}]]></customTitle>
+        <inputTextSnippet><![CDATA[${item.inputTextSnippet}]]></inputTextSnippet>
+        <fullInputText><![CDATA[${item.fullInputText}]]></fullInputText>
+        <fullResult>
+            <text><![CDATA[${item.fullResult.text}]]></text>
+            ${item.fullResult.sources ? `<sources>${item.fullResult.sources.map(s => `<source><uri><![CDATA[${s.web.uri}]]></uri><title><![CDATA[${s.web.title}]]></title></source>`).join('')}</sources>` : ''}
+        </fullResult>
+    </item>`).join('');
+                dataStr = `<?xml version="1.0" encoding="UTF-8"?>\n<history>\n${itemsXml}\n</history>`;
+                mimeType = 'application/xml';
+                fileExtension = 'xml';
+            }
+        
             const blob = new Blob([dataStr], { type: mimeType });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -148,9 +235,30 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onDelet
                     <h2 id="history-title" className="text-2xl font-bold text-slate-100">Histórico de Análises</h2>
                 </div>
                 <div className="flex items-center space-x-2 w-full sm:w-auto">
-                    <button onClick={() => handleExportHistory('json')} className="flex-1 sm:flex-none flex items-center justify-center space-x-2 bg-white/5 hover:bg-white/10 text-slate-200 font-semibold py-2 px-3 rounded-lg transition-colors text-xs border border-white/10" title="Exportar Histórico como JSON">
-                        <DownloadIcon/><span>Exportar JSON</span>
-                    </button>
+                    <div className="relative" ref={exportMenuRef}>
+                        <button 
+                            onClick={() => setIsExportMenuOpen(prev => !prev)} 
+                            className="flex-1 sm:flex-none flex items-center justify-center space-x-2 bg-white/5 hover:bg-white/10 text-slate-200 font-semibold py-2 px-3 rounded-lg transition-colors text-xs border border-white/10"
+                            title="Exportar Histórico"
+                            aria-haspopup="true"
+                            aria-expanded={isExportMenuOpen}
+                        >
+                            <DownloadIcon/><span>Exportar</span>
+                        </button>
+                        {isExportMenuOpen && (
+                            <div className="absolute right-0 bottom-full mb-2 w-48 bg-slate-800/90 backdrop-blur-lg border border-white/10 rounded-lg shadow-xl z-20 animate-fade-in-fast" role="menu">
+                                <button onClick={() => handleExportHistory('json')} className="w-full text-left px-4 py-2 text-sm text-slate-200 hover:bg-sky-500/20 transition-colors flex items-center space-x-2" role="menuitem">
+                                    <span>Exportar como JSON</span>
+                                </button>
+                                <button onClick={() => handleExportHistory('xml')} className="w-full text-left px-4 py-2 text-sm text-slate-200 hover:bg-sky-500/20 transition-colors flex items-center space-x-2" role="menuitem">
+                                    <span>Exportar como XML</span>
+                                </button>
+                                <button onClick={() => handleExportHistory('pdf')} className="w-full text-left px-4 py-2 text-sm text-slate-200 hover:bg-sky-500/20 transition-colors flex items-center space-x-2" role="menuitem">
+                                    <span>Exportar como PDF</span>
+                                </button>
+                            </div>
+                        )}
+                    </div>
                     <button onClick={handleImportClick} className="flex-1 sm:flex-none flex items-center justify-center space-x-2 bg-white/5 hover:bg-white/10 text-slate-200 font-semibold py-2 px-3 rounded-lg transition-colors text-xs border border-white/10" title="Importar Histórico de um arquivo JSON">
                         <ImportIcon/><span>Importar</span>
                     </button>
