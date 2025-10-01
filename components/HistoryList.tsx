@@ -80,37 +80,18 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onDelet
             onDeleteItem(itemId);
         }
     };
-
-    const handleExportHistory = () => {
-        if (history.length === 0) {
-            alert('O histórico está vazio. Não há nada para exportar.');
-            return;
-        }
-
-        try {
-            const dataStr = JSON.stringify(history, null, 2);
-            const dataBlob = new Blob([dataStr], { type: 'application/json' });
-            const url = URL.createObjectURL(dataBlob);
-            const link = document.createElement('a');
-            link.href = url;
-            const timestamp = new Date().toISOString().replace(/:/g, '-').replace(/\..+/, '');
-            link.download = `tutor-ativo-ai-historico-${timestamp}.json`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
-        } catch (error) {
-            console.error('Erro ao exportar o histórico:', error);
-            alert('Ocorreu um erro ao tentar exportar o histórico.');
-        }
-    };
     
-    const handleExportHistoryXML = () => {
+    const handleExportHistory = (format: 'json' | 'xml') => {
         if (history.length === 0) {
             alert('O histórico está vazio. Não há nada para exportar.');
             return;
         }
 
         try {
-            const toXML = (items: HistoryItem[]) => {
-                const escapeCdata = (str: string) => str.replace(/
+            let dataStr: string;
+            let mimeType: string;
+            let fileExtension: string;
+            const timestamp = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+
+            if (format === 'xml') {
+                const cdata = (str: string | undefined | null) => str ? `<![CDATA[${String(str).replace(/]]>/g, ']]&gt;')}
