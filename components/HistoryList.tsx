@@ -4,7 +4,7 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { HistoryItem } from '../types';
 import { actionConfig } from '../constants';
-import { HistoryIcon, TrashIcon, PencilIcon, SearchIcon } from './icons';
+import { HistoryIcon, TrashIcon, PencilIcon, SearchIcon, DownloadIcon } from './icons';
 
 interface HistoryListProps {
     history: HistoryItem[];
@@ -82,15 +82,51 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onDelet
         }
     };
 
+    const handleExportHistory = () => {
+        if (history.length === 0) {
+            alert('O histórico está vazio. Não há nada para exportar.');
+            return;
+        }
+
+        try {
+            const dataStr = JSON.stringify(history, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            const timestamp = new Date().toISOString().replace(/:/g, '-').replace(/\..+/, '');
+            link.download = `tutor-ativo-ai-historico-${timestamp}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Erro ao exportar o histórico:', error);
+            alert('Ocorreu um erro ao tentar exportar o histórico.');
+        }
+    };
+
     const visibleHistory = filteredHistory.slice(0, visibleCount);
     const canLoadMore = filteredHistory.length > visibleCount;
 
     return (
         <div className="mt-8">
-            <h2 className="text-xl font-bold text-slate-100 mb-3 flex items-center">
-                <HistoryIcon className="text-2xl mr-2 text-slate-400" />
-                Histórico de Atividades
-            </h2>
+            <div className="flex justify-between items-center mb-3">
+                <h2 className="text-xl font-bold text-slate-100 flex items-center">
+                    <HistoryIcon className="text-2xl mr-2 text-slate-400" />
+                    Histórico de Atividades
+                </h2>
+                {history.length > 0 && (
+                    <button
+                        onClick={handleExportHistory}
+                        className="p-2 rounded-full hover:bg-white/10 text-slate-400 hover:text-sky-400 transition-colors"
+                        title="Exportar Histórico (JSON)"
+                    >
+                        <DownloadIcon className="text-lg" />
+                    </button>
+                )}
+            </div>
+
 
             {history.length > 0 && (
                 <div className="relative my-4">
