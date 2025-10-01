@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { HistoryItem, ActionType, GroundingChunk } from '../types';
 import { actionConfig } from '../constants';
@@ -94,4 +95,4 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onDelet
             const timestamp = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
 
             if (format === 'xml') {
-                const cdata = (str: string | undefined | null) => str ? `<![CDATA[${String(str).replace(/]]>/g, ']]&gt;')}
+                const cdata = (str: string | undefined | null): string => str ? `<![CDATA[${String(str).replace(/]]>/g, ']]&gt;')}
