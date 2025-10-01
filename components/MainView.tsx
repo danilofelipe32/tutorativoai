@@ -44,6 +44,7 @@ const actionGroups = [
     title: 'Análise e Compreensão',
     description: 'Ações para extrair, simplificar e entender as informações centrais do texto.',
     actions: [
+      ActionType.WEB_SEARCH,
       ActionType.SUMMARIZE,
       ActionType.KEYWORDS,
       ActionType.SIMPLIFY,
@@ -148,7 +149,7 @@ const MainView: React.FC<MainViewProps> = ({
             <div className="flex justify-between items-center mb-4">
                 <div>
                     <h2 className="text-3xl font-bold text-slate-100">Bem-vindo!</h2>
-                    <p className="text-slate-400">Cole um texto abaixo para começar.</p>
+                    <p className="text-slate-400">Cole um texto ou faça uma pergunta abaixo.</p>
                 </div>
                 {isTextProvided && (
                      <button
@@ -166,7 +167,7 @@ const MainView: React.FC<MainViewProps> = ({
                 <textarea
                     value={inputText}
                     onChange={(e) => onTextChange(e.target.value)}
-                    placeholder="Cole seu texto aqui para começar. Você também pode usar o botão azul para anexar uma imagem (e extrair o texto dela) ou um arquivo PDF."
+                    placeholder="Cole seu texto aqui para analisá-lo, ou digite uma pergunta para a 'Pesquisa Web Inteligente'. Você também pode usar o botão azul para anexar uma imagem ou PDF."
                     className={`w-full flex-grow bg-slate-900/50 text-slate-300 p-4 rounded-lg mb-4 border backdrop-blur-sm focus:outline-none min-h-[150px] md:min-h-[200px] resize-y transition-all duration-300 border-white/10 focus:ring-2 focus:ring-sky-400 focus:shadow-[0_0_15px_rgba(59,130,246,0.4)]`}
                     aria-label="Área de texto para análise"
                     disabled={isLoading}

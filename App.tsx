@@ -21,7 +21,12 @@ const ai = new GoogleGenAI({ apiKey: "AIzaSyA3e-4Do8arZ4NkqE_qC5eUBWkpt1kYKJs" }
 
 
 function getPromptForAction(action: ActionType, context: string): string {
-    // Prompt avançado instruindo a IA a usar um processo de raciocínio estruturado.
+    // Para a pesquisa na web, o "contexto" é a própria pergunta do usuário.
+    if (action === ActionType.WEB_SEARCH) {
+        return `Como um assistente de pesquisa IA, use as informações mais recentes da web para fornecer uma resposta abrangente e atualizada para a seguinte pergunta ou tópico: "${context}"`;
+    }
+
+    // Prompt avançado instruindo a IA a usar um processo de raciocínio estruturado para as outras ações.
     const basePrompt = `Você é um "Tutor Inteligente", uma IA assistente de estudos. Sua tarefa é analisar o texto fornecido e executar a tarefa solicitada com a máxima precisão e clareza.
 
 Para garantir a mais alta qualidade em sua resposta, você DEVE seguir este processo de raciocínio interno antes de fornecer a resposta final:
@@ -224,14 +229,20 @@ const App: React.FC = () => {
                 ? `Com base na resposta anterior, refine o resultado com a seguinte instrução: "${refinementInstruction}". A resposta anterior foi gerada a partir do texto original. Mantenha o formato e a essência da resposta original, apenas aplicando a modificação solicitada.\n\n--- RESPOSTA ANTERIOR ---\n${result?.text}\n\n--- TEXTO ORIGINAL (para contexto) ---\n${context}`
                 : getPromptForAction(action, context);
             
+            const modelConfig: any = {
+                temperature: aiSettings.temperature,
+                topK: aiSettings.topK,
+                topP: aiSettings.topP,
+            };
+
+            if (action === ActionType.WEB_SEARCH) {
+                modelConfig.tools = [{ googleSearch: {} }];
+            }
+
             const response = await ai.models.generateContent({
                 model: 'gemini-2.5-flash',
                 contents: prompt,
-                config: {
-                    temperature: aiSettings.temperature,
-                    topK: aiSettings.topK,
-                    topP: aiSettings.topP,
-                }
+                config: modelConfig,
             });
 
             const responseText = response.text;

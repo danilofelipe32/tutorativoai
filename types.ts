@@ -39,6 +39,7 @@ export enum ActionType {
     GAME_BUILDER = 'GAME_BUILDER',
     MAKER_GUIDE = 'MAKER_GUIDE',
     CASE_STUDIES = 'CASE_STUDIES',
+    WEB_SEARCH = 'WEB_SEARCH',
 }
 
 export enum View {

@@ -9,7 +9,8 @@ import {
     RealWorldExamplesIcon, AIQuestEduIcon, PossibilitiesEngineIcon, CoDesignerIcon, 
     CollaborationCoachIcon, ExploratoriumIcon, IdentifyPerspectiveIcon, FeedbackGeneratorIcon,
     ParetoPrincipleIcon, FeynmanTechniqueIcon,
-    SimulatedDebateIcon, WhatIfScenariosIcon, EvidenceHuntIcon, GameBuilderIcon, MakerGuideIcon, CaseStudiesIcon
+    SimulatedDebateIcon, WhatIfScenariosIcon, EvidenceHuntIcon, GameBuilderIcon, MakerGuideIcon, CaseStudiesIcon,
+    SearchIcon
 } from './components/icons';
 
 type ActionConfig = {
@@ -81,6 +82,12 @@ export const actionConfig: ActionConfig = {
         description: 'Gera perguntas que desafiam premissas e exploram implicações.',
         icon: DeeperQuestionsIcon,
         className: 'bg-zinc-900/30 border border-zinc-500/50 hover:bg-zinc-500/30 hover:shadow-lg hover:shadow-zinc-500/40 backdrop-blur',
+    },
+    [ActionType.WEB_SEARCH]: {
+        title: 'Pesquisa Web Inteligente',
+        description: 'Busca informações em tempo real na web para responder perguntas sobre eventos atuais ou tópicos recentes.',
+        icon: SearchIcon,
+        className: 'bg-gray-900/30 border border-gray-500/50 hover:bg-gray-500/30 hover:shadow-lg hover:shadow-gray-500/40 backdrop-blur',
     },
     [ActionType.LESSON_PLAN]: {
         title: 'Esboçar Plano de Aula',
