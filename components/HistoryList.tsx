@@ -2,7 +2,7 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { HistoryItem, ActionType, GroundingChunk } from '../types';
 import { actionConfig } from '../constants';
-import { HistoryIcon, TrashIcon, PencilIcon, SearchIcon, DownloadIcon, ImportIcon } from './icons';
+import { HistoryIcon, TrashIcon, PencilIcon, SearchIcon, DownloadIcon, ImportIcon, CheckIcon, CloseIcon } from './icons';
 
 interface HistoryListProps {
     history: HistoryItem[];
@@ -81,7 +81,7 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onDelet
             onDeleteItem(itemId);
         }
     };
-    
+
     const handleExportHistory = (format: 'json' | 'xml') => {
         if (history.length === 0) {
             alert('O histórico está vazio. Não há nada para exportar.');
@@ -92,7 +92,7 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onDelet
             let dataStr: string;
             let mimeType: string;
             let fileExtension: string;
-            const timestamp = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+            const timestamp = new Date().toISOString().slice(0, 10);
 
             if (format === 'xml') {
                 const cdata = (str: string | undefined | null): string => str ? `<![CDATA[${String(str).replace(/]]>/g, ']]&gt;')}
