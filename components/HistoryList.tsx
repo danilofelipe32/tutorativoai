@@ -15,7 +15,7 @@ interface HistoryListProps {
 const ITEMS_PER_PAGE = 10;
 
 const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onDeleteItem, onRenameItem, onImportHistory }) => {
-    const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
+    const [currentPage, setCurrentPage] = useState(1);
     const [editingItemId, setEditingItemId] = useState<number | null>(null);
     const [renameValue, setRenameValue] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
@@ -60,9 +60,24 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onDelet
         });
     }, [history, searchTerm]);
 
-    const handleLoadMore = () => {
-        setVisibleCount(prevCount => prevCount + ITEMS_PER_PAGE);
+    // Reset to page 1 when search term changes or history is updated
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [filteredHistory.length]);
+
+    // Pagination logic
+    const totalPages = Math.ceil(filteredHistory.length / ITEMS_PER_PAGE);
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const currentItems = filteredHistory.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+    const handleNextPage = () => {
+        setCurrentPage(prev => Math.min(prev + 1, totalPages));
     };
+
+    const handlePrevPage = () => {
+        setCurrentPage(prev => Math.max(prev - 1, 1));
+    };
+
 
     const formatDate = (isoString: string) => {
         const date = new Date(isoString);
@@ -322,8 +337,8 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onDelet
             </div>
 
             <div className="space-y-2 mt-4">
-                {history.length > 0 ? (
-                    filteredHistory.slice(0, visibleCount).map(item => {
+                {history.length > 0 && currentItems.length > 0 ? (
+                    currentItems.map(item => {
                         const Icon = actionConfig[item.actionType].icon;
                         const title = item.customTitle || actionConfig[item.actionType].title;
                         const isEditing = editingItemId === item.id;
@@ -376,13 +391,24 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onDelet
                 )}
             </div>
             
-            {visibleCount < filteredHistory.length && (
-                <div className="text-center mt-6">
+            {totalPages > 1 && (
+                <div className="flex items-center justify-between mt-6">
                     <button
-                        onClick={handleLoadMore}
-                        className="bg-slate-700/50 hover:bg-slate-600/50 text-slate-300 font-semibold py-2 px-6 rounded-lg transition-colors border border-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-sky-500"
+                        onClick={handlePrevPage}
+                        disabled={currentPage === 1}
+                        className="bg-slate-700/50 hover:bg-slate-600/50 text-slate-300 font-semibold py-2 px-4 rounded-lg transition-colors border border-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-sky-500 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        Carregar Mais
+                        Anterior
+                    </button>
+                    <span className="text-sm text-slate-400 font-medium">
+                        Página {currentPage} de {totalPages}
+                    </span>
+                    <button
+                        onClick={handleNextPage}
+                        disabled={currentPage === totalPages}
+                        className="bg-slate-700/50 hover:bg-slate-600/50 text-slate-300 font-semibold py-2 px-4 rounded-lg transition-colors border border-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-sky-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        Próximo
                     </button>
                 </div>
             )}
