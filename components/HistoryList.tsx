@@ -1,5 +1,3 @@
-
-
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { HistoryItem, ActionType, GroundingChunk } from '../types';
 import { actionConfig } from '../constants';
