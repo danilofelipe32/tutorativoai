@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { HistoryItem } from '../types';
+import { HistoryItem, ActionType, GroundingChunk } from '../types';
 import { actionConfig } from '../constants';
 import { HistoryIcon, TrashIcon, PencilIcon, SearchIcon, DownloadIcon, ImportIcon, CheckIcon, CloseIcon } from './icons';
 
@@ -209,23 +209,67 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onDelet
         reader.onload = (e) => {
             try {
                 const text = e.target?.result as string;
-                if (file.type === "application/json") {
-                    const importedData = JSON.parse(text);
-                    if (Array.isArray(importedData) && importedData.every(item => 'id' in item && 'actionType' in item)) {
-                        onImportHistory(importedData);
+                let importedData: HistoryItem[] = [];
+
+                if (file.type === "application/json" || file.name.endsWith('.json')) {
+                    const parsedJson = JSON.parse(text);
+                    if (Array.isArray(parsedJson) && parsedJson.every(item => 'id' in item && 'actionType' in item)) {
+                        importedData = parsedJson;
                     } else {
                         throw new Error('Formato de JSON inválido.');
                     }
+                } else if (file.type === "application/xml" || file.type === "text/xml" || file.name.endsWith('.xml')) {
+                    const parser = new DOMParser();
+                    const xmlDoc = parser.parseFromString(text, "application/xml");
+                    
+                    if (xmlDoc.getElementsByTagName("parsererror").length) {
+                        throw new Error("Falha ao analisar o arquivo XML. Verifique se o formato está correto.");
+                    }
+
+                    const itemNodes = xmlDoc.getElementsByTagName("item");
+                    importedData = Array.from(itemNodes).map(itemNode => {
+                        const getTagContent = (tagName: string) => itemNode.getElementsByTagName(tagName)[0]?.textContent ?? '';
+                        
+                        const sourcesNodes = itemNode.getElementsByTagName("source");
+                        const sources: GroundingChunk[] = Array.from(sourcesNodes).map(s => ({
+                            web: {
+                                uri: s.getElementsByTagName('uri')[0]?.textContent ?? '',
+                                title: s.getElementsByTagName('title')[0]?.textContent ?? ''
+                            }
+                        }));
+
+                        const historyItem: HistoryItem = {
+                            id: Number(itemNode.getAttribute("id")),
+                            actionType: getTagContent('actionType') as ActionType,
+                            timestamp: getTagContent('timestamp'),
+                            customTitle: getTagContent('customTitle') || undefined,
+                            inputTextSnippet: getTagContent('inputTextSnippet'),
+                            fullInputText: getTagContent('fullInputText'),
+                            fullResult: {
+                                text: itemNode.querySelector('fullResult > text')?.textContent ?? '',
+                                sources: sources.length > 0 ? sources : undefined
+                            },
+                        };
+                        return historyItem;
+                    });
                 } else {
-                     throw new Error('Apenas a importação de arquivos JSON é suportada no momento.');
+                     throw new Error('Tipo de arquivo não suportado. Por favor, importe um arquivo JSON ou XML.');
                 }
+
+                if (importedData.length > 0) {
+                    onImportHistory(importedData);
+                } else {
+                    alert("Nenhum item válido encontrado no arquivo importado.");
+                }
+
             } catch (error: any) {
                 alert(`Erro ao importar arquivo: ${error.message}`);
             }
         };
         reader.readAsText(file);
-        event.target.value = '';
+        event.target.value = ''; // Reset input to allow re-uploading the same file
     };
+
 
     return (
         <section className="mt-12 mb-8" aria-labelledby="history-title">
@@ -259,10 +303,10 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onDelet
                             </div>
                         )}
                     </div>
-                    <button onClick={handleImportClick} className="flex-1 sm:flex-none flex items-center justify-center space-x-2 bg-white/5 hover:bg-white/10 text-slate-200 font-semibold py-2 px-3 rounded-lg transition-colors text-xs border border-white/10" title="Importar Histórico de um arquivo JSON">
+                    <button onClick={handleImportClick} className="flex-1 sm:flex-none flex items-center justify-center space-x-2 bg-white/5 hover:bg-white/10 text-slate-200 font-semibold py-2 px-3 rounded-lg transition-colors text-xs border border-white/10" title="Importar Histórico de um arquivo JSON ou XML">
                         <ImportIcon/><span>Importar</span>
                     </button>
-                    <input type="file" ref={importInputRef} onChange={handleFileImport} accept=".json" className="hidden" />
+                    <input type="file" ref={importInputRef} onChange={handleFileImport} accept=".json,.xml,application/json,application/xml" className="hidden" />
                 </div>
             </div>
 
