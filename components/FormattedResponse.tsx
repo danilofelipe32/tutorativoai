@@ -34,7 +34,7 @@ const TableRenderer: React.FC<{ tableLines: string[] }> = ({ tableLines }) => {
                 <thead className="bg-white/5 text-xs text-slate-200 uppercase">
                     <tr>
                         {headers.map((header, index) => (
-                            <th key={index} scope="col" className="px-4 py-3">
+                            <th key={index} scope="col" className="px-4 py-3 whitespace-nowrap">
                                 {renderBoldText(header)}
                             </th>
                         ))}
@@ -48,7 +48,7 @@ const TableRenderer: React.FC<{ tableLines: string[] }> = ({ tableLines }) => {
                         return (
                             <tr key={rowIndex} className="bg-transparent even:bg-white/5 border-b border-white/10 last:border-b-0">
                                 {cells.map((cell, cellIndex) => (
-                                    <td key={cellIndex} className="px-4 py-3">
+                                    <td key={cellIndex} className="px-4 py-3 whitespace-nowrap">
                                         {renderBoldText(cell)}
                                     </td>
                                 ))}
