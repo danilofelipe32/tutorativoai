@@ -103,7 +103,7 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onDelet
     // Pagination logic
     const totalPages = Math.ceil(processedHistory.length / ITEMS_PER_PAGE);
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    const currentItems = processedHistory.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+    const currentItems = processedHistory.slice(startIndex, startIndex, startIndex + ITEMS_PER_PAGE);
 
     const handleNextPage = () => {
         setCurrentPage(prev => Math.min(prev + 1, totalPages));
@@ -325,14 +325,14 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onDelet
         <section className="mt-12 mb-8" aria-labelledby="history-title">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
                 <div className="flex items-center space-x-3">
-                    <HistoryIcon className="text-2xl text-slate-400" />
-                    <h2 id="history-title" className="text-2xl font-bold text-slate-100">Histórico de Análises</h2>
+                    <HistoryIcon className="text-2xl text-slate-500 dark:text-slate-400" />
+                    <h2 id="history-title" className="text-2xl font-bold text-slate-800 dark:text-slate-100">Histórico de Análises</h2>
                 </div>
                 <div className="flex items-center space-x-2 w-full sm:w-auto">
                     <div className="relative" ref={exportMenuRef}>
                         <button 
                             onClick={() => setIsExportMenuOpen(prev => !prev)} 
-                            className="flex-1 sm:flex-none flex items-center justify-center space-x-2 bg-white/5 hover:bg-white/10 text-slate-200 font-semibold py-2 px-3 rounded-lg transition-colors text-xs border border-white/10"
+                            className="flex-1 sm:flex-none flex items-center justify-center space-x-2 bg-slate-200 hover:bg-slate-300 dark:bg-white/5 dark:hover:bg-white/10 text-slate-700 dark:text-slate-200 font-semibold py-2 px-3 rounded-lg transition-colors text-xs border border-slate-300 dark:border-white/10"
                             title="Exportar Histórico"
                             aria-haspopup="true"
                             aria-expanded={isExportMenuOpen}
@@ -340,20 +340,20 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onDelet
                             <DownloadIcon/><span>Exportar</span>
                         </button>
                         {isExportMenuOpen && (
-                            <div className="absolute right-0 bottom-full mb-2 w-48 bg-slate-800/90 backdrop-blur-lg border border-white/10 rounded-lg shadow-xl z-20 animate-fade-in-fast" role="menu">
-                                <button onClick={() => handleExportHistory('json')} className="w-full text-left px-4 py-2 text-sm text-slate-200 hover:bg-sky-500/20 transition-colors flex items-center space-x-2" role="menuitem">
+                            <div className="absolute right-0 bottom-full mb-2 w-48 bg-slate-100/90 dark:bg-slate-800/90 backdrop-blur-lg border border-slate-200 dark:border-white/10 rounded-lg shadow-xl z-20 animate-fade-in-fast" role="menu">
+                                <button onClick={() => handleExportHistory('json')} className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-sky-100 dark:hover:bg-sky-500/20 transition-colors flex items-center space-x-2" role="menuitem">
                                     <span>Exportar como JSON</span>
                                 </button>
-                                <button onClick={() => handleExportHistory('xml')} className="w-full text-left px-4 py-2 text-sm text-slate-200 hover:bg-sky-500/20 transition-colors flex items-center space-x-2" role="menuitem">
+                                <button onClick={() => handleExportHistory('xml')} className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-sky-100 dark:hover:bg-sky-500/20 transition-colors flex items-center space-x-2" role="menuitem">
                                     <span>Exportar como XML</span>
                                 </button>
-                                <button onClick={() => handleExportHistory('pdf')} className="w-full text-left px-4 py-2 text-sm text-slate-200 hover:bg-sky-500/20 transition-colors flex items-center space-x-2" role="menuitem">
+                                <button onClick={() => handleExportHistory('pdf')} className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-sky-100 dark:hover:bg-sky-500/20 transition-colors flex items-center space-x-2" role="menuitem">
                                     <span>Exportar como PDF</span>
                                 </button>
                             </div>
                         )}
                     </div>
-                    <button onClick={handleImportClick} className="flex-1 sm:flex-none flex items-center justify-center space-x-2 bg-white/5 hover:bg-white/10 text-slate-200 font-semibold py-2 px-3 rounded-lg transition-colors text-xs border border-white/10" title="Importar Histórico de um arquivo JSON ou XML" aria-label="Importar histórico">
+                    <button onClick={handleImportClick} className="flex-1 sm:flex-none flex items-center justify-center space-x-2 bg-slate-200 hover:bg-slate-300 dark:bg-white/5 dark:hover:bg-white/10 text-slate-700 dark:text-slate-200 font-semibold py-2 px-3 rounded-lg transition-colors text-xs border border-slate-300 dark:border-white/10" title="Importar Histórico de um arquivo JSON ou XML" aria-label="Importar histórico">
                         <ImportIcon/><span>Importar</span>
                     </button>
                     <input type="file" ref={importInputRef} onChange={handleFileImport} accept=".json,.xml,application/json,application/xml" className="hidden" />
@@ -362,13 +362,13 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onDelet
 
             <div className="flex flex-col sm:flex-row items-center gap-4 mb-4">
                 <div className="relative w-full sm:flex-grow">
-                    <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                    <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-400" />
                     <input
                         type="text"
                         placeholder="Pesquisar no histórico..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full bg-slate-900/50 text-slate-300 pl-10 pr-4 py-2 rounded-lg border border-white/10 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                        className="w-full bg-slate-100 dark:bg-slate-900/50 text-slate-800 dark:text-slate-300 pl-10 pr-4 py-2 rounded-lg border border-slate-300 dark:border-white/10 focus:outline-none focus:ring-2 focus:ring-sky-500"
                         aria-label="Pesquisar no histórico"
                     />
                 </div>
@@ -379,19 +379,19 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onDelet
                             id="sort-history"
                             value={sortOption}
                             onChange={(e) => setSortOption(e.target.value as SortOption)}
-                            className="w-full sm:w-auto appearance-none bg-slate-900/50 text-slate-300 pl-4 pr-10 py-2 rounded-lg border border-white/10 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                            className="w-full sm:w-auto appearance-none bg-slate-100 dark:bg-slate-900/50 text-slate-800 dark:text-slate-300 pl-4 pr-10 py-2 rounded-lg border border-slate-300 dark:border-white/10 focus:outline-none focus:ring-2 focus:ring-sky-500"
                             aria-label="Ordenar histórico"
                         >
                             <option value="date-desc">Mais Recentes</option>
                             <option value="date-asc">Mais Antigos</option>
                             <option value="action-asc">Tipo de Ação (A-Z)</option>
                         </select>
-                        <SortIcon className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                        <SortIcon className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-400 pointer-events-none" />
                     </div>
                     {areFiltersActive && (
                         <button
                             onClick={handleClearFilters}
-                            className="flex-shrink-0 py-2 px-3 bg-slate-900/50 text-slate-300 rounded-lg border border-white/10 hover:bg-rose-500/20 hover:text-rose-300 transition-colors focus:outline-none focus:ring-2 focus:ring-rose-500"
+                            className="flex-shrink-0 py-2 px-3 bg-slate-100 dark:bg-slate-900/50 text-slate-800 dark:text-slate-300 rounded-lg border border-slate-300 dark:border-white/10 hover:bg-rose-100 dark:hover:bg-rose-500/20 hover:text-rose-600 dark:hover:text-rose-300 transition-colors focus:outline-none focus:ring-2 focus:ring-rose-500"
                             title="Limpar filtros"
                             aria-label="Limpar filtros de pesquisa e ordenação"
                         >
@@ -410,7 +410,7 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onDelet
                         const isEditing = editingItemId === item.id;
                         
                         return (
-                            <div key={item.id} className="bg-slate-800/40 rounded-lg p-3 flex items-center justify-between hover:bg-slate-700/50 transition-colors group">
+                            <div key={item.id} className="bg-white dark:bg-slate-800/40 rounded-lg p-3 flex items-center justify-between hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors group shadow-sm border border-slate-200 dark:border-transparent">
                                 {isEditing ? (
                                     <div className="flex-grow flex items-center space-x-2">
                                         <input
@@ -420,27 +420,27 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onDelet
                                             onChange={(e) => setRenameValue(e.target.value)}
                                             onKeyDown={(e) => e.key === 'Enter' && handleSaveRename(item.id)}
                                             onBlur={() => handleSaveRename(item.id)}
-                                            className="w-full bg-slate-900/80 text-slate-200 px-2 py-1 rounded border border-sky-500/50 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                                            className="w-full bg-slate-100 dark:bg-slate-900/80 text-slate-800 dark:text-slate-200 px-2 py-1 rounded border border-sky-500/50 focus:outline-none focus:ring-1 focus:ring-sky-500"
                                             aria-label="Novo título para o item"
                                         />
-                                        <button onClick={() => handleSaveRename(item.id)} className="p-2 text-emerald-400 hover:bg-emerald-500/20 rounded-full" aria-label="Salvar renomeação"><CheckIcon /></button>
-                                        <button onClick={handleCancelRename} className="p-2 text-rose-400 hover:bg-rose-500/20 rounded-full" aria-label="Cancelar renomeação"><CloseIcon /></button>
+                                        <button onClick={() => handleSaveRename(item.id)} className="p-2 text-emerald-500 dark:text-emerald-400 hover:bg-emerald-500/20 rounded-full" aria-label="Salvar renomeação"><CheckIcon /></button>
+                                        <button onClick={handleCancelRename} className="p-2 text-rose-500 dark:text-rose-400 hover:bg-rose-500/20 rounded-full" aria-label="Cancelar renomeação"><CloseIcon /></button>
                                     </div>
                                 ) : (
                                     <>
                                         <button onClick={() => onItemClick(item)} className="flex items-center space-x-3 text-left flex-grow truncate">
-                                            <Icon className="text-2xl text-slate-400 flex-shrink-0" />
+                                            <Icon className="text-2xl text-slate-500 dark:text-slate-400 flex-shrink-0" />
                                             <div className="truncate">
-                                                <p className="font-bold text-slate-200 truncate" title={title}>{title}</p>
-                                                <p className="text-xs text-slate-400 truncate" title={item.inputTextSnippet}>{item.inputTextSnippet}</p>
-                                                <p className="text-[10px] text-slate-500 mt-1">{formatDate(item.timestamp)}</p>
+                                                <p className="font-bold text-slate-800 dark:text-slate-200 truncate" title={title}>{title}</p>
+                                                <p className="text-xs text-slate-500 dark:text-slate-400 truncate" title={item.inputTextSnippet}>{item.inputTextSnippet}</p>
+                                                <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-1">{formatDate(item.timestamp)}</p>
                                             </div>
                                         </button>
                                         <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button onClick={() => handleRenameClick(item)} className="p-2 text-slate-400 hover:text-sky-400 hover:bg-sky-500/20 rounded-full" title="Renomear" aria-label={`Renomear item: ${title}`}>
+                                            <button onClick={() => handleRenameClick(item)} className="p-2 text-slate-500 dark:text-slate-400 hover:text-sky-500 dark:hover:text-sky-400 hover:bg-sky-500/10 dark:hover:bg-sky-500/20 rounded-full" title="Renomear" aria-label={`Renomear item: ${title}`}>
                                                 <PencilIcon />
                                             </button>
-                                            <button onClick={() => handleDeleteClick(item.id)} className="p-2 text-slate-400 hover:text-rose-400 hover:bg-rose-500/20 rounded-full" title="Excluir" aria-label={`Excluir item: ${title}`}>
+                                            <button onClick={() => handleDeleteClick(item.id)} className="p-2 text-slate-500 dark:text-slate-400 hover:text-rose-500 dark:hover:text-rose-400 hover:bg-rose-500/10 dark:hover:bg-rose-500/20 rounded-full" title="Excluir" aria-label={`Excluir item: ${title}`}>
                                                 <TrashIcon />
                                             </button>
                                         </div>
@@ -450,10 +450,10 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onDelet
                         );
                     })
                 ) : (
-                    <div className="text-center py-8 px-4 bg-slate-800/30 rounded-lg">
-                        <HistoryIcon className="text-4xl text-slate-500 mx-auto mb-3" />
-                        <p className="text-slate-400">{searchTerm ? 'Nenhum item corresponde à sua busca.' : 'Seu histórico aparecerá aqui.'}</p>
-                         { !searchTerm && <p className="text-xs text-slate-500 mt-1">Nenhuma análise foi realizada ainda.</p> }
+                    <div className="text-center py-8 px-4 bg-slate-100/50 dark:bg-slate-800/30 rounded-lg">
+                        <HistoryIcon className="text-4xl text-slate-400 dark:text-slate-500 mx-auto mb-3" />
+                        <p className="text-slate-500 dark:text-slate-400">{searchTerm ? 'Nenhum item corresponde à sua busca.' : 'Seu histórico aparecerá aqui.'}</p>
+                         { !searchTerm && <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">Nenhuma análise foi realizada ainda.</p> }
                     </div>
                 )}
             </div>
@@ -463,18 +463,18 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onDelet
                     <button
                         onClick={handlePrevPage}
                         disabled={currentPage === 1}
-                        className="bg-slate-700/50 hover:bg-slate-600/50 text-slate-300 font-semibold py-2 px-4 rounded-lg transition-colors border border-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-sky-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="bg-white dark:bg-slate-700/50 hover:bg-slate-100 dark:hover:bg-slate-600/50 text-slate-700 dark:text-slate-300 font-semibold py-2 px-4 rounded-lg transition-colors border border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-50 dark:focus:ring-offset-slate-900 focus:ring-sky-500 disabled:opacity-50 disabled:cursor-not-allowed"
                         aria-label="Ir para a página anterior do histórico"
                     >
                         Anterior
                     </button>
-                    <span className="text-sm text-slate-400 font-medium" aria-live="polite" aria-atomic="true">
+                    <span className="text-sm text-slate-500 dark:text-slate-400 font-medium" aria-live="polite" aria-atomic="true">
                         Página {currentPage} de {totalPages}
                     </span>
                     <button
                         onClick={handleNextPage}
                         disabled={currentPage === totalPages}
-                        className="bg-slate-700/50 hover:bg-slate-600/50 text-slate-300 font-semibold py-2 px-4 rounded-lg transition-colors border border-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-sky-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="bg-white dark:bg-slate-700/50 hover:bg-slate-100 dark:hover:bg-slate-600/50 text-slate-700 dark:text-slate-300 font-semibold py-2 px-4 rounded-lg transition-colors border border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-50 dark:focus:ring-offset-slate-900 focus:ring-sky-500 disabled:opacity-50 disabled:cursor-not-allowed"
                         aria-label="Ir para a página seguinte do histórico"
                     >
                         Próximo

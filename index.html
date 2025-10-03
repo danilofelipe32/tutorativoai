@@ -49,7 +49,13 @@
             filter: blur(100px);
             opacity: 0.6;
             z-index: -1;
+            transition: background-color 0.5s ease-in-out, opacity 0.5s ease-in-out;
         }
+        
+        html:not(.dark) .orb {
+            opacity: 0.3;
+        }
+
 
         /* Animations for modals, dropdowns, and views */
         @keyframes fade-in {
@@ -134,8 +140,23 @@
   }
 }
 </script>
+<script>
+    // Evita o "flash" do tema incorreto (FOUC) ao carregar a página
+    (function() {
+        try {
+            const theme = localStorage.getItem('tutor-ai-theme');
+            if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        } catch (e) {
+            console.error('Failed to set initial theme', e);
+        }
+    })();
+</script>
 </head>
-<body class="bg-slate-900 text-slate-100 font-sans h-screen overflow-hidden">
+<body class="font-sans h-screen overflow-hidden transition-colors duration-300">
     <div id="app-background">
         <div class="orb" style="top: 5%; left: 10%; width: 350px; height: 350px; background-color: rgba(14, 165, 233, 0.4); animation: float 8s ease-in-out infinite alternate;"></div>
         <div class="orb" style="top: 50%; left: 75%; width: 450px; height: 450px; background-color: rgba(132, 114, 246, 0.4); animation: float 10s ease-in-out infinite reverse;"></div>

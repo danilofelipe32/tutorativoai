@@ -1,4 +1,5 @@
 
+
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { ActionType, HistoryItem } from '../types';
 import { actionConfig } from '../constants';
@@ -50,13 +51,13 @@ const ActionButton: React.FC<{
             <button
                 onClick={onClick}
                 disabled={isDisabled}
-                className={`rounded-xl text-white shadow-lg ${config.className} w-full p-3 text-left flex flex-col justify-between h-full focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 focus-visible:ring-white`}
+                className={`rounded-xl text-slate-800 dark:text-white shadow-lg ${config.className} w-full p-3 text-left flex flex-col justify-between h-full focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 focus-visible:ring-white`}
                 aria-label={config.title}
             >
                 <config.icon className="text-3xl mb-2" />
                 <div className="mt-auto">
                     <h3 className="font-bold text-xs md:text-sm">{config.title}</h3>
-                    <p className="text-[10px] opacity-80 mt-1">{config.description}</p>
+                    <p className="text-[10px] text-slate-600 dark:text-slate-200/80 opacity-80 mt-1">{config.description}</p>
                 </div>
             </button>
             
@@ -71,7 +72,7 @@ const ActionButton: React.FC<{
             >
                 {isFavorite 
                     ? <StarFillIcon className={`text-yellow-400 text-xl drop-shadow-[0_0_4px_rgba(250,204,21,0.7)] ${animationClass}`} /> 
-                    : <StarIcon className={`text-slate-300 group-hover:text-yellow-300 text-xl transition-all group-hover:scale-125 drop-shadow-[0_0_4px_rgba(0,0,0,0.8)] ${animationClass}`} />
+                    : <StarIcon className={`text-slate-500 dark:text-slate-300 group-hover:text-yellow-400 dark:group-hover:text-yellow-300 text-xl transition-all group-hover:scale-125 drop-shadow-[0_0_4px_rgba(0,0,0,0.8)] ${animationClass}`} />
                 }
             </button>
         </div>
@@ -82,7 +83,7 @@ const initialActionGroups = [
   {
     title: 'Análise e Compreensão',
     description: 'Ações para extrair, simplificar e entender as informações centrais do texto.',
-    colorClass: 'border-sky-500 hover:bg-sky-900/40',
+    colorClass: 'border-sky-500 hover:bg-sky-100/60 dark:hover:bg-sky-900/40',
     actions: [
       ActionType.WEB_SEARCH,
       ActionType.SUMMARIZE,
@@ -103,7 +104,7 @@ const initialActionGroups = [
   {
     title: 'Pensamento Crítico e Exploração',
     description: 'Ferramentas para questionar, aprofundar e explorar as ideias do texto por diferentes ângulos.',
-    colorClass: 'border-purple-500 hover:bg-purple-900/40',
+    colorClass: 'border-purple-500 hover:bg-purple-100/60 dark:hover:bg-purple-900/40',
     actions: [
       ActionType.REFLECT,
       ActionType.DEEPER_QUESTIONS,
@@ -130,7 +131,7 @@ const initialActionGroups = [
   {
     title: 'Criação e Aplicação',
     description: 'Use o conteúdo como base para criar novos materiais, projetos e narrativas.',
-    colorClass: 'border-emerald-500 hover:bg-emerald-900/40',
+    colorClass: 'border-emerald-500 hover:bg-emerald-100/60 dark:hover:bg-emerald-900/40',
     actions: [
       ActionType.MINDMAP,
       ActionType.STEP_BY_STEP,
@@ -150,7 +151,7 @@ const initialActionGroups = [
   {
     title: 'Avaliação e Planejamento Pedagógico',
     description: 'Recursos específicos para educadores criarem avaliações, planos de aula e atividades.',
-    colorClass: 'border-amber-500 hover:bg-amber-900/40',
+    colorClass: 'border-amber-500 hover:bg-amber-100/60 dark:hover:bg-amber-900/40',
     actions: [
       ActionType.TEST,
       ActionType.PROGRESS_MAP,
@@ -194,7 +195,7 @@ const MainView: React.FC<MainViewProps> = ({
         const favoritesGroup = {
             title: '⭐ Favoritos',
             description: `Suas ações mais usadas (${favoriteActions.length}/5). Clique na estrela para adicionar ou remover.`,
-            colorClass: 'border-yellow-400 hover:bg-yellow-900/40',
+            colorClass: 'border-yellow-400 hover:bg-yellow-100/60 dark:hover:bg-yellow-900/40',
             actions: favoriteActions.sort((a, b) => actionConfig[a].title.localeCompare(actionConfig[b].title)),
         };
 
@@ -246,13 +247,13 @@ const MainView: React.FC<MainViewProps> = ({
         <div className="flex flex-col h-full">
             <div className="flex justify-between items-center mb-4">
                 <div>
-                    <h2 className="text-3xl font-bold text-slate-100">Bem-vindo!</h2>
-                    <p className="text-slate-400">Cole um texto ou faça uma pergunta abaixo.</p>
+                    <h2 className="text-3xl font-bold text-slate-800 dark:text-slate-100">Bem-vindo!</h2>
+                    <p className="text-slate-500 dark:text-slate-400">Cole um texto ou faça uma pergunta abaixo.</p>
                 </div>
                 {isTextProvided && !isLoading && (
                      <button
                         onClick={onClearText}
-                        className="bg-white/5 hover:bg-white/10 text-slate-200 font-semibold py-2 px-4 rounded-lg transition-colors text-sm flex items-center space-x-2 border border-white/10"
+                        className="bg-slate-200 hover:bg-slate-300 dark:bg-white/5 dark:hover:bg-white/10 text-slate-700 dark:text-slate-200 font-semibold py-2 px-4 rounded-lg transition-colors text-sm flex items-center space-x-2 border border-slate-300 dark:border-white/10"
                         title="Limpar texto"
                         aria-label="Limpar área de texto"
                     >
@@ -267,17 +268,17 @@ const MainView: React.FC<MainViewProps> = ({
                     value={inputText}
                     onChange={(e) => onTextChange(e.target.value)}
                     placeholder="Cole seu texto aqui para analisá-lo, ou digite uma pergunta para a 'Pesquisa Web Inteligente'. Você também pode usar o botão azul para anexar uma imagem ou PDF."
-                    className={`w-full flex-grow bg-gray-200 text-gray-900 placeholder-gray-600 p-4 rounded-lg mb-4 border focus:outline-none min-h-[150px] md:min-h-[200px] resize-y transition-all duration-300 border-gray-300 focus:ring-2 focus:ring-sky-400 focus:shadow-[0_0_15px_rgba(59,130,246,0.4)]`}
+                    className={`w-full flex-grow bg-white text-slate-900 placeholder-slate-500 p-4 rounded-lg mb-4 border focus:outline-none min-h-[150px] md:min-h-[200px] resize-y transition-all duration-300 border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-sky-500 dark:focus:ring-sky-400 focus:shadow-[0_0_15px_rgba(59,130,246,0.4)] dark:bg-slate-800 dark:text-slate-200 dark:placeholder-slate-400`}
                     aria-label="Área de texto para análise"
                     disabled={isLoading}
                 />
                 {isLoading && (
-                    <div className="absolute inset-0 bg-slate-900/80 backdrop-blur-sm rounded-lg mb-4 flex flex-col items-center justify-center text-slate-200">
-                        <LoadingIcon className="text-3xl animate-spin text-sky-400" />
+                    <div className="absolute inset-0 bg-slate-100/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-lg mb-4 flex flex-col items-center justify-center text-slate-800 dark:text-slate-200">
+                        <LoadingIcon className="text-3xl animate-spin text-sky-500 dark:text-sky-400" />
                         <p className="mt-3 font-semibold text-center px-4">
                             {loadingMessage}
                         </p>
-                        <div className="w-4/5 max-w-xs bg-slate-700/50 rounded-full h-1.5 mt-3 overflow-hidden">
+                        <div className="w-4/5 max-w-xs bg-slate-300 dark:bg-slate-700/50 rounded-full h-1.5 mt-3 overflow-hidden">
                            <div className="bg-sky-500 h-1.5 rounded-full animate-pulse"></div>
                         </div>
                     </div>
@@ -286,7 +287,7 @@ const MainView: React.FC<MainViewProps> = ({
 
             <>
                 <div className="mb-6">
-                    <p className="text-slate-300 font-semibold text-center text-lg">Agora, escolha uma ação:</p>
+                    <p className="text-slate-700 dark:text-slate-300 font-semibold text-center text-lg">Agora, escolha uma ação:</p>
                 </div>
 
                 <div className="space-y-3">
@@ -297,8 +298,8 @@ const MainView: React.FC<MainViewProps> = ({
                         return (
                             <div 
                                 key={group.title} 
-                                className={`bg-slate-900/30 backdrop-blur-sm border rounded-xl overflow-hidden transition-all duration-300 shadow-md hover:shadow-lg hover:shadow-black/30 ${
-                                    isFavoriteGroup ? 'border-yellow-400/60 shadow-yellow-500/10' : 'border-white/10'
+                                className={`bg-white/50 dark:bg-slate-900/30 backdrop-blur-sm border rounded-xl overflow-hidden transition-all duration-300 shadow-md hover:shadow-lg hover:shadow-black/10 dark:hover:shadow-black/30 ${
+                                    isFavoriteGroup ? 'border-yellow-400/60 shadow-yellow-500/10' : 'border-slate-200 dark:border-white/10'
                                 }`}
                             >
                                 <button
@@ -308,10 +309,10 @@ const MainView: React.FC<MainViewProps> = ({
                                     aria-controls={`accordion-content-${groupId}`}
                                 >
                                     <div>
-                                        <h3 id={`accordion-title-${groupId}`} className="text-lg font-bold text-slate-100">{group.title}</h3>
-                                        <p className="text-slate-400 text-sm mt-1">{group.description}</p>
+                                        <h3 id={`accordion-title-${groupId}`} className="text-lg font-bold text-slate-800 dark:text-slate-100">{group.title}</h3>
+                                        <p className="text-slate-600 dark:text-slate-400 text-sm mt-1">{group.description}</p>
                                     </div>
-                                    <ChevronRightIcon className={`text-2xl text-slate-400 transition-transform duration-300 flex-shrink-0 ml-4 ${isOpen ? 'rotate-90' : ''}`} />
+                                    <ChevronRightIcon className={`text-2xl text-slate-500 dark:text-slate-400 transition-transform duration-300 flex-shrink-0 ml-4 ${isOpen ? 'rotate-90' : ''}`} />
                                 </button>
                                 <div
                                     id={`accordion-content-${groupId}`}

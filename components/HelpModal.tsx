@@ -33,31 +33,31 @@ const HelpModal: React.FC<HelpModalProps> = ({ isVisible, onClose }) => {
             onClick={onClose}
         >
             <div 
-                className="relative bg-slate-800/50 backdrop-blur-2xl border border-white/10 rounded-2xl p-6 w-full max-w-md shadow-2xl"
+                className="relative bg-slate-100/90 dark:bg-slate-800/80 backdrop-blur-2xl border border-slate-200 dark:border-white/10 rounded-2xl p-6 w-full max-w-md shadow-2xl"
                 onClick={(e) => e.stopPropagation()}
             >
                 <button 
                     onClick={onClose} 
-                    className="absolute top-3 right-3 p-2 rounded-full text-slate-400 hover:bg-white/10 hover:text-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500"
+                    className="absolute top-3 right-3 p-2 rounded-full text-slate-500 dark:text-slate-400 hover:bg-black/10 dark:hover:bg-white/10 hover:text-slate-800 dark:hover:text-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500"
                     aria-label="Fechar modal"
                 >
                     <CloseIcon className="text-2xl" />
                 </button>
-                <h2 className="text-xl font-bold text-white mb-3">Como usar o Tutor Ativo AI</h2>
-                <p className="text-slate-300 mb-5">
+                <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-3">Como usar o Tutor Ativo AI</h2>
+                <p className="text-slate-600 dark:text-slate-300 mb-5">
                     Esta extensão ajuda-o a estudar o conteúdo de qualquer página web. Use os botões para interagir com o texto:
                 </p>
                 <ul className="space-y-3 text-sm max-h-[50vh] overflow-y-auto pr-2">
                     {Object.values(actionConfig).map(config => (
                         <li key={config.title}>
-                            <strong className="text-slate-100">{config.title}:</strong>
-                            <span className="text-slate-300 ml-2">{config.description}</span>
+                            <strong className="text-slate-800 dark:text-slate-100">{config.title}:</strong>
+                            <span className="text-slate-600 dark:text-slate-300 ml-2">{config.description}</span>
                         </li>
                     ))}
                 </ul>
                 <button 
                     onClick={onClose} 
-                    className="mt-6 w-full bg-sky-600 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-sky-500"
+                    className="mt-6 w-full bg-sky-600 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-100 dark:focus:ring-offset-slate-800 focus:ring-sky-500"
                 >
                     Entendido
                 </button>

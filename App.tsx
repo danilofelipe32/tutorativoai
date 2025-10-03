@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback, useEffect, useRef, lazy, Suspense } from 'react';
 import { GoogleGenAI } from '@google/genai';
-import { ActionType, View, HistoryItem, ResultPayload, AISettings, GroundingChunk } from './types';
+import { ActionType, View, HistoryItem, ResultPayload, AISettings, GroundingChunk, Theme } from './types';
 import Header from './components/Header';
 import { actionConfig } from './constants';
 import { PlusIcon, LoadingIcon } from './components/icons';
@@ -224,6 +224,17 @@ const App: React.FC = () => {
 
     const initialSettings: AISettings = { temperature: 0.7, topK: 40, topP: 0.95 };
     const [aiSettings, setAiSettings] = useState<AISettings>(initialSettings);
+    const [theme, setTheme] = useState<Theme>(() => {
+        try {
+            const savedTheme = localStorage.getItem('tutor-ai-theme');
+            if (savedTheme === 'light' || savedTheme === 'dark') {
+                return savedTheme;
+            }
+        } catch (e) {
+            console.error("Failed to load theme from localStorage", e);
+        }
+        return 'dark';
+    });
 
     const lastRequestRef = useRef<{ action: ActionType, context: string, difficulty?: string } | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -281,6 +292,21 @@ const App: React.FC = () => {
             console.error("Failed to save favorites to localStorage", e);
         }
     }, [favoriteActions]);
+
+    // Theme Management
+    useEffect(() => {
+        const root = document.documentElement;
+        if (theme === 'light') {
+            root.classList.remove('dark');
+        } else {
+            root.classList.add('dark');
+        }
+        try {
+            localStorage.setItem('tutor-ai-theme', theme);
+        } catch (e) {
+            console.error("Failed to save theme to localStorage", e);
+        }
+    }, [theme]);
 
     const handleGenerateContent = useCallback(async (action: ActionType, context: string, isRefinement = false, refinementInstruction = '', difficulty: string = 'Médio') => {
         if (!context.trim()) {
@@ -488,8 +514,9 @@ const App: React.FC = () => {
         }
     };
 
-    const handleSaveSettings = (newSettings: AISettings) => {
+    const handleSaveSettings = (newSettings: AISettings, newTheme: Theme) => {
         setAiSettings(newSettings);
+        setTheme(newTheme);
         setSettingsModalVisible(false);
     };
     
@@ -538,7 +565,7 @@ const App: React.FC = () => {
     );
 
     return (
-        <div className="flex flex-col h-screen">
+        <div className="flex flex-col h-screen bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 transition-colors duration-300">
             <Header
                 title={view === View.MAIN ? 'Tutor Ativo AI' : (currentAction ? actionConfig[currentAction].title : 'Resultado')}
                 showBackButton={view === View.RESULTS}
@@ -619,6 +646,7 @@ const App: React.FC = () => {
                     isVisible={isSettingsModalVisible}
                     onClose={() => setSettingsModalVisible(false)}
                     currentSettings={aiSettings}
+                    currentTheme={theme}
                     onSave={handleSaveSettings}
                 />}
                 {isQuizModalVisible && <QuizDifficultyModal

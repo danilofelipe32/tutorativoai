@@ -88,23 +88,23 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isVisible, onClose })
             role="dialog"
         >
             <div 
-                className="relative bg-slate-800/80 backdrop-blur-2xl border border-sky-500/30 rounded-2xl p-6 w-full max-w-md shadow-2xl text-center flex flex-col items-center"
+                className="relative bg-slate-100 dark:bg-slate-800/80 backdrop-blur-2xl border border-sky-300 dark:border-sky-500/30 rounded-2xl p-6 w-full max-w-md shadow-2xl text-center flex flex-col items-center"
                 onClick={(e) => e.stopPropagation()}
             >
                 <button 
                     onClick={onClose} 
-                    className="absolute top-3 right-3 p-2 rounded-full text-slate-400 hover:bg-white/10 hover:text-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500"
+                    className="absolute top-3 right-3 p-2 rounded-full text-slate-500 dark:text-slate-400 hover:bg-black/10 dark:hover:bg-white/10 hover:text-slate-800 dark:hover:text-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500"
                     aria-label="Pular tour"
                 >
                     <CloseIcon className="text-2xl" />
                 </button>
                 
                 <div className="w-16 h-16 rounded-full bg-sky-500/20 border border-sky-500/30 flex items-center justify-center mb-5">
-                    <IconComponent className="text-3xl text-sky-300" />
+                    <IconComponent className="text-3xl text-sky-500 dark:text-sky-300" />
                 </div>
 
-                <h2 className="text-2xl font-bold text-white mb-3">{step.title}</h2>
-                <p className="text-slate-300 mb-6">
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">{step.title}</h2>
+                <p className="text-slate-600 dark:text-slate-300 mb-6">
                     {step.content}
                 </p>
 
@@ -114,7 +114,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isVisible, onClose })
                         <div
                             key={index}
                             className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
-                                currentStep === index ? 'bg-sky-400 scale-125' : 'bg-slate-600'
+                                currentStep === index ? 'bg-sky-500 dark:bg-sky-400 scale-125' : 'bg-slate-300 dark:bg-slate-600'
                             }`}
                         />
                     ))}
@@ -123,7 +123,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isVisible, onClose })
                 <div className="flex items-center justify-between w-full">
                     <button
                         onClick={onClose}
-                        className="text-slate-400 hover:text-white font-semibold py-2 px-4 rounded-lg transition-colors text-sm"
+                        className="text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white font-semibold py-2 px-4 rounded-lg transition-colors text-sm"
                     >
                         Pular
                     </button>
@@ -131,7 +131,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isVisible, onClose })
                          {currentStep > 0 && (
                             <button 
                                 onClick={handlePrev} 
-                                className="bg-white/10 hover:bg-white/20 border border-white/10 text-white font-bold p-2.5 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-slate-500"
+                                className="bg-slate-200 hover:bg-slate-300/80 dark:bg-white/10 dark:hover:bg-white/20 border border-slate-300 dark:border-white/10 text-slate-800 dark:text-white font-bold p-2.5 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-100 dark:focus:ring-offset-slate-800 focus:ring-slate-500"
                                 aria-label="Passo anterior"
                             >
                                 <BackIcon />
@@ -139,7 +139,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isVisible, onClose })
                         )}
                         <button 
                             onClick={handleNext} 
-                            className="bg-sky-600 hover:bg-sky-700 text-white font-bold py-2.5 px-6 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-sky-500 flex items-center space-x-2"
+                            className="bg-sky-600 hover:bg-sky-700 text-white font-bold py-2.5 px-6 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-100 dark:focus:ring-offset-slate-800 focus:ring-sky-500 flex items-center space-x-2"
                         >
                             <span>{isLastStep ? 'Começar!' : 'Próximo'}</span>
                             {!isLastStep && <ChevronRightIcon />}

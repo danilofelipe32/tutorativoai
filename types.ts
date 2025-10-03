@@ -94,3 +94,5 @@ export interface AISettings {
     topK: number;
     topP: number;
 }
+
+export type Theme = 'light' | 'dark';

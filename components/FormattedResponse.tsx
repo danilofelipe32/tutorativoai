@@ -14,7 +14,7 @@ const renderBoldText = (line: string): React.ReactNode[] => {
     const parts = line.split(/(\*\*.*?\*\*)/g);
     return parts.map((part, index) => {
         if (part.startsWith('**') && part.endsWith('**')) {
-            return <strong key={index} className="text-sky-300">{part.slice(2, -2)}</strong>;
+            return <strong key={index} className="text-sky-600 dark:text-sky-300">{part.slice(2, -2)}</strong>;
         }
         return part;
     });
@@ -29,9 +29,9 @@ const TableRenderer: React.FC<{ tableLines: string[] }> = ({ tableLines }) => {
     const bodyRows = tableLines.slice(2); // Skip header and separator
 
     return (
-        <div className="overflow-x-auto my-4 rounded-lg border border-white/10">
-            <table className="w-full text-sm text-left text-slate-300">
-                <thead className="bg-white/5 text-xs text-slate-200 uppercase">
+        <div className="overflow-x-auto my-4 rounded-lg border border-slate-200 dark:border-white/10">
+            <table className="w-full text-sm text-left text-slate-600 dark:text-slate-300">
+                <thead className="bg-slate-100 dark:bg-white/5 text-xs text-slate-700 dark:text-slate-200 uppercase">
                     <tr>
                         {headers.map((header, index) => (
                             <th key={index} scope="col" className="px-4 py-3 whitespace-nowrap">
@@ -46,7 +46,7 @@ const TableRenderer: React.FC<{ tableLines: string[] }> = ({ tableLines }) => {
                         // Make sure the number of cells matches the number of headers
                         if (cells.length !== headers.length) return null; 
                         return (
-                            <tr key={rowIndex} className="bg-transparent even:bg-white/5 border-b border-white/10 last:border-b-0">
+                            <tr key={rowIndex} className="bg-transparent even:bg-slate-100/50 dark:even:bg-white/5 border-b border-slate-200 dark:border-white/10 last:border-b-0">
                                 {cells.map((cell, cellIndex) => (
                                     <td key={cellIndex} className="px-4 py-3 whitespace-nowrap">
                                         {renderBoldText(cell)}
@@ -102,12 +102,12 @@ const FormattedResponse: React.FC<FormattedResponseProps> = ({ text, actionType 
         // 2. If there's more than one header, create and add the TOC element
         if (headers.length > 1) {
             elements.push(
-                <nav key="toc" className="bg-slate-900/50 backdrop-blur-sm border border-white/10 rounded-lg p-4 mb-6" aria-labelledby="toc-title">
-                    <h2 id="toc-title" className="text-lg font-bold text-slate-100 mb-3">Tabela de Conteúdo</h2>
+                <nav key="toc" className="bg-slate-100 dark:bg-slate-900/50 backdrop-blur-sm border border-slate-200 dark:border-white/10 rounded-lg p-4 mb-6" aria-labelledby="toc-title">
+                    <h2 id="toc-title" className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-3">Tabela de Conteúdo</h2>
                     <ul className="space-y-2">
                         {headers.map((header) => (
                             <li key={header.id}>
-                                <a href={`#${header.id}`} className="text-sky-400 hover:text-sky-300 hover:underline transition-colors text-sm">
+                                <a href={`#${header.id}`} className="text-sky-600 dark:text-sky-400 hover:text-sky-500 dark:hover:text-sky-300 hover:underline transition-colors text-sm">
                                     {header.text}
                                 </a>
                             </li>
@@ -131,7 +131,7 @@ const FormattedResponse: React.FC<FormattedResponseProps> = ({ text, actionType 
 
             if (isHeader && !isExcludedPattern && currentHeaderFromList && trimmedLine.slice(2, -2).trim() === currentHeaderFromList.text) {
                 elements.push(
-                    <h2 key={currentHeaderFromList.id} id={currentHeaderFromList.id} className="text-xl font-bold text-slate-100 mt-6 mb-2 pt-2 scroll-mt-24">
+                    <h2 key={currentHeaderFromList.id} id={currentHeaderFromList.id} className="text-xl font-bold text-slate-800 dark:text-slate-100 mt-6 mb-2 pt-2 scroll-mt-24">
                         {currentHeaderFromList.text}
                     </h2>
                 );
@@ -180,17 +180,17 @@ const FormattedResponse: React.FC<FormattedResponseProps> = ({ text, actionType 
             } else if (line.toLowerCase().startsWith('**gabarito:**')) {
                  isList = false;
                  elements.push(
-                    <div key={`gabarito-${i}`} className="mt-6 bg-emerald-900/50 border-l-4 border-emerald-400 p-4 rounded-r-lg">
-                        <p className="text-emerald-300 font-bold">{renderBoldText(line)}</p>
+                    <div key={`gabarito-${i}`} className="mt-6 bg-emerald-100 dark:bg-emerald-900/50 border-l-4 border-emerald-500 dark:border-emerald-400 p-4 rounded-r-lg">
+                        <p className="text-emerald-800 dark:text-emerald-300 font-bold">{renderBoldText(line)}</p>
                     </div>
                  );
             } else if (/^\d+\.\s/.test(line)) { // Quiz Question
                 isList = false;
-                 elements.push(<h3 key={`h3-${i}`} className="text-lg font-semibold text-slate-100 mt-5 mb-2">{renderBoldText(line)}</h3>);
+                 elements.push(<h3 key={`h3-${i}`} className="text-lg font-semibold text-slate-800 dark:text-slate-100 mt-5 mb-2">{renderBoldText(line)}</h3>);
             } else if (/^[a-d]\)\s/.test(line)) { // Quiz Option
                 isList = false;
                  elements.push(
-                    <p key={`p-quiz-${i}`} className="ml-4 my-1 p-2 bg-white/5 rounded-md border border-white/10 hover:bg-white/10 transition-colors">
+                    <p key={`p-quiz-${i}`} className="ml-4 my-1 p-2 bg-slate-100 dark:bg-white/5 rounded-md border border-slate-200 dark:border-white/10 hover:bg-slate-200 dark:hover:bg-white/10 transition-colors">
                         {renderBoldText(line)}
                     </p>
                 );
@@ -208,7 +208,7 @@ const FormattedResponse: React.FC<FormattedResponseProps> = ({ text, actionType 
         return elements;
     }, [text, actionColor]);
 
-    return <div className="text-slate-300">{content}</div>;
+    return <div className="text-slate-700 dark:text-slate-300">{content}</div>;
 };
 
 export default FormattedResponse;

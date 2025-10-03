@@ -95,10 +95,10 @@ const ResultsView: React.FC<ResultsViewProps> = ({ isLoading, result, error, act
 
     if (isLoading) {
         return (
-            <div className="flex flex-col items-center justify-center h-full text-center text-slate-300">
-                <LoadingIcon className="text-4xl animate-spin text-sky-400" />
+            <div className="flex flex-col items-center justify-center h-full text-center text-slate-600 dark:text-slate-300">
+                <LoadingIcon className="text-4xl animate-spin text-sky-500 dark:text-sky-400" />
                 <p className="mt-4 text-lg font-semibold">{loadingMessage}</p>
-                <div className="w-full max-w-sm bg-slate-700/50 rounded-full h-2.5 mt-4 overflow-hidden">
+                <div className="w-full max-w-sm bg-slate-200 dark:bg-slate-700/50 rounded-full h-2.5 mt-4 overflow-hidden">
                     <div
                         className="bg-sky-500 h-2.5 rounded-full transition-all duration-500 ease-out"
                         style={{ width: `${progress}%` }}
@@ -110,7 +110,7 @@ const ResultsView: React.FC<ResultsViewProps> = ({ isLoading, result, error, act
 
     if (error) {
         return (
-            <div className="bg-rose-500/10 backdrop-blur-sm border border-rose-400/20 text-rose-200 p-4 rounded-lg">
+            <div className="bg-rose-100 dark:bg-rose-500/10 backdrop-blur-sm border border-rose-300 dark:border-rose-400/20 text-rose-800 dark:text-rose-200 p-4 rounded-lg">
                 <h3 className="font-bold mb-2">Ocorreu um Erro</h3>
                 <p className="text-sm">{error}</p>
             </div>
@@ -128,21 +128,21 @@ const ResultsView: React.FC<ResultsViewProps> = ({ isLoading, result, error, act
     };
 
     return (
-        <div className="bg-black/20 backdrop-blur-xl rounded-2xl border border-white/10 h-full flex flex-col">
+        <div className="bg-white/70 dark:bg-black/20 backdrop-blur-xl rounded-2xl border border-slate-200 dark:border-white/10 h-full flex flex-col">
             <div className="flex-grow p-4 overflow-y-auto">
                 {renderContent()}
                 {result?.sources && result.sources.length > 0 && (
-                    <div className="mt-6 pt-4 border-t border-white/20">
-                        <h4 className="text-sm font-bold text-slate-200 mb-3">Fontes Consultadas:</h4>
+                    <div className="mt-6 pt-4 border-t border-slate-300 dark:border-white/20">
+                        <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200 mb-3">Fontes Consultadas:</h4>
                         <ul className="space-y-2">
                             {result.sources.map((source, index) => (
                                 <li key={index} className="text-xs flex items-start">
-                                    <span className="text-sky-400 mr-2">&#8226;</span>
+                                    <span className="text-sky-500 dark:text-sky-400 mr-2">&#8226;</span>
                                     <a
                                         href={source.web.uri}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="text-sky-400 hover:text-sky-300 underline transition-colors break-words"
+                                        className="text-sky-600 dark:text-sky-400 hover:text-sky-500 dark:hover:text-sky-300 underline transition-colors break-words"
                                         title={source.web.uri}
                                     >
                                         {source.web.title || source.web.uri}
@@ -155,10 +155,10 @@ const ResultsView: React.FC<ResultsViewProps> = ({ isLoading, result, error, act
             </div>
             
             {result?.text && (
-                 <div className="flex-shrink-0 p-3 border-t border-white/10 flex items-stretch justify-between gap-2">
+                 <div className="flex-shrink-0 p-3 border-t border-slate-200 dark:border-white/10 flex items-stretch justify-between gap-2">
                     <button
                         onClick={onOpenRefineModal}
-                        className="flex-1 flex items-center justify-center space-x-1.5 px-2 py-2 text-xs font-semibold rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/50 text-white transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-emerald-400"
+                        className="flex-1 flex items-center justify-center space-x-1.5 px-2 py-2 text-xs font-semibold rounded-lg bg-emerald-100 hover:bg-emerald-200 border border-emerald-300/70 text-emerald-800 dark:bg-emerald-500/20 dark:hover:bg-emerald-500/30 dark:border-emerald-400/50 dark:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-100 dark:focus:ring-offset-slate-900 focus:ring-emerald-400"
                         disabled={isLoading}
                         title="Refinar resultado"
                     >
@@ -168,10 +168,10 @@ const ResultsView: React.FC<ResultsViewProps> = ({ isLoading, result, error, act
 
                     <button
                         onClick={handleCopy}
-                        className={`flex-1 flex items-center justify-center space-x-1.5 px-2 py-2 text-xs font-semibold rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 ${
+                        className={`flex-1 flex items-center justify-center space-x-1.5 px-2 py-2 text-xs font-semibold rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-100 dark:focus:ring-offset-slate-900 ${
                             copyStatus === 'copied'
                                 ? 'bg-emerald-500/30 border border-emerald-400/50 text-white cursor-default'
-                                : 'bg-white/10 hover:bg-white/20 border border-white/20 text-slate-200 focus:ring-slate-500'
+                                : 'bg-slate-200 hover:bg-slate-300 border border-slate-300 text-slate-700 dark:bg-white/10 dark:hover:bg-white/20 dark:border-white/20 dark:text-slate-200 focus:ring-slate-500'
                         }`}
                         disabled={copyStatus === 'copied'}
                         aria-live="polite"
@@ -187,7 +187,7 @@ const ResultsView: React.FC<ResultsViewProps> = ({ isLoading, result, error, act
                     {isShareSupported && (
                         <button
                             onClick={handleShare}
-                            className="flex-1 flex items-center justify-center space-x-1.5 px-2 py-2 text-xs font-semibold rounded-lg bg-sky-500/20 hover:bg-sky-500/30 border border-sky-400/50 text-white transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-sky-400"
+                            className="flex-1 flex items-center justify-center space-x-1.5 px-2 py-2 text-xs font-semibold rounded-lg bg-sky-100 hover:bg-sky-200 border border-sky-300/70 text-sky-800 dark:bg-sky-500/20 dark:hover:bg-sky-500/30 dark:border-sky-400/50 dark:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-100 dark:focus:ring-offset-slate-900 focus:ring-sky-400"
                         >
                             <ShareIcon className="text-base flex-shrink-0" />
                             <span className="truncate">Compartilhar</span>
