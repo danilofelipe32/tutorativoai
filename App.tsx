@@ -1,5 +1,6 @@
 
 
+
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { GoogleGenAI } from '@google/genai';
 import { ActionType, View, HistoryItem, ResultPayload, AISettings, GroundingChunk } from './types';
@@ -176,6 +177,14 @@ ${context}
             return basePrompt + "Tarefa: Crie um cenário ou estudo de caso curto e realista onde o conhecimento do texto é necessário para resolver um problema. Conclua o cenário com 1-2 perguntas desafiadoras para o leitor.";
         case 'REVERSE_ENGINEERING':
             return basePrompt + "Tarefa: Aplique a 'engenharia reversa' ao argumento principal do texto. Desconstrua-o em suas partes fundamentais: 1) A conclusão principal. 2) As premissas ou evidências que a sustentam. Apresente isso em uma lista clara.";
+        case 'GLOSSARY':
+             return basePrompt + "Tarefa: Crie um glossário com os 5 a 7 termos técnicos ou mais importantes do texto. Para cada termo, forneça uma definição clara e concisa baseada no contexto. Formate como: **Termo:** Definição.";
+        case 'SENTIMENT_ANALYSIS':
+            return basePrompt + "Tarefa: Realize uma análise de sentimento do texto. Determine o tom geral do autor (ex: positivo, negativo, neutro, informativo, persuasivo, crítico) e justifique sua análise com 2-3 exemplos ou frases do texto.";
+        case 'GENERATE_TWEET':
+            return basePrompt + "Tarefa: Resuma a ideia central do texto em um tweet conciso (máximo de 280 caracteres). O tweet deve ser envolvente e incluir 2-3 hashtags relevantes.";
+        case 'IDENTIFY_BIAS':
+            return basePrompt + "Tarefa: Atue como um analista crítico. Identifique 2-3 possíveis vieses, linguagens carregadas ou argumentos unilaterais no texto. Para cada ponto, descreva o viés potencial e cite a parte do texto que o sugere.";
         default:
             return context;
     }

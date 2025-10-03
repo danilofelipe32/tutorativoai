@@ -78,7 +78,7 @@ export const PracticalApplicationsIcon = createIcon('lni lni-rocket');
 export const ContextualizedExamplesIcon = createIcon('lni lni-pin');
 export const InterdisciplinaryExplorationIcon = createIcon('lni lni-library');
 
-// New Icons
+// Icons for Learning Mindsets and Techniques
 export const MetaphoricalLearningIcon = createIcon('lni lni-invention');
 export const SpacedRepetitionIcon = createIcon('lni lni-alarm-clock');
 export const GrowthMindsetIcon = createIcon('lni lni-stats-up');
@@ -86,3 +86,9 @@ export const FlowStateIcon = createIcon('lni lni-bolt-alt');
 export const CuriosityExplorationIcon = createIcon('lni lni-compass');
 export const ScenarioBasedLearningIcon = createIcon('lni lni-website');
 export const ReverseEngineeringIcon = createIcon('lni lni-construction-hammer');
+
+// Icons for New Actions
+export const GlossaryIcon = createIcon('lni lni-book');
+export const SentimentAnalysisIcon = createIcon('lni lni-emoji-friendly');
+export const GenerateTweetIcon = createIcon('lni lni-share-alt');
+export const IdentifyBiasIcon = createIcon('lni lni-scale');

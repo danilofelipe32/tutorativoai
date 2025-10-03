@@ -23,7 +23,11 @@ import {
     FlowStateIcon,
     CuriosityExplorationIcon,
     ScenarioBasedLearningIcon,
-    ReverseEngineeringIcon
+    ReverseEngineeringIcon,
+    GlossaryIcon,
+    SentimentAnalysisIcon,
+    GenerateTweetIcon,
+    IdentifyBiasIcon
 } from './components/icons';
 
 type ActionConfig = {
@@ -359,5 +363,30 @@ export const actionConfig: ActionConfig = {
         description: 'Ensina a desconstruir ideias complexas em blocos simples e lógicos.',
         icon: ReverseEngineeringIcon,
         className: 'bg-slate-900/30 border border-slate-500/50 hover:bg-slate-500/30 hover:shadow-lg hover:shadow-slate-500/40 backdrop-blur',
+    },
+    // New Actions
+    [ActionType.GLOSSARY]: {
+        title: 'Elaborar Glossário',
+        description: 'Cria um glossário formal com os termos técnicos do texto.',
+        icon: GlossaryIcon,
+        className: 'bg-yellow-900/30 border border-yellow-500/50 hover:bg-yellow-500/30 hover:shadow-lg hover:shadow-yellow-500/40 backdrop-blur',
+    },
+    [ActionType.SENTIMENT_ANALYSIS]: {
+        title: 'Análise de Sentimento',
+        description: 'Determina o tom do autor (positivo, negativo, neutro, etc.).',
+        icon: SentimentAnalysisIcon,
+        className: 'bg-pink-900/30 border border-pink-500/50 hover:bg-pink-500/30 hover:shadow-lg hover:shadow-pink-500/40 backdrop-blur',
+    },
+    [ActionType.GENERATE_TWEET]: {
+        title: 'Gerar Tweet',
+        description: 'Resume a ideia central em um tweet conciso com hashtags.',
+        icon: GenerateTweetIcon,
+        className: 'bg-sky-900/30 border border-sky-400/50 hover:bg-sky-500/30 hover:shadow-lg hover:shadow-sky-500/40 backdrop-blur',
+    },
+    [ActionType.IDENTIFY_BIAS]: {
+        title: 'Identificar Viés',
+        description: 'Procura por linguagem tendenciosa ou argumentos unilaterais no texto.',
+        icon: IdentifyBiasIcon,
+        className: 'bg-red-900/30 border border-red-500/50 hover:bg-red-500/30 hover:shadow-lg hover:shadow-red-500/40 backdrop-blur',
     },
 };
