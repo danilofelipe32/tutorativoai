@@ -297,8 +297,14 @@ const MainView: React.FC<MainViewProps> = ({
                     {actionGroups.map((group) => {
                         const isOpen = openGroup === group.title;
                         const groupId = group.title.replace(/\s+/g, '-');
+                        const isFavoriteGroup = group.title === '⭐ Favoritos';
                         return (
-                            <div key={group.title} className="bg-slate-900/30 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden transition-shadow duration-300 shadow-md hover:shadow-lg hover:shadow-black/30">
+                            <div 
+                                key={group.title} 
+                                className={`bg-slate-900/30 backdrop-blur-sm border rounded-xl overflow-hidden transition-all duration-300 shadow-md hover:shadow-lg hover:shadow-black/30 ${
+                                    isFavoriteGroup ? 'border-yellow-400/60 shadow-yellow-500/10' : 'border-white/10'
+                                }`}
+                            >
                                 <button
                                     onClick={() => handleToggleGroup(group.title)}
                                     className={`w-full flex justify-between items-center p-4 text-left transition-colors duration-200 ${group.colorClass} border-l-4`}
