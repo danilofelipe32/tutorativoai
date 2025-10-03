@@ -64,13 +64,15 @@ const ActionButton: React.FC<{
             <button
                 onClick={handleFavoriteClick}
                 disabled={isDisabled || isFavoriteLimitReached}
-                className="absolute top-1 right-1 p-2 z-20 focus:outline-none focus:ring-2 focus:ring-yellow-400 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className={`absolute top-1 right-1 p-2 z-20 focus:outline-none focus:ring-2 focus:ring-yellow-400 rounded-full transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${
+                    isFavorite ? 'opacity-100' : 'opacity-60 group-hover:opacity-100'
+                }`}
                 aria-label={isFavorite ? `Desfavoritar ${config.title}` : `Favoritar ${config.title}`}
                 title={isFavorite ? 'Desfavoritar' : (isFavoriteLimitReached ? 'Limite de favoritos atingido (5 máx)' : 'Favoritar')}
             >
                 {isFavorite 
                     ? <StarFillIcon className={`text-yellow-400 text-xl drop-shadow-[0_0_4px_rgba(250,204,21,0.7)] ${animationClass}`} /> 
-                    : <StarIcon className={`text-slate-300 hover:text-yellow-300 text-xl transition-all hover:scale-125 drop-shadow-[0_0_4px_rgba(0,0,0,0.8)] ${animationClass}`} />
+                    : <StarIcon className={`text-slate-300 group-hover:text-yellow-300 text-xl transition-all group-hover:scale-125 drop-shadow-[0_0_4px_rgba(0,0,0,0.8)] ${animationClass}`} />
                 }
             </button>
         </div>
