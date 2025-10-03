@@ -16,7 +16,14 @@ import {
     GapDetectorIcon,
     PracticalApplicationsIcon,
     ContextualizedExamplesIcon,
-    InterdisciplinaryExplorationIcon
+    InterdisciplinaryExplorationIcon,
+    MetaphoricalLearningIcon,
+    SpacedRepetitionIcon,
+    GrowthMindsetIcon,
+    FlowStateIcon,
+    CuriosityExplorationIcon,
+    ScenarioBasedLearningIcon,
+    ReverseEngineeringIcon
 } from './components/icons';
 
 type ActionConfig = {
@@ -310,5 +317,47 @@ export const actionConfig: ActionConfig = {
         description: 'Liga o tema do texto a outras matérias (História, Arte, Ciência).',
         icon: InterdisciplinaryExplorationIcon,
         className: 'bg-purple-900/30 border border-purple-500/50 hover:bg-purple-500/30 hover:shadow-lg hover:shadow-purple-500/40 backdrop-blur',
+    },
+    [ActionType.METAPHORICAL_LEARNING]: {
+        title: 'Aprendizado por Metáforas',
+        description: 'Explica conceitos complexos usando metáforas e analogias do dia a dia.',
+        icon: MetaphoricalLearningIcon,
+        className: 'bg-teal-900/30 border border-teal-500/50 hover:bg-teal-500/30 hover:shadow-lg hover:shadow-teal-500/40 backdrop-blur',
+    },
+    [ActionType.SPACED_REPETITION]: {
+        title: 'Revisão Espaçada',
+        description: 'Cria um cronograma de estudos para otimizar a memorização a longo prazo.',
+        icon: SpacedRepetitionIcon,
+        className: 'bg-sky-900/30 border border-sky-500/50 hover:bg-sky-500/30 hover:shadow-lg hover:shadow-sky-500/40 backdrop-blur',
+    },
+    [ActionType.GROWTH_MINDSET]: {
+        title: 'Mentalidade de Crescimento',
+        description: 'Oferece estratégias para desenvolver resiliência e foco no progresso.',
+        icon: GrowthMindsetIcon,
+        className: 'bg-emerald-900/30 border border-emerald-500/50 hover:bg-emerald-500/30 hover:shadow-lg hover:shadow-emerald-500/40 backdrop-blur',
+    },
+    [ActionType.FLOW_STATE]: {
+        title: 'Estado de Flow',
+        description: 'Orienta como atingir o foco máximo e a imersão nos estudos.',
+        icon: FlowStateIcon,
+        className: 'bg-indigo-900/30 border border-indigo-500/50 hover:bg-indigo-500/30 hover:shadow-lg hover:shadow-indigo-500/40 backdrop-blur',
+    },
+    [ActionType.CURIOSITY_EXPLORATION]: {
+        title: 'Exploração pela Curiosidade',
+        description: 'Gera perguntas e desafios para estimular um aprendizado autônomo.',
+        icon: CuriosityExplorationIcon,
+        className: 'bg-amber-900/30 border border-amber-500/50 hover:bg-amber-500/30 hover:shadow-lg hover:shadow-amber-500/40 backdrop-blur',
+    },
+    [ActionType.SCENARIO_BASED_LEARNING]: {
+        title: 'Aprendizado por Cenários',
+        description: 'Cria cenários práticos para aplicar o conhecimento e tomar decisões.',
+        icon: ScenarioBasedLearningIcon,
+        className: 'bg-rose-900/30 border border-rose-500/50 hover:bg-rose-500/30 hover:shadow-lg hover:shadow-rose-500/40 backdrop-blur',
+    },
+    [ActionType.REVERSE_ENGINEERING]: {
+        title: 'Engenharia Reversa',
+        description: 'Ensina a desconstruir ideias complexas em blocos simples e lógicos.',
+        icon: ReverseEngineeringIcon,
+        className: 'bg-slate-900/30 border border-slate-500/50 hover:bg-slate-500/30 hover:shadow-lg hover:shadow-slate-500/40 backdrop-blur',
     },
 };

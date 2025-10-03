@@ -143,6 +143,20 @@ ${context}
             return basePrompt + "Tarefa: Gere 3 'Exemplos Contextualizados' que ilustrem a aplicação prática dos conceitos do texto. Cada exemplo deve ser um mini cenário ou uma breve história que descreve uma situação do mundo real onde o conhecimento do texto é essencial para entender ou resolver o problema. Numere cada exemplo.";
         case 'INTERDISCIPLINARY_EXPLORATION':
             return basePrompt + "Tarefa: Realize uma 'Exploração Interdisciplinar'. Identifique o tema central do texto e descreva como ele se conecta com pelo menos 3 outras áreas do conhecimento (ex: História, Arte, Ciência, Filosofia, Economia, etc.). Para cada conexão, explique a relação de forma clara e concisa em 2-3 frases. Use o formato: **Conexão com [Área do Conhecimento]:** Explicação.";
+        case 'METAPHORICAL_LEARNING':
+            return `Você é um educador criativo especializado em tornar ideias complexas acessíveis. Explique o conceito de ${context} por meio de metáforas, analogias e histórias envolventes. Use referências do cotidiano para que qualquer pessoa consiga entender e lembrar com facilidade. Finalize com uma pergunta reflexiva para consolidar o entendimento.`;
+        case 'SPACED_REPETITION':
+            return `Você é um especialista em neuroeducação. Crie um cronograma de revisão espaçada para aprender e memorizar ${context}, baseado em evidências da curva do esquecimento. Inclua as datas ideais para revisar, técnicas de microteste e recomendações de ferramentas digitais para acompanhar o progresso.`;
+        case 'GROWTH_MINDSET':
+            return `Você é um mentor de desenvolvimento pessoal. Me ensine como desenvolver uma mentalidade de crescimento ao estudar ou aplicar ${context}. Apresente estratégias práticas que reforcem a resiliência, o foco no progresso e a superação de bloqueios. Inclua uma lista de hábitos diários ou reflexões semanais que favoreçam esse mindset.`;
+        case 'FLOW_STATE':
+            return `Você é um treinador de performance cognitiva. Me oriente sobre como atingir e manter o estado de flow enquanto estudo ou prático ${context}. Indique condições ideais (ambiente, tempo, estímulos), técnicas para evitar distrações e como monitorar se estou em flow de forma prática.`;
+        case 'CURIOSITY_EXPLORATION':
+            return `Você é um mentor do pensamento investigativo. Gere uma lista de perguntas provocativas, tarefas exploratórias e desafios criativos sobre ${context} para estimular minha curiosidade e expandir meu aprendizado de forma autônoma. Organize os tópicos por nível de profundidade (iniciante, intermediário e avançado) e sugira recursos para cada um.`;
+        case 'SCENARIO_BASED_LEARNING':
+            return `Você é um designer instrucional especializado em ensino ativo. Crie uma sequência de cenários realistas e desafiadores onde eu possa aplicar o conhecimento sobre ${context}. Em cada cenário, descreva o contexto, o desafio e as possíveis abordagens, incentivando a tomada de decisão e o raciocínio crítico. Finalize com perguntas de reflexão para consolidar o aprendizado.`;
+        case 'REVERSE_ENGINEERING':
+            return `Você é um especialista em aprendizagem profunda. Me ensine a aplicar engenharia reversa ao estudar ${context}, desconstruindo ideias complexas em blocos simples e lógicos. Forneça uma estrutura passo a passo, use analogias visuais ou práticas, e proponha exercícios para reforçar a reconstrução dos conceitos a partir da base.`;
         default:
             return context;
     }
