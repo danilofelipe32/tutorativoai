@@ -28,8 +28,6 @@ export const PlusIcon = createIcon('lni lni-plus');
 export const SettingsIcon = createIcon('lni lni-cog');
 export const DownloadIcon = createIcon('lni lni-download');
 export const ImportIcon = createIcon('lni lni-enter');
-export const StarIcon = createIcon('lni lni-star');
-export const StarFilledIcon = createIcon('lni lni-star-fill');
 
 
 // Action Icons (30 unique icons for 30 actions)

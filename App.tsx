@@ -1,5 +1,6 @@
 
 
+
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { GoogleGenAI } from '@google/genai';
 import { ActionType, View, HistoryItem, ResultPayload, AISettings, GroundingChunk } from './types';
@@ -17,8 +18,8 @@ import QuizDifficultyModal from './components/QuizDifficultyModal';
 // Declara a biblioteca pdf.js como uma variável global para o TypeScript
 declare const pdfjsLib: any;
 
-// FIX: The API key must be obtained from environment variables.
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// A chave de API foi inserida diretamente no código.
+const ai = new GoogleGenAI({ apiKey: "AIzaSyA3e-4Do8arZ4NkqE_qC5eUBWkpt1kYKJs" });
 
 
 function getPromptForAction(action: ActionType, context: string, difficulty: string = 'Médio'): string {
@@ -216,7 +217,6 @@ const App: React.FC = () => {
     const [isQuizModalVisible, setQuizModalVisible] = useState(false);
     const [isOcrLoading, setOcrLoading] = useState(false);
     const [isPdfLoading, setPdfLoading] = useState(false);
-    const [favoriteActions, setFavoriteActions] = useState<Set<ActionType>>(new Set());
 
     const initialSettings: AISettings = { temperature: 0.7, topK: 40, topP: 0.95 };
     const [aiSettings, setAiSettings] = useState<AISettings>(initialSettings);
@@ -242,16 +242,6 @@ const App: React.FC = () => {
             if (!hasOnboarded) {
                 setOnboardingModalVisible(true);
             }
-
-            const savedFavorites = localStorage.getItem('tutor-ai-favorites');
-            if (savedFavorites) {
-                const parsed = JSON.parse(savedFavorites);
-                if (Array.isArray(parsed)) {
-                    const validFavorites = parsed.filter(action => Object.values(ActionType).includes(action));
-                    setFavoriteActions(new Set(validFavorites));
-                }
-            }
-
         } catch (e) {
             console.error("Failed to load from localStorage", e);
         }
@@ -273,14 +263,6 @@ const App: React.FC = () => {
             console.error("Failed to save settings to localStorage", e);
         }
     }, [aiSettings]);
-
-    useEffect(() => {
-        try {
-            localStorage.setItem('tutor-ai-favorites', JSON.stringify(Array.from(favoriteActions)));
-        } catch (e) {
-            console.error("Failed to save favorites to localStorage", e);
-        }
-    }, [favoriteActions]);
 
     const handleGenerateContent = useCallback(async (action: ActionType, context: string, isRefinement = false, refinementInstruction = '', difficulty: string = 'Médio') => {
         if (!context.trim()) {
@@ -496,18 +478,6 @@ const App: React.FC = () => {
         });
     }, []);
 
-    const handleToggleFavorite = (action: ActionType) => {
-        setFavoriteActions(prev => {
-            const newFavorites = new Set(prev);
-            if (newFavorites.has(action)) {
-                newFavorites.delete(action);
-            } else {
-                newFavorites.add(action);
-            }
-            return newFavorites;
-        });
-    };
-
     return (
         <div className="flex flex-col h-screen">
             <Header
@@ -535,8 +505,6 @@ const App: React.FC = () => {
                         onPdfUpload={handlePdfUpload}
                         isPdfLoading={isPdfLoading}
                         onImportHistory={handleImportHistory}
-                        favoriteActions={favoriteActions}
-                        onToggleFavorite={handleToggleFavorite}
                     />
                 )}
                 {view === View.RESULTS && (
