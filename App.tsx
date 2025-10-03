@@ -514,35 +514,37 @@ const App: React.FC = () => {
                 onSettings={() => setSettingsModalVisible(true)}
             />
             <main className="flex-grow overflow-y-auto p-4 md:p-6 w-full max-w-5xl mx-auto">
-                {view === View.MAIN && (
-                    <MainView
-                        onActionSelect={handleActionSelect}
-                        inputText={inputText}
-                        onTextChange={setInputText}
-                        onClearText={handleClearText}
-                        history={history}
-                        onHistoryItemClick={handleHistoryItemClick}
-                        onDeleteItem={handleDeleteItem}
-                        onRenameItem={handleRenameItem}
-                        onImageUpload={handleImageUpload}
-                        isOcrLoading={isOcrLoading}
-                        onPdfUpload={handlePdfUpload}
-                        isPdfLoading={isPdfLoading}
-                        onImportHistory={handleImportHistory}
-                        favoriteActions={favoriteActions}
-                        onToggleFavorite={handleToggleFavorite}
-                    />
-                )}
-                {view === View.RESULTS && (
-                    <ResultsView
-                        isLoading={isLoading}
-                        result={result}
-                        error={error}
-                        actionType={currentAction}
-                        onOpenRefineModal={() => setRefineModalVisible(true)}
-                        onExplainTopic={handleExplainTopic}
-                    />
-                )}
+                <div key={view} className="animate-view-enter h-full">
+                    {view === View.MAIN && (
+                        <MainView
+                            onActionSelect={handleActionSelect}
+                            inputText={inputText}
+                            onTextChange={setInputText}
+                            onClearText={handleClearText}
+                            history={history}
+                            onHistoryItemClick={handleHistoryItemClick}
+                            onDeleteItem={handleDeleteItem}
+                            onRenameItem={handleRenameItem}
+                            onImageUpload={handleImageUpload}
+                            isOcrLoading={isOcrLoading}
+                            onPdfUpload={handlePdfUpload}
+                            isPdfLoading={isPdfLoading}
+                            onImportHistory={handleImportHistory}
+                            favoriteActions={favoriteActions}
+                            onToggleFavorite={handleToggleFavorite}
+                        />
+                    )}
+                    {view === View.RESULTS && (
+                        <ResultsView
+                            isLoading={isLoading}
+                            result={result}
+                            error={error}
+                            actionType={currentAction}
+                            onOpenRefineModal={() => setRefineModalVisible(true)}
+                            onExplainTopic={handleExplainTopic}
+                        />
+                    )}
+                </div>
             </main>
 
             <HelpModal isVisible={isHelpModalVisible} onClose={() => setHelpModalVisible(false)} />

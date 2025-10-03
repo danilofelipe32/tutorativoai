@@ -42,14 +42,22 @@ const SettingControl: React.FC<{
 
 const SettingsModal: React.FC<SettingsModalProps> = ({ isVisible, onClose, currentSettings, onSave }) => {
     const [settings, setSettings] = useState<AISettings>(currentSettings);
+    const [isRendered, setIsRendered] = useState(isVisible);
 
     useEffect(() => {
         if (isVisible) {
             setSettings(currentSettings);
+            setIsRendered(true);
         }
     }, [isVisible, currentSettings]);
 
-    if (!isVisible) return null;
+    const handleAnimationEnd = () => {
+        if (!isVisible) {
+            setIsRendered(false);
+        }
+    };
+
+    if (!isRendered) return null;
 
     const handleSave = () => {
         onSave(settings);
@@ -57,7 +65,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isVisible, onClose, curre
 
     return (
         <div 
-            className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 animate-fade-in"
+            className={`fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 ${isVisible ? 'animate-fade-in' : 'animate-fade-out'}`}
+            onAnimationEnd={handleAnimationEnd}
             onClick={onClose}
             aria-modal="true"
             role="dialog"

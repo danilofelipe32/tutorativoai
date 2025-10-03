@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
     CloseIcon, 
     BackIcon, 
@@ -45,8 +45,20 @@ const steps = [
 
 const OnboardingModal: React.FC<OnboardingModalProps> = ({ isVisible, onClose }) => {
     const [currentStep, setCurrentStep] = useState(0);
+    const [isRendered, setIsRendered] = useState(isVisible);
 
-    if (!isVisible) return null;
+    useEffect(() => {
+        if (isVisible) {
+            setIsRendered(true);
+            setCurrentStep(0); // Reset step when modal re-opens
+        }
+    }, [isVisible]);
+
+    const handleAnimationEnd = () => {
+        if (!isVisible) {
+            setIsRendered(false);
+        }
+    };
 
     const handleNext = () => {
         if (currentStep < steps.length - 1) {
@@ -62,13 +74,16 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isVisible, onClose })
         }
     };
 
+    if (!isRendered) return null;
+    
     const step = steps[currentStep];
     const IconComponent = step.icon;
     const isLastStep = currentStep === steps.length - 1;
 
     return (
         <div 
-            className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 animate-fade-in"
+            className={`fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 ${isVisible ? 'animate-fade-in' : 'animate-fade-out'}`}
+            onAnimationEnd={handleAnimationEnd}
             aria-modal="true"
             role="dialog"
         >

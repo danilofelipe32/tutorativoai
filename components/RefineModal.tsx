@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CloseIcon } from './icons';
 
 interface RefineModalProps {
@@ -9,19 +9,34 @@ interface RefineModalProps {
 
 const RefineModal: React.FC<RefineModalProps> = ({ isVisible, onClose, onSubmit }) => {
     const [instruction, setInstruction] = useState('');
+    const [isRendered, setIsRendered] = useState(isVisible);
 
-    if (!isVisible) return null;
+    useEffect(() => {
+        if (isVisible) {
+            setIsRendered(true);
+        }
+    }, [isVisible]);
 
+    const handleAnimationEnd = () => {
+        if (!isVisible) {
+            setIsRendered(false);
+        }
+    };
+    
     const handleSubmit = () => {
         if (instruction.trim()) {
             onSubmit(instruction);
             setInstruction(''); // Clear after submit
+            onClose();
         }
     };
 
+    if (!isRendered) return null;
+
     return (
         <div 
-            className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 animate-fade-in"
+            className={`fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 ${isVisible ? 'animate-fade-in' : 'animate-fade-out'}`}
+            onAnimationEnd={handleAnimationEnd}
             onClick={onClose}
             aria-modal="true"
             role="dialog"

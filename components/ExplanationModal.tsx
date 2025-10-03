@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { CloseIcon, LoadingIcon } from './icons';
 import FormattedResponse from './FormattedResponse';
 
@@ -11,11 +11,26 @@ interface ExplanationModalProps {
 }
 
 const ExplanationModal: React.FC<ExplanationModalProps> = ({ isVisible, onClose, topic, explanation, isLoading }) => {
-    if (!isVisible) return null;
+    const [isRendered, setIsRendered] = useState(isVisible);
+
+    useEffect(() => {
+        if (isVisible) {
+            setIsRendered(true);
+        }
+    }, [isVisible]);
+
+    const handleAnimationEnd = () => {
+        if (!isVisible) {
+            setIsRendered(false);
+        }
+    };
+    
+    if (!isRendered) return null;
 
     return (
         <div 
-            className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 animate-fade-in"
+            className={`fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 ${isVisible ? 'animate-fade-in' : 'animate-fade-out'}`}
+            onAnimationEnd={handleAnimationEnd}
             onClick={onClose}
             aria-modal="true"
             role="dialog"
