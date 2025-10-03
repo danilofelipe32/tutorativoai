@@ -522,6 +522,10 @@ const App: React.FC = () => {
             if (isFavorited) {
                 return prev.filter(fav => fav !== action);
             } else {
+                if (prev.length >= 5) {
+                    alert('Você pode fixar no máximo 5 ações como favoritas.');
+                    return prev;
+                }
                 return [...prev, action];
             }
         });

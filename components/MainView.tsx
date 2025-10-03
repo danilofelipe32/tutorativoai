@@ -28,28 +28,26 @@ const ActionButton: React.FC<{
     isDisabled: boolean;
     isFavorite: boolean;
     onToggleFavorite: (action: ActionType) => void;
-}> = ({ action, onClick, isDisabled, isFavorite, onToggleFavorite }) => {
+    favoritesCount: number;
+}> = ({ action, onClick, isDisabled, isFavorite, onToggleFavorite, favoritesCount }) => {
     const config = actionConfig[action];
-    const [isAnimating, setIsAnimating] = useState(false); // Estado para a animação
+    const [isAnimating, setIsAnimating] = useState(false);
+    const isFavoriteLimitReached = !isFavorite && favoritesCount >= 5;
 
     const handleFavoriteClick = (e: React.MouseEvent) => {
-        e.stopPropagation(); // Impede que o clique no favorito acione a ação principal
+        e.stopPropagation();
         onToggleFavorite(action);
         setIsAnimating(true);
-        // Reseta o estado da animação após a sua conclusão
-        const animationDuration = 300; // em milissegundos
+        const animationDuration = 300;
         setTimeout(() => {
             setIsAnimating(false);
         }, animationDuration);
     };
 
-    // Determina a classe para a animação
-    const animationClass = isAnimating ? 'animate-favorite-pop' : '';
+    const animationClass = isAnimating ? 'animate-favorite-click' : '';
 
     return (
-        // Um contêiner relativo para o card de ação
         <div className={`relative group transition-all duration-200 ease-in-out hover:scale-105 ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}>
-            {/* O botão principal para a ação */}
             <button
                 onClick={onClick}
                 disabled={isDisabled}
@@ -63,17 +61,16 @@ const ActionButton: React.FC<{
                 </div>
             </button>
             
-            {/* O botão de favorito, agora sem fundo para parecer apenas uma estrela */}
             <button
                 onClick={handleFavoriteClick}
-                disabled={isDisabled}
-                className="absolute top-1 right-1 p-2 z-20 rounded-full focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-colors"
+                disabled={isDisabled || isFavoriteLimitReached}
+                className="absolute top-1 right-1 p-2 z-20 focus:outline-none focus:ring-2 focus:ring-yellow-400 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 aria-label={isFavorite ? `Desfavoritar ${config.title}` : `Favoritar ${config.title}`}
-                title={isFavorite ? 'Desfavoritar' : 'Favoritar'}
+                title={isFavorite ? 'Desfavoritar' : (isFavoriteLimitReached ? 'Limite de favoritos atingido (5 máx)' : 'Favoritar')}
             >
                 {isFavorite 
                     ? <StarFillIcon className={`text-yellow-400 text-xl drop-shadow-[0_0_4px_rgba(250,204,21,0.7)] ${animationClass}`} /> 
-                    : <StarIcon className={`text-white/80 hover:text-yellow-300 text-xl transition-all hover:scale-125 drop-shadow-[0_0_4px_rgba(0,0,0,0.8)] ${animationClass}`} />
+                    : <StarIcon className={`text-slate-300 hover:text-yellow-300 text-xl transition-all hover:scale-125 drop-shadow-[0_0_4px_rgba(0,0,0,0.8)] ${animationClass}`} />
                 }
             </button>
         </div>
@@ -195,7 +192,7 @@ const MainView: React.FC<MainViewProps> = ({
 
         const favoritesGroup = {
             title: '⭐ Favoritos',
-            description: 'Suas ações mais usadas, sempre à mão.',
+            description: `Suas ações mais usadas (${favoriteActions.length}/5). Clique na estrela para adicionar ou remover.`,
             colorClass: 'border-yellow-400 hover:bg-yellow-900/40',
             actions: favoriteActions.sort((a, b) => actionConfig[a].title.localeCompare(actionConfig[b].title)),
         };
@@ -329,6 +326,7 @@ const MainView: React.FC<MainViewProps> = ({
                                                 isDisabled={!isTextProvided || isLoading}
                                                 isFavorite={favoriteActions.includes(action)}
                                                 onToggleFavorite={onToggleFavorite}
+                                                favoritesCount={favoriteActions.length}
                                             />
                                         ))}
                                     </div>
