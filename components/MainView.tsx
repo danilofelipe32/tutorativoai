@@ -1,8 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
+
+
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { ActionType, HistoryItem } from '../types';
 import { actionConfig } from '../constants';
 import HistoryList from './HistoryList';
-import { PlusIcon, LoadingIcon, TrashIcon, ChevronRightIcon } from './icons';
+import { PlusIcon, LoadingIcon, TrashIcon, ChevronRightIcon, StarIcon, StarFilledIcon } from './icons';
 
 interface MainViewProps {
     onActionSelect: (action: ActionType) => void;
@@ -18,25 +20,55 @@ interface MainViewProps {
     onPdfUpload: (file: File) => void;
     isPdfLoading: boolean;
     onImportHistory: (importedHistory: HistoryItem[]) => void;
+    favoriteActions: Set<ActionType>;
+    onToggleFavorite: (action: ActionType) => void;
 }
 
-const ActionButton: React.FC<{ action: ActionType; onClick: () => void; isDisabled: boolean }> = ({ action, onClick, isDisabled }) => {
+const ActionButton: React.FC<{
+    action: ActionType;
+    onClick: () => void;
+    isDisabled: boolean;
+    isFavorite: boolean;
+    onToggleFavorite: () => void;
+}> = ({ action, onClick, isDisabled, isFavorite, onToggleFavorite }) => {
     const config = actionConfig[action];
+
+    const handleFavoriteClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        onToggleFavorite();
+    };
+
+    const favoriteClasses = isFavorite
+        ? 'ring-2 ring-amber-400/80 shadow-[0_0_15px_rgba(251,191,36,0.5)]'
+        : '';
+
     return (
-        <button
-            onClick={onClick}
-            disabled={isDisabled}
-            className={`p-3 rounded-xl flex flex-col items-start justify-between text-white shadow-lg transition-all duration-200 ease-in-out hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-white disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:active:scale-100 ${config.className}`}
-            aria-disabled={isDisabled}
-        >
-            <config.icon className="text-3xl mb-2" />
-            <div className="text-left">
-                <h3 className="font-bold text-xs md:text-sm">{config.title}</h3>
-                <p className="text-[10px] opacity-80 mt-1">{config.description}</p>
-            </div>
-        </button>
+        <div className="relative h-full">
+            <button
+                onClick={onClick}
+                disabled={isDisabled}
+                className={`w-full h-full p-3 rounded-xl flex flex-col items-start justify-between text-white shadow-lg transition-all duration-200 ease-in-out hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-white disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:active:scale-100 ${config.className} ${favoriteClasses}`}
+                aria-disabled={isDisabled}
+                aria-pressed={isFavorite}
+            >
+                <config.icon className="text-3xl mb-2" />
+                <div className="text-left">
+                    <h3 className="font-bold text-xs md:text-sm">{config.title}</h3>
+                    <p className="text-[10px] opacity-80 mt-1">{config.description}</p>
+                </div>
+            </button>
+            <button
+                onClick={handleFavoriteClick}
+                className="absolute top-1.5 right-1.5 p-1.5 rounded-full bg-black/20 text-amber-400/70 hover:bg-black/40 hover:text-amber-400 focus:text-amber-400 transition-all focus:outline-none focus:ring-2 focus:ring-amber-500"
+                aria-label={isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+                title={isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+            >
+                {isFavorite ? <StarFilledIcon className="text-sm" /> : <StarIcon className="text-sm" />}
+            </button>
+        </div>
     );
 };
+
 
 const actionGroups = [
   {
@@ -142,12 +174,34 @@ const MainView: React.FC<MainViewProps> = ({
     onPdfUpload,
     isPdfLoading,
     onImportHistory,
+    favoriteActions,
+    onToggleFavorite,
 }) => {
     const isTextProvided = inputText.trim().length > 0;
     const fileInputRef = useRef<HTMLInputElement>(null);
     const isLoading = isOcrLoading || isPdfLoading;
-    const [openGroup, setOpenGroup] = useState<string | null>(actionGroups[0].title);
+    const [openGroup, setOpenGroup] = useState<string | null>(null);
     const [loadingMessage, setLoadingMessage] = useState('');
+    const [initialGroupSet, setInitialGroupSet] = useState(false);
+
+    const favoriteActionTypes = useMemo(() => {
+        // FIX: Explicitly type the sort function parameters to fix a "Type 'unknown' cannot be used as an index type" error.
+        return Array.from(favoriteActions).sort((a: ActionType, b: ActionType) =>
+            actionConfig[a].title.localeCompare(actionConfig[b].title)
+        );
+    }, [favoriteActions]);
+
+    useEffect(() => {
+        // On initial mount, decide which group to open.
+        if (!initialGroupSet) {
+            if (favoriteActions.size > 0) {
+                setOpenGroup('Favoritos');
+            } else {
+                setOpenGroup(actionGroups[0].title);
+            }
+            setInitialGroupSet(true);
+        }
+    }, [favoriteActions, initialGroupSet]);
 
     useEffect(() => {
         let intervalId: number | undefined;
@@ -248,6 +302,41 @@ const MainView: React.FC<MainViewProps> = ({
                 </div>
 
                 <div className="space-y-3">
+                    {favoriteActionTypes.length > 0 && (
+                         <div className="bg-slate-900/30 backdrop-blur-sm border border-amber-500/50 rounded-xl overflow-hidden transition-shadow duration-300 shadow-md hover:shadow-lg hover:shadow-black/30">
+                            <button
+                                onClick={() => handleToggleGroup('Favoritos')}
+                                className="w-full flex justify-between items-center p-4 text-left transition-colors duration-200 border-amber-500 hover:bg-amber-900/40 border-l-4"
+                                aria-expanded={openGroup === 'Favoritos'}
+                                aria-controls="accordion-content-favoritos"
+                            >
+                                <div>
+                                    <h3 id="accordion-title-favoritos" className="text-lg font-bold text-amber-300">⭐ Favoritos</h3>
+                                    <p className="text-slate-400 text-sm mt-1">Suas ações mais usadas, prontas para acesso rápido.</p>
+                                </div>
+                                <ChevronRightIcon className={`text-2xl text-slate-400 transition-transform duration-300 flex-shrink-0 ml-4 ${openGroup === 'Favoritos' ? 'rotate-90' : ''}`} />
+                            </button>
+                            <div
+                                id="accordion-content-favoritos"
+                                className={`accordion-content ${openGroup === 'Favoritos' ? 'open' : ''}`}
+                                role="region"
+                                aria-labelledby="accordion-title-favoritos"
+                            >
+                                <div className="max-h-96 overflow-y-auto pr-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
+                                    {favoriteActionTypes.map(action => (
+                                        <ActionButton
+                                            key={action}
+                                            action={action}
+                                            onClick={() => onActionSelect(action)}
+                                            isDisabled={!isTextProvided || isLoading}
+                                            isFavorite={true}
+                                            onToggleFavorite={() => onToggleFavorite(action)}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    )}
                     {actionGroups.map((group) => {
                         const isOpen = openGroup === group.title;
                         const groupId = group.title.replace(/\s+/g, '-');
@@ -278,6 +367,8 @@ const MainView: React.FC<MainViewProps> = ({
                                                 action={action}
                                                 onClick={() => onActionSelect(action)}
                                                 isDisabled={!isTextProvided || isLoading}
+                                                isFavorite={favoriteActions.has(action)}
+                                                onToggleFavorite={() => onToggleFavorite(action)}
                                             />
                                         ))}
                                     </div>
