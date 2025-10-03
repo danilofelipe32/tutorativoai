@@ -52,10 +52,13 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onDelet
         const lowerCaseSearch = searchTerm.toLowerCase();
         return history.filter(item => {
             const title = item.customTitle ?? actionConfig[item.actionType].title;
-            const snippet = item.inputTextSnippet;
+            const originalText = item.fullInputText;
+            const resultText = item.fullResult.text;
+
             return (
                 title.toLowerCase().includes(lowerCaseSearch) ||
-                snippet.toLowerCase().includes(lowerCaseSearch)
+                originalText.toLowerCase().includes(lowerCaseSearch) ||
+                resultText.toLowerCase().includes(lowerCaseSearch)
             );
         });
     }, [history, searchTerm]);
