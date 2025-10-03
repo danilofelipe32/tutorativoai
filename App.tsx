@@ -1,19 +1,22 @@
 
 
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useEffect, useRef, lazy, Suspense } from 'react';
 import { GoogleGenAI } from '@google/genai';
 import { ActionType, View, HistoryItem, ResultPayload, AISettings, GroundingChunk } from './types';
 import Header from './components/Header';
-import MainView from './components/MainView';
-import ResultsView from './components/ResultsView';
-import HelpModal from './components/HelpModal';
-import RefineModal from './components/RefineModal';
-import ExplanationModal from './components/ExplanationModal';
 import { actionConfig } from './constants';
-import OnboardingModal from './components/OnboardingModal';
-import SettingsModal from './components/SettingsModal';
-import QuizDifficultyModal from './components/QuizDifficultyModal';
-import { PlusIcon } from './components/icons';
+import { PlusIcon, LoadingIcon } from './components/icons';
+
+// Carregamento assíncrono dos componentes principais e modais
+const MainView = lazy(() => import('./components/MainView'));
+const ResultsView = lazy(() => import('./components/ResultsView'));
+const HelpModal = lazy(() => import('./components/HelpModal'));
+const RefineModal = lazy(() => import('./components/RefineModal'));
+const ExplanationModal = lazy(() => import('./components/ExplanationModal'));
+const OnboardingModal = lazy(() => import('./components/OnboardingModal'));
+const SettingsModal = lazy(() => import('./components/SettingsModal'));
+const QuizDifficultyModal = lazy(() => import('./components/QuizDifficultyModal'));
+
 
 // Declara a biblioteca pdf.js como uma variável global para o TypeScript
 declare const pdfjsLib: any;
@@ -523,6 +526,12 @@ const App: React.FC = () => {
             }
         });
     };
+    
+    const LoadingFallback = () => (
+        <div className="flex items-center justify-center h-full">
+            <LoadingIcon className="text-4xl animate-spin text-sky-400" />
+        </div>
+    );
 
     return (
         <div className="flex flex-col h-screen">
@@ -536,35 +545,37 @@ const App: React.FC = () => {
                 onSettings={() => setSettingsModalVisible(true)}
             />
             <main className="flex-grow overflow-y-auto p-4 md:p-6 w-full max-w-5xl mx-auto">
-                <div key={view} className="animate-view-enter h-full">
-                    {view === View.MAIN && (
-                        <MainView
-                            onActionSelect={handleActionSelect}
-                            inputText={inputText}
-                            onTextChange={setInputText}
-                            onClearText={handleClearText}
-                            history={history}
-                            onHistoryItemClick={handleHistoryItemClick}
-                            onDeleteItem={handleDeleteItem}
-                            onRenameItem={handleRenameItem}
-                            isOcrLoading={isOcrLoading}
-                            isPdfLoading={isPdfLoading}
-                            onImportHistory={handleImportHistory}
-                            favoriteActions={favoriteActions}
-                            onToggleFavorite={handleToggleFavorite}
-                        />
-                    )}
-                    {view === View.RESULTS && (
-                        <ResultsView
-                            isLoading={isLoading}
-                            result={result}
-                            error={error}
-                            actionType={currentAction}
-                            onOpenRefineModal={() => setRefineModalVisible(true)}
-                            onExplainTopic={handleExplainTopic}
-                        />
-                    )}
-                </div>
+                <Suspense fallback={<LoadingFallback />}>
+                    <div key={view} className="animate-view-enter h-full">
+                        {view === View.MAIN && (
+                            <MainView
+                                onActionSelect={handleActionSelect}
+                                inputText={inputText}
+                                onTextChange={setInputText}
+                                onClearText={handleClearText}
+                                history={history}
+                                onHistoryItemClick={handleHistoryItemClick}
+                                onDeleteItem={handleDeleteItem}
+                                onRenameItem={handleRenameItem}
+                                isOcrLoading={isOcrLoading}
+                                isPdfLoading={isPdfLoading}
+                                onImportHistory={handleImportHistory}
+                                favoriteActions={favoriteActions}
+                                onToggleFavorite={handleToggleFavorite}
+                            />
+                        )}
+                        {view === View.RESULTS && (
+                            <ResultsView
+                                isLoading={isLoading}
+                                result={result}
+                                error={error}
+                                actionType={currentAction}
+                                onOpenRefineModal={() => setRefineModalVisible(true)}
+                                onExplainTopic={handleExplainTopic}
+                            />
+                        )}
+                    </div>
+                </Suspense>
             </main>
 
             {view === View.MAIN && (
@@ -588,28 +599,30 @@ const App: React.FC = () => {
                     </button>
                 </>
             )}
-
-            <HelpModal isVisible={isHelpModalVisible} onClose={() => setHelpModalVisible(false)} />
-            <RefineModal isVisible={isRefineModalVisible} onClose={() => setRefineModalVisible(false)} onSubmit={handleRefine} />
-            <ExplanationModal 
-                isVisible={isExplanationModalVisible} 
-                onClose={() => setExplanationModalVisible(false)}
-                topic={explanationTopic}
-                explanation={explanationContent}
-                isLoading={isExplanationLoading}
-            />
-            <OnboardingModal isVisible={isOnboardingModalVisible} onClose={handleCloseOnboarding} />
-            <SettingsModal 
-                isVisible={isSettingsModalVisible}
-                onClose={() => setSettingsModalVisible(false)}
-                currentSettings={aiSettings}
-                onSave={handleSaveSettings}
-            />
-            <QuizDifficultyModal
-                isVisible={isQuizModalVisible}
-                onClose={() => setQuizModalVisible(false)}
-                onSelectDifficulty={handleQuizGeneration}
-            />
+            
+            <Suspense fallback={null}>
+                {isHelpModalVisible && <HelpModal isVisible={isHelpModalVisible} onClose={() => setHelpModalVisible(false)} />}
+                {isRefineModalVisible && <RefineModal isVisible={isRefineModalVisible} onClose={() => setRefineModalVisible(false)} onSubmit={handleRefine} />}
+                {isExplanationModalVisible && <ExplanationModal 
+                    isVisible={isExplanationModalVisible} 
+                    onClose={() => setExplanationModalVisible(false)}
+                    topic={explanationTopic}
+                    explanation={explanationContent}
+                    isLoading={isExplanationLoading}
+                />}
+                {isOnboardingModalVisible && <OnboardingModal isVisible={isOnboardingModalVisible} onClose={handleCloseOnboarding} />}
+                {isSettingsModalVisible && <SettingsModal 
+                    isVisible={isSettingsModalVisible}
+                    onClose={() => setSettingsModalVisible(false)}
+                    currentSettings={aiSettings}
+                    onSave={handleSaveSettings}
+                />}
+                {isQuizModalVisible && <QuizDifficultyModal
+                    isVisible={isQuizModalVisible}
+                    onClose={() => setQuizModalVisible(false)}
+                    onSelectDifficulty={handleQuizGeneration}
+                />}
+            </Suspense>
         </div>
     );
 };

@@ -73,7 +73,7 @@ const ActionButton: React.FC<{
             >
                 {isFavorite 
                     ? <StarFillIcon className={`text-yellow-400 text-xl drop-shadow-[0_0_4px_rgba(250,204,21,0.7)] ${animationClass}`} /> 
-                    : <StarIcon className={`text-slate-200 hover:text-yellow-300 text-xl transition-colors drop-shadow-[0_0_3px_rgba(0,0,0,0.7)] ${animationClass}`} />
+                    : <StarIcon className={`text-white/80 hover:text-yellow-300 text-xl transition-all hover:scale-125 drop-shadow-[0_0_4px_rgba(0,0,0,0.8)] ${animationClass}`} />
                 }
             </button>
         </div>
