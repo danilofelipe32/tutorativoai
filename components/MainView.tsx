@@ -1,5 +1,4 @@
 
-
 import React, { useState, useRef } from 'react';
 import { ActionType, HistoryItem } from '../types';
 import { actionConfig } from '../constants';
@@ -44,7 +43,7 @@ const actionGroups = [
   {
     title: 'Análise e Compreensão',
     description: 'Ações para extrair, simplificar e entender as informações centrais do texto.',
-    colorClass: 'border-sky-500/80 hover:bg-sky-900/40',
+    colorClass: 'border-sky-500 hover:bg-sky-900/40',
     actions: [
       ActionType.WEB_SEARCH,
       ActionType.SUMMARIZE,
@@ -64,7 +63,7 @@ const actionGroups = [
   {
     title: 'Pensamento Crítico e Exploração',
     description: 'Ferramentas para questionar, aprofundar e explorar as ideias do texto por diferentes ângulos.',
-    colorClass: 'border-purple-500/80 hover:bg-purple-900/40',
+    colorClass: 'border-purple-500 hover:bg-purple-900/40',
     actions: [
       ActionType.REFLECT,
       ActionType.DEEPER_QUESTIONS,
@@ -89,7 +88,7 @@ const actionGroups = [
   {
     title: 'Criação e Aplicação',
     description: 'Use o conteúdo como base para criar novos materiais, projetos e narrativas.',
-    colorClass: 'border-emerald-500/80 hover:bg-emerald-900/40',
+    colorClass: 'border-emerald-500 hover:bg-emerald-900/40',
     actions: [
       ActionType.MINDMAP,
       ActionType.STEP_BY_STEP,
@@ -108,7 +107,7 @@ const actionGroups = [
   {
     title: 'Avaliação e Planejamento Pedagógico',
     description: 'Recursos específicos para educadores criarem avaliações, planos de aula e atividades.',
-    colorClass: 'border-amber-500/80 hover:bg-amber-900/40',
+    colorClass: 'border-amber-500 hover:bg-amber-900/40',
     actions: [
       ActionType.TEST,
       ActionType.PROGRESS_MAP,
