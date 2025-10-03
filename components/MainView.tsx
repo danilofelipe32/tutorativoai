@@ -1,10 +1,10 @@
 
 
-import React, { useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { ActionType, HistoryItem } from '../types';
 import { actionConfig } from '../constants';
 import HistoryList from './HistoryList';
-import { PlusIcon, LoadingIcon, TrashIcon } from './icons';
+import { PlusIcon, LoadingIcon, TrashIcon, ChevronRightIcon } from './icons';
 
 interface MainViewProps {
     onActionSelect: (action: ActionType) => void;
@@ -44,6 +44,7 @@ const actionGroups = [
   {
     title: 'Análise e Compreensão',
     description: 'Ações para extrair, simplificar e entender as informações centrais do texto.',
+    colorClass: 'border-sky-500/80 hover:bg-sky-900/40',
     actions: [
       ActionType.WEB_SEARCH,
       ActionType.SUMMARIZE,
@@ -63,6 +64,7 @@ const actionGroups = [
   {
     title: 'Pensamento Crítico e Exploração',
     description: 'Ferramentas para questionar, aprofundar e explorar as ideias do texto por diferentes ângulos.',
+    colorClass: 'border-purple-500/80 hover:bg-purple-900/40',
     actions: [
       ActionType.REFLECT,
       ActionType.DEEPER_QUESTIONS,
@@ -87,6 +89,7 @@ const actionGroups = [
   {
     title: 'Criação e Aplicação',
     description: 'Use o conteúdo como base para criar novos materiais, projetos e narrativas.',
+    colorClass: 'border-emerald-500/80 hover:bg-emerald-900/40',
     actions: [
       ActionType.MINDMAP,
       ActionType.STEP_BY_STEP,
@@ -105,6 +108,7 @@ const actionGroups = [
   {
     title: 'Avaliação e Planejamento Pedagógico',
     description: 'Recursos específicos para educadores criarem avaliações, planos de aula e atividades.',
+    colorClass: 'border-amber-500/80 hover:bg-amber-900/40',
     actions: [
       ActionType.TEST,
       ActionType.PROGRESS_MAP,
@@ -140,6 +144,11 @@ const MainView: React.FC<MainViewProps> = ({
     const isTextProvided = inputText.trim().length > 0;
     const fileInputRef = useRef<HTMLInputElement>(null);
     const isLoading = isOcrLoading || isPdfLoading;
+    const [openGroup, setOpenGroup] = useState<string | null>(actionGroups[0].title);
+
+    const handleToggleGroup = (title: string) => {
+        setOpenGroup(prevOpenGroup => (prevOpenGroup === title ? null : title));
+    };
 
     const handleFabClick = () => {
         fileInputRef.current?.click();
@@ -202,25 +211,44 @@ const MainView: React.FC<MainViewProps> = ({
                     <p className="text-slate-300 font-semibold text-center text-lg">Agora, escolha uma ação:</p>
                 </div>
 
-                <div className="space-y-8">
-                    {actionGroups.map((group) => (
-                        <section key={group.title} aria-labelledby={group.title.replace(/\s+/g, '-').toLowerCase()}>
-                            <div className="mb-4 border-l-4 border-sky-500/50 pl-4">
-                                <h3 id={group.title.replace(/\s+/g, '-').toLowerCase()} className="text-xl font-bold text-slate-100">{group.title}</h3>
-                                <p className="text-slate-400 text-sm">{group.description}</p>
+                <div className="space-y-3">
+                    {actionGroups.map((group) => {
+                        const isOpen = openGroup === group.title;
+                        const groupId = group.title.replace(/\s+/g, '-');
+                        return (
+                            <div key={group.title} className="bg-slate-900/30 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden transition-shadow duration-300 shadow-md hover:shadow-lg hover:shadow-black/30">
+                                <button
+                                    onClick={() => handleToggleGroup(group.title)}
+                                    className={`w-full flex justify-between items-center p-4 text-left transition-colors duration-200 ${group.colorClass} border-l-4`}
+                                    aria-expanded={isOpen}
+                                    aria-controls={`accordion-content-${groupId}`}
+                                >
+                                    <div>
+                                        <h3 id={`accordion-title-${groupId}`} className="text-lg font-bold text-slate-100">{group.title}</h3>
+                                        <p className="text-slate-400 text-sm mt-1">{group.description}</p>
+                                    </div>
+                                    <ChevronRightIcon className={`text-2xl text-slate-400 transition-transform duration-300 flex-shrink-0 ml-4 ${isOpen ? 'rotate-90' : ''}`} />
+                                </button>
+                                <div
+                                    id={`accordion-content-${groupId}`}
+                                    className={`accordion-content ${isOpen ? 'open' : ''}`}
+                                    role="region"
+                                    aria-labelledby={`accordion-title-${groupId}`}
+                                >
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
+                                        {group.actions.map((action) => (
+                                            <ActionButton
+                                                key={action}
+                                                action={action}
+                                                onClick={() => onActionSelect(action)}
+                                                isDisabled={!isTextProvided || isLoading}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
                             </div>
-                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
-                                {group.actions.map((action) => (
-                                    <ActionButton
-                                        key={action}
-                                        action={action}
-                                        onClick={() => onActionSelect(action)}
-                                        isDisabled={!isTextProvided || isLoading}
-                                    />
-                                ))}
-                            </div>
-                        </section>
-                    ))}
+                        );
+                    })}
                 </div>
             </>
 
