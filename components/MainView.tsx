@@ -64,8 +64,8 @@ const ActionButton: React.FC<{
                 title={isFavorite ? 'Desfavoritar' : 'Favoritar'}
             >
                 {isFavorite 
-                    ? <StarFillIcon className="text-yellow-400 text-xl" /> 
-                    : <StarIcon className="text-slate-400 hover:text-yellow-300 text-xl transition-colors" />
+                    ? <StarFillIcon className="text-yellow-400 text-xl drop-shadow-[0_0_2px_white]" /> 
+                    : <StarIcon className="text-slate-400 hover:text-yellow-300 text-xl transition-colors drop-shadow-[0_0_2px_white]" />
                 }
             </button>
         </div>
