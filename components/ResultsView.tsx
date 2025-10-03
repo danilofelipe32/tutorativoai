@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ActionType, ResultPayload } from '../types';
 import MindMapRenderer from './MindMapRenderer';
 import { LoadingIcon, SparkleIcon, CopyIcon, ShareIcon, CheckIcon } from './icons';
@@ -16,7 +16,52 @@ interface ResultsViewProps {
 
 const ResultsView: React.FC<ResultsViewProps> = ({ isLoading, result, error, actionType, onOpenRefineModal, onExplainTopic }) => {
     const [copyStatus, setCopyStatus] = useState<'idle' | 'copied'>('idle');
+    const [loadingMessage, setLoadingMessage] = useState('Aquecendo os motores da IA...');
+    const [progress, setProgress] = useState(0);
     const isShareSupported = typeof navigator.share === 'function';
+
+    useEffect(() => {
+        let messageInterval: number | undefined;
+        let progressInterval: number | undefined;
+
+        if (isLoading) {
+            const messages = [
+                'Analisando a estrutura do seu texto...',
+                'Consultando a vasta base de conhecimento...',
+                'Formulando os conceitos principais...',
+                'Construindo uma resposta clara e objetiva...',
+                'Polindo os detalhes finais para você...',
+                'Quase pronto, a mágica está acontecendo!',
+            ];
+            let messageIndex = 0;
+            
+            setLoadingMessage(messages[0]);
+            messageInterval = window.setInterval(() => {
+                messageIndex = (messageIndex + 1) % messages.length;
+                setLoadingMessage(messages[messageIndex]);
+            }, 3000);
+
+            // Simulate progress
+            setProgress(0);
+            progressInterval = window.setInterval(() => {
+                setProgress(prev => {
+                    if (prev >= 95) {
+                        clearInterval(progressInterval);
+                        return 95;
+                    }
+                    return prev + Math.random() * 5;
+                });
+            }, 400);
+
+        } else {
+            setProgress(100);
+        }
+
+        return () => {
+            if (messageInterval) clearInterval(messageInterval);
+            if (progressInterval) clearInterval(progressInterval);
+        };
+    }, [isLoading]);
 
     const handleCopy = async () => {
         if (!result?.text) return;
@@ -52,8 +97,13 @@ const ResultsView: React.FC<ResultsViewProps> = ({ isLoading, result, error, act
         return (
             <div className="flex flex-col items-center justify-center h-full text-center text-slate-300">
                 <LoadingIcon className="text-4xl animate-spin text-sky-400" />
-                <p className="mt-4 text-lg font-semibold">Analisando...</p>
-                <p className="text-sm text-slate-400">A IA está trabalhando para gerar sua resposta.</p>
+                <p className="mt-4 text-lg font-semibold">{loadingMessage}</p>
+                <div className="w-full max-w-sm bg-slate-700/50 rounded-full h-2.5 mt-4 overflow-hidden">
+                    <div
+                        className="bg-sky-500 h-2.5 rounded-full transition-all duration-500 ease-out"
+                        style={{ width: `${progress}%` }}
+                    ></div>
+                </div>
             </div>
         );
     }

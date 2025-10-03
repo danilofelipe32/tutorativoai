@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { ActionType, HistoryItem } from '../types';
 import { actionConfig } from '../constants';
 import HistoryList from './HistoryList';
@@ -143,6 +143,37 @@ const MainView: React.FC<MainViewProps> = ({
     const fileInputRef = useRef<HTMLInputElement>(null);
     const isLoading = isOcrLoading || isPdfLoading;
     const [openGroup, setOpenGroup] = useState<string | null>(actionGroups[0].title);
+    const [loadingMessage, setLoadingMessage] = useState('');
+
+    useEffect(() => {
+        let intervalId: number | undefined;
+        if (isLoading) {
+            const ocrMessages = [
+                'Analisando a imagem...',
+                'Identificando áreas de texto...',
+                'Extraindo caracteres...',
+                'Reconstruindo palavras e frases...',
+            ];
+            const pdfMessages = [
+                'Carregando o arquivo PDF...',
+                'Processando as páginas...',
+                'Extraindo conteúdo textual...',
+                'Montando o documento final...',
+            ];
+            const messages = isOcrLoading ? ocrMessages : pdfMessages;
+            let messageIndex = 0;
+            
+            setLoadingMessage(messages[0]);
+            intervalId = window.setInterval(() => {
+                messageIndex = (messageIndex + 1) % messages.length;
+                setLoadingMessage(messages[messageIndex]);
+            }, 2000);
+
+        }
+        return () => {
+            if (intervalId) clearInterval(intervalId);
+        };
+    }, [isLoading, isOcrLoading]);
 
     const handleToggleGroup = (title: string) => {
         setOpenGroup(prevOpenGroup => (prevOpenGroup === title ? null : title));
@@ -195,11 +226,14 @@ const MainView: React.FC<MainViewProps> = ({
                     disabled={isLoading}
                 />
                 {isLoading && (
-                    <div className="absolute inset-0 bg-slate-900/70 rounded-lg mb-4 flex flex-col items-center justify-center text-slate-200">
+                    <div className="absolute inset-0 bg-slate-900/80 backdrop-blur-sm rounded-lg mb-4 flex flex-col items-center justify-center text-slate-200">
                         <LoadingIcon className="text-3xl animate-spin text-sky-400" />
-                        <p className="mt-3 font-semibold">
-                            {isOcrLoading ? 'Extraindo texto da imagem...' : 'Extraindo texto do PDF...'}
+                        <p className="mt-3 font-semibold text-center px-4">
+                            {loadingMessage}
                         </p>
+                        <div className="w-4/5 max-w-xs bg-slate-700/50 rounded-full h-1.5 mt-3 overflow-hidden">
+                           <div className="bg-sky-500 h-1.5 rounded-full animate-pulse"></div>
+                        </div>
                     </div>
                 )}
             </div>
