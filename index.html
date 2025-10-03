@@ -66,6 +66,14 @@
         .animate-fade-in-fast {
             animation: fade-in-fast 0.15s ease-out forwards;
         }
+        @keyframes checkmark-pop {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-checkmark-pop {
+            animation: checkmark-pop 0.3s ease-out forwards;
+        }
     </style>
 <script type="importmap">
 {

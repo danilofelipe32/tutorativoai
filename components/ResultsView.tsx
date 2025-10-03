@@ -127,7 +127,7 @@ const ResultsView: React.FC<ResultsViewProps> = ({ isLoading, result, error, act
                         aria-live="polite"
                     >
                         {copyStatus === 'copied' ? (
-                            <CheckIcon className="text-base flex-shrink-0" />
+                            <CheckIcon className="text-base flex-shrink-0 animate-checkmark-pop" />
                         ) : (
                             <CopyIcon className="text-base flex-shrink-0" />
                         )}
