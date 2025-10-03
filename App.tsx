@@ -13,6 +13,7 @@ import { actionConfig } from './constants';
 import OnboardingModal from './components/OnboardingModal';
 import SettingsModal from './components/SettingsModal';
 import QuizDifficultyModal from './components/QuizDifficultyModal';
+import { PlusIcon } from './components/icons';
 
 // Declara a biblioteca pdf.js como uma variável global para o TypeScript
 declare const pdfjsLib: any;
@@ -222,6 +223,7 @@ const App: React.FC = () => {
     const [aiSettings, setAiSettings] = useState<AISettings>(initialSettings);
 
     const lastRequestRef = useRef<{ action: ActionType, context: string, difficulty?: string } | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Load state from localStorage on initial render
     useEffect(() => {
@@ -443,6 +445,26 @@ const App: React.FC = () => {
         }
     };
 
+    const handleFabClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            if (file.type === 'application/pdf') {
+                handlePdfUpload(file);
+            } else if (file.type.startsWith('image/')) {
+                handleImageUpload(file);
+            } else {
+                alert('Tipo de arquivo não suportado. Por favor, anexe uma imagem ou PDF.');
+            }
+        }
+        if (event.target) {
+            event.target.value = ''; // Allow uploading the same file again
+        }
+    };
+
     const handleBack = () => setView(View.MAIN);
     const handleClearText = () => setInputText('');
     const handleHistoryItemClick = (item: HistoryItem) => {
@@ -525,9 +547,7 @@ const App: React.FC = () => {
                             onHistoryItemClick={handleHistoryItemClick}
                             onDeleteItem={handleDeleteItem}
                             onRenameItem={handleRenameItem}
-                            onImageUpload={handleImageUpload}
                             isOcrLoading={isOcrLoading}
-                            onPdfUpload={handlePdfUpload}
                             isPdfLoading={isPdfLoading}
                             onImportHistory={handleImportHistory}
                             favoriteActions={favoriteActions}
@@ -546,6 +566,28 @@ const App: React.FC = () => {
                     )}
                 </div>
             </main>
+
+            {view === View.MAIN && (
+                <>
+                    <input
+                        type="file"
+                        ref={fileInputRef}
+                        onChange={handleFileChange}
+                        accept="image/*,application/pdf"
+                        className="hidden"
+                        aria-hidden="true"
+                    />
+                    <button
+                        onClick={handleFabClick}
+                        disabled={isOcrLoading || isPdfLoading}
+                        className="fixed bottom-6 right-4 sm:right-6 md:right-8 w-14 h-14 bg-sky-600 hover:bg-sky-500 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-300 ease-in-out transform hover:scale-110 focus:outline-none focus:ring-4 focus:ring-sky-400/50 disabled:bg-slate-500 disabled:cursor-not-allowed disabled:hover:scale-100 z-30"
+                        title="Anexar Imagem ou PDF"
+                        aria-label="Anexar Imagem ou PDF"
+                    >
+                        <PlusIcon className="text-2xl" />
+                    </button>
+                </>
+            )}
 
             <HelpModal isVisible={isHelpModalVisible} onClose={() => setHelpModalVisible(false)} />
             <RefineModal isVisible={isRefineModalVisible} onClose={() => setRefineModalVisible(false)} onSubmit={handleRefine} />

@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { ActionType, HistoryItem } from '../types';
 import { actionConfig } from '../constants';
@@ -13,9 +14,7 @@ interface MainViewProps {
     onHistoryItemClick: (item: HistoryItem) => void;
     onDeleteItem: (itemId: number) => void;
     onRenameItem: (itemId: number, newTitle: string) => void;
-    onImageUpload: (file: File) => void;
     isOcrLoading: boolean;
-    onPdfUpload: (file: File) => void;
     isPdfLoading: boolean;
     onImportHistory: (importedHistory: HistoryItem[]) => void;
     favoriteActions: ActionType[];
@@ -161,16 +160,13 @@ const MainView: React.FC<MainViewProps> = ({
     onHistoryItemClick,
     onDeleteItem,
     onRenameItem,
-    onImageUpload,
     isOcrLoading,
-    onPdfUpload,
     isPdfLoading,
     onImportHistory,
     favoriteActions,
     onToggleFavorite,
 }) => {
     const isTextProvided = inputText.trim().length > 0;
-    const fileInputRef = useRef<HTMLInputElement>(null);
     const isLoading = isOcrLoading || isPdfLoading;
     
     const [loadingMessage, setLoadingMessage] = useState('');
@@ -227,24 +223,6 @@ const MainView: React.FC<MainViewProps> = ({
 
     const handleToggleGroup = (title: string) => {
         setOpenGroup(prevOpenGroup => (prevOpenGroup === title ? null : title));
-    };
-
-    const handleFabClick = () => {
-        fileInputRef.current?.click();
-    };
-
-    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file) {
-            if (file.type === 'application/pdf') {
-                onPdfUpload(file);
-            } else if (file.type.startsWith('image/')) {
-                onImageUpload(file);
-            } else {
-                alert('Tipo de arquivo não suportado. Por favor, anexe uma imagem ou PDF.');
-            }
-        }
-        event.target.value = ''; // Allow uploading the same file again
     };
 
     return (
@@ -349,24 +327,6 @@ const MainView: React.FC<MainViewProps> = ({
                 onRenameItem={onRenameItem}
                 onImportHistory={onImportHistory}
             />
-
-            <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleFileChange}
-                accept="image/*,application/pdf"
-                className="hidden"
-                aria-hidden="true"
-            />
-            <button
-                onClick={handleFabClick}
-                disabled={isLoading}
-                className="fixed bottom-20 right-4 sm:right-6 md:right-8 w-14 h-14 bg-sky-600 hover:bg-sky-500 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-300 ease-in-out transform hover:scale-110 focus:outline-none focus:ring-4 focus:ring-sky-400/50 disabled:bg-slate-500 disabled:cursor-not-allowed disabled:hover:scale-100 z-30"
-                title="Anexar Imagem ou PDF"
-                aria-label="Anexar Imagem ou PDF"
-            >
-                <PlusIcon className="text-2xl" />
-            </button>
 
         </div>
     );
