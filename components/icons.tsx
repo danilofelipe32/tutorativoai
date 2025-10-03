@@ -1,5 +1,3 @@
-
-
 import React from 'react';
 
 type IconProps = { className?: string };
@@ -92,4 +90,4 @@ export const ReverseEngineeringIcon = createIcon('lni lni-construction-hammer');
 export const GlossaryIcon = createIcon('lni lni-book');
 export const SentimentAnalysisIcon = createIcon('lni lni-happy');
 export const GenerateTweetIcon = createIcon('lni lni-share-alt');
-export const IdentifyBiasIcon = createIcon('lni lni-target-alt');
+export const IdentifyBiasIcon = createIcon('lni lni-focus');
