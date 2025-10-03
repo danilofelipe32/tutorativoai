@@ -27,7 +27,7 @@ import {
     GlossaryIcon,
     SentimentAnalysisIcon,
     GenerateTweetIcon,
-    IdentifyBiasIcon
+    UnbalancedScaleIcon
 } from './components/icons';
 
 type ActionConfig = {
@@ -386,7 +386,7 @@ export const actionConfig: ActionConfig = {
     [ActionType.IDENTIFY_BIAS]: {
         title: 'Identificar Viés',
         description: 'Procura por linguagem tendenciosa ou argumentos unilaterais no texto.',
-        icon: IdentifyBiasIcon,
+        icon: UnbalancedScaleIcon,
         className: 'bg-red-900/30 border border-red-500/50 hover:bg-red-500/30 hover:shadow-lg hover:shadow-red-500/40 backdrop-blur',
     },
 };
