@@ -2,7 +2,7 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { HistoryItem, ActionType, GroundingChunk } from '../types';
 import { actionConfig } from '../constants';
-import { HistoryIcon, TrashIcon, PencilIcon, SearchIcon, DownloadIcon, ImportIcon, CheckIcon, CloseIcon, SortIcon } from './icons';
+import { HistoryIcon, TrashIcon, PencilIcon, SearchIcon, DownloadIcon, ImportIcon, CheckIcon, CloseIcon, SortIcon, UndoIcon } from './icons';
 
 interface HistoryListProps {
     history: HistoryItem[];
@@ -46,6 +46,13 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onDelet
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, []);
+
+    const handleClearFilters = () => {
+        setSearchTerm('');
+        setSortOption('date-desc');
+    };
+
+    const areFiltersActive = searchTerm.trim() !== '' || sortOption !== 'date-desc';
 
     const processedHistory = useMemo(() => {
         let processedItems = [...history]; // Start with a shallow copy
@@ -364,20 +371,32 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onDelet
                         aria-label="Pesquisar no histórico"
                     />
                 </div>
-                <div className="relative w-full sm:w-auto">
-                    <label htmlFor="sort-history" className="sr-only">Ordenar histórico</label>
-                    <select
-                        id="sort-history"
-                        value={sortOption}
-                        onChange={(e) => setSortOption(e.target.value as SortOption)}
-                        className="w-full sm:w-auto appearance-none bg-slate-900/50 text-slate-300 pl-4 pr-10 py-2 rounded-lg border border-white/10 focus:outline-none focus:ring-2 focus:ring-sky-500"
-                        aria-label="Ordenar histórico"
-                    >
-                        <option value="date-desc">Mais Recentes</option>
-                        <option value="date-asc">Mais Antigos</option>
-                        <option value="action-asc">Tipo de Ação (A-Z)</option>
-                    </select>
-                    <SortIcon className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                    <div className="relative w-full sm:w-auto flex-grow">
+                        <label htmlFor="sort-history" className="sr-only">Ordenar histórico</label>
+                        <select
+                            id="sort-history"
+                            value={sortOption}
+                            onChange={(e) => setSortOption(e.target.value as SortOption)}
+                            className="w-full sm:w-auto appearance-none bg-slate-900/50 text-slate-300 pl-4 pr-10 py-2 rounded-lg border border-white/10 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                            aria-label="Ordenar histórico"
+                        >
+                            <option value="date-desc">Mais Recentes</option>
+                            <option value="date-asc">Mais Antigos</option>
+                            <option value="action-asc">Tipo de Ação (A-Z)</option>
+                        </select>
+                        <SortIcon className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                    </div>
+                    {areFiltersActive && (
+                        <button
+                            onClick={handleClearFilters}
+                            className="flex-shrink-0 py-2 px-3 bg-slate-900/50 text-slate-300 rounded-lg border border-white/10 hover:bg-rose-500/20 hover:text-rose-300 transition-colors focus:outline-none focus:ring-2 focus:ring-rose-500"
+                            title="Limpar filtros"
+                            aria-label="Limpar filtros de pesquisa e ordenação"
+                        >
+                            <UndoIcon className="text-lg" />
+                        </button>
+                    )}
                 </div>
             </div>
 
@@ -431,8 +450,8 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onDelet
                 ) : (
                     <div className="text-center py-8 px-4 bg-slate-800/30 rounded-lg">
                         <HistoryIcon className="text-4xl text-slate-500 mx-auto mb-3" />
-                        <p className="text-slate-400">Seu histórico aparecerá aqui.</p>
-                        <p className="text-xs text-slate-500 mt-1">{searchTerm ? 'Nenhum item corresponde à sua busca.' : 'Nenhuma análise foi realizada ainda.'}</p>
+                        <p className="text-slate-400">{searchTerm ? 'Nenhum item corresponde à sua busca.' : 'Seu histórico aparecerá aqui.'}</p>
+                         { !searchTerm && <p className="text-xs text-slate-500 mt-1">Nenhuma análise foi realizada ainda.</p> }
                     </div>
                 )}
             </div>

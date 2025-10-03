@@ -31,6 +31,7 @@ export const ImportIcon = createIcon('lni lni-enter');
 export const StarIcon = createIcon('lni lni-star');
 export const StarFillIcon = createIcon('lni lni-star-fill');
 export const SortIcon = createIcon('lni lni-arrows-vertical');
+export const UndoIcon = createIcon('lni lni-undo');
 
 
 // Action Icons (30 unique icons for 30 actions)
