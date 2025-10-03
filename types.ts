@@ -81,6 +81,7 @@ export interface HistoryItem {
     fullResult: ResultPayload;
     timestamp: string; // ISO String
     customTitle?: string;
+    difficulty?: 'Fácil' | 'Médio' | 'Difícil';
 }
 
 export interface AISettings {

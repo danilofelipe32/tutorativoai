@@ -12,6 +12,7 @@ import ExplanationModal from './components/ExplanationModal';
 import { actionConfig } from './constants';
 import OnboardingModal from './components/OnboardingModal';
 import SettingsModal from './components/SettingsModal';
+import QuizDifficultyModal from './components/QuizDifficultyModal';
 
 // Declara a biblioteca pdf.js como uma variável global para o TypeScript
 declare const pdfjsLib: any;
@@ -20,7 +21,7 @@ declare const pdfjsLib: any;
 const ai = new GoogleGenAI({ apiKey: "AIzaSyA3e-4Do8arZ4NkqE_qC5eUBWkpt1kYKJs" });
 
 
-function getPromptForAction(action: ActionType, context: string): string {
+function getPromptForAction(action: ActionType, context: string, difficulty: string = 'Médio'): string {
     // Para a pesquisa na web, o "contexto" é a própria pergunta do usuário.
     if (action === ActionType.WEB_SEARCH) {
         return `Como um assistente de pesquisa IA, use as informações mais recentes da web para fornecer uma resposta abrangente e atualizada para a seguinte pergunta ou tópico: "${context}"`;
@@ -50,7 +51,7 @@ ${context}
         case 'REFLECT':
             return basePrompt + "Tarefa: Elabore de 3 a 5 perguntas abertas e instigantes que incentivem a reflexão sobre o conteúdo do texto. As perguntas devem estimular o pensamento crítico. Numere as perguntas.";
         case 'TEST':
-            return basePrompt + "Tarefa: Crie um pequeno quiz com 4 perguntas de múltipla escolha para testar o conhecimento sobre o texto. Siga ESTRITAMENTE este formato:\n1. Pergunta...\na) Opção A\nb) Opção B\nc) Opção C\nd) Opção D\n\n2. Pergunta...\n...\n\nNo final, adicione a chave de respostas usando a tag **Gabarito:** seguido das respostas (ex: 1-c, 2-a...).";
+            return basePrompt + `Tarefa: Crie um pequeno quiz de nível **${difficulty}** com 4 perguntas de múltipla escolha para testar o conhecimento sobre o texto. Siga ESTRITAMENTE este formato:\n1. Pergunta...\na) Opção A\nb) Opção B\nc) Opção C\nd) Opção D\n\n2. Pergunta...\n...\n\nNo final, adicione a chave de respostas usando a tag **Gabarito:** seguido das respostas (ex: 1-c, 2-a...).`;
         case 'SIMPLIFY':
             return basePrompt + "Tarefa: Reescreva os conceitos mais complexos do texto em uma linguagem simples e fácil de entender, como se estivesse explicando para um estudante do ensino médio. Use parágrafos curtos.";
         case 'MINDMAP':
@@ -186,13 +187,14 @@ const App: React.FC = () => {
     const [isExplanationLoading, setExplanationLoading] = useState(false);
     const [isOnboardingModalVisible, setOnboardingModalVisible] = useState(false);
     const [isSettingsModalVisible, setSettingsModalVisible] = useState(false);
+    const [isQuizModalVisible, setQuizModalVisible] = useState(false);
     const [isOcrLoading, setOcrLoading] = useState(false);
     const [isPdfLoading, setPdfLoading] = useState(false);
 
     const initialSettings: AISettings = { temperature: 0.7, topK: 40, topP: 0.95 };
     const [aiSettings, setAiSettings] = useState<AISettings>(initialSettings);
 
-    const lastRequestRef = useRef<{ action: ActionType, context: string } | null>(null);
+    const lastRequestRef = useRef<{ action: ActionType, context: string, difficulty?: string } | null>(null);
 
     // Load state from localStorage on initial render
     useEffect(() => {
@@ -235,7 +237,7 @@ const App: React.FC = () => {
         }
     }, [aiSettings]);
 
-    const handleGenerateContent = useCallback(async (action: ActionType, context: string, isRefinement = false, refinementInstruction = '') => {
+    const handleGenerateContent = useCallback(async (action: ActionType, context: string, isRefinement = false, refinementInstruction = '', difficulty: string = 'Médio') => {
         if (!context.trim()) {
             setError("O texto de entrada não pode estar vazio.");
             return;
@@ -247,13 +249,13 @@ const App: React.FC = () => {
             setResult(null);
             setView(View.RESULTS);
             setCurrentAction(action);
-            lastRequestRef.current = { action, context };
+            lastRequestRef.current = { action, context, difficulty: action === ActionType.TEST ? difficulty : undefined };
         }
 
         try {
             const prompt = isRefinement
                 ? `Com base na resposta anterior, refine o resultado com a seguinte instrução: "${refinementInstruction}". A resposta anterior foi gerada a partir do texto original. Mantenha o formato e a essência da resposta original, apenas aplicando a modificação solicitada.\n\n--- RESPOSTA ANTERIOR ---\n${result?.text}\n\n--- TEXTO ORIGINAL (para contexto) ---\n${context}`
-                : getPromptForAction(action, context);
+                : getPromptForAction(action, context, difficulty);
             
             const modelConfig: any = {
                 temperature: aiSettings.temperature,
@@ -285,6 +287,7 @@ const App: React.FC = () => {
                     fullInputText: context,
                     fullResult: newResult,
                     timestamp: new Date().toISOString(),
+                    difficulty: action === ActionType.TEST ? difficulty as ('Fácil' | 'Médio' | 'Difícil') : undefined,
                 };
                 setHistory(prev => [newHistoryItem, ...prev]);
             }
@@ -298,7 +301,20 @@ const App: React.FC = () => {
     }, [aiSettings, result]);
 
     const handleActionSelect = (action: ActionType) => {
-        handleGenerateContent(action, inputText);
+        if (!inputText.trim()) {
+             setError("O texto de entrada não pode estar vazio.");
+             return;
+        }
+        if (action === ActionType.TEST) {
+            setQuizModalVisible(true);
+        } else {
+            handleGenerateContent(action, inputText);
+        }
+    };
+
+    const handleQuizGeneration = (difficulty: 'Fácil' | 'Médio' | 'Difícil') => {
+        setQuizModalVisible(false);
+        handleGenerateContent(ActionType.TEST, inputText, false, '', difficulty);
     };
 
     const handleRefine = (instruction: string) => {
@@ -393,7 +409,7 @@ const App: React.FC = () => {
         setInputText(item.fullInputText);
         setResult(item.fullResult);
         setCurrentAction(item.actionType);
-        lastRequestRef.current = { action: item.actionType, context: item.fullInputText };
+        lastRequestRef.current = { action: item.actionType, context: item.fullInputText, difficulty: item.difficulty };
         setView(View.RESULTS);
     };
     const handleDeleteItem = (itemId: number) => setHistory(prev => prev.filter(item => item.id !== itemId));
@@ -403,7 +419,7 @@ const App: React.FC = () => {
 
     const handleRefresh = () => {
         if (lastRequestRef.current) {
-            handleGenerateContent(lastRequestRef.current.action, lastRequestRef.current.context);
+            handleGenerateContent(lastRequestRef.current.action, lastRequestRef.current.context, false, '', lastRequestRef.current.difficulty);
         }
     };
 
@@ -491,6 +507,11 @@ const App: React.FC = () => {
                 onClose={() => setSettingsModalVisible(false)}
                 currentSettings={aiSettings}
                 onSave={handleSaveSettings}
+            />
+            <QuizDifficultyModal
+                isVisible={isQuizModalVisible}
+                onClose={() => setQuizModalVisible(false)}
+                onSelectDifficulty={handleQuizGeneration}
             />
         </div>
     );
