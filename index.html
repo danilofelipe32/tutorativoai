@@ -1,11 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tutor Ativo AI</title>
+    <link rel="icon" href="/icons/icon192.png" type="image/png">
+    
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#0f172a" />
+    <link rel="apple-touch-icon" href="/icons/icon192.png">
+
+    <!-- iOS-specific PWA tags for a native app feel -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Tutor Ativo AI">
+
+    <!-- Icon Library -->
+    <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.min.js"></script>
+    <style>
+        /* Custom scrollbar for the new glass aesthetic */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.1);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0px); }
+            50% { transform: translate(0, 20px); }
+            100% { transform: translate(0, -0px); }
+        }
+
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.6;
+            z-index: -1;
+        }
+
+        /* Animations for modals and dropdowns */
+        @keyframes fade-in {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .animate-fade-in {
+            animation: fade-in 0.2s ease-out forwards;
+        }
+        @keyframes fade-in-fast {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in-fast {
+            animation: fade-in-fast 0.15s ease-out forwards;
+        }
+        @keyframes checkmark-pop {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-checkmark-pop {
+            animation: checkmark-pop 0.3s ease-out forwards;
+        }
+
+        /* Accordion Styles */
+        .accordion-content {
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease-in-out, padding 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            max-height: 0;
+            opacity: 0;
+            padding-left: 1rem;
+            padding-right: 1rem;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+
+        .accordion-content.open {
+            max-height: 1200px; /* Adjust if content is larger */
+            opacity: 1;
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+    </style>
 <script type="importmap">
 {
   "imports": {
-    "react/": "https://aistudiocdn.com/react@^19.2.0/",
-    "react": "https://aistudiocdn.com/react@^19.2.0",
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
-    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.22.0"
+    "react/": "https://aistudiocdn.com/react@^19.1.1/",
+    "react": "https://aistudiocdn.com/react@^19.1.1",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/",
+    "@google/genai": "https://esm.run/@google/genai"
   }
 }
 </script>
-full contents of index.html
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans h-screen overflow-hidden">
+    <div id="app-background">
+        <div class="orb" style="top: 5%; left: 10%; width: 350px; height: 350px; background-color: rgba(14, 165, 233, 0.4); animation: float 8s ease-in-out infinite alternate;"></div>
+        <div class="orb" style="top: 50%; left: 75%; width: 450px; height: 450px; background-color: rgba(132, 114, 246, 0.4); animation: float 10s ease-in-out infinite reverse;"></div>
+        <div class="orb" style="top: 30%; left: 40%; width: 300px; height: 300px; background-color: rgba(34, 211, 238, 0.3); animation: float 7s ease-in-out infinite;"></div>
+    </div>
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+</body>
+</html>
