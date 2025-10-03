@@ -37,7 +37,6 @@ const ActionButton: React.FC<{
     };
 
     return (
-        // Wrapper div that holds both buttons and provides the visual style and relative positioning context.
         <div
             className={`relative rounded-xl text-white shadow-lg transition-all duration-200 ease-in-out hover:scale-105 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-offset-slate-900 focus-within:ring-white ${config.className}`}
         >
@@ -57,14 +56,17 @@ const ActionButton: React.FC<{
                 </div>
             </button>
 
-            {/* Favorite button, absolutely positioned on top */}
+            {/* Favorite button, refactored for clarity and guaranteed visibility */}
             <button
                 onClick={handleFavoriteClick}
-                className="absolute top-2 right-2 p-1.5 text-slate-400 hover:text-yellow-400 transition-colors duration-200 z-10 focus:outline-none focus:ring-2 focus:ring-yellow-400 rounded-full"
+                className="absolute top-2 right-2 p-1.5 z-10 rounded-full focus:outline-none focus:ring-2 focus:ring-yellow-400"
                 aria-label={isFavorite ? `Desfavoritar ${config.title}` : `Favoritar ${config.title}`}
                 title={isFavorite ? 'Desfavoritar' : 'Favoritar'}
             >
-                {isFavorite ? <StarFillIcon className="text-yellow-400 text-xl" /> : <StarIcon className="text-xl" />}
+                {isFavorite 
+                    ? <StarFillIcon className="text-yellow-400 text-xl" /> 
+                    : <StarIcon className="text-slate-400 hover:text-yellow-300 text-xl transition-colors" />
+                }
             </button>
         </div>
     );
