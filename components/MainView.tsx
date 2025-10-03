@@ -1,4 +1,5 @@
 
+
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { ActionType, HistoryItem } from '../types';
 import { actionConfig } from '../constants';
@@ -249,7 +250,7 @@ const MainView: React.FC<MainViewProps> = ({
                     value={inputText}
                     onChange={(e) => onTextChange(e.target.value)}
                     placeholder="Cole seu texto aqui para analisá-lo, ou digite uma pergunta para a 'Pesquisa Web Inteligente'. Você também pode usar o botão azul para anexar uma imagem ou PDF."
-                    className={`w-full flex-grow bg-slate-900/50 text-slate-300 p-4 rounded-lg mb-4 border backdrop-blur-sm focus:outline-none min-h-[150px] md:min-h-[200px] resize-y transition-all duration-300 border-white/10 focus:ring-2 focus:ring-sky-400 focus:shadow-[0_0_15px_rgba(59,130,246,0.4)]`}
+                    className={`w-full flex-grow bg-gray-200 text-gray-900 placeholder-gray-600 p-4 rounded-lg mb-4 border focus:outline-none min-h-[150px] md:min-h-[200px] resize-y transition-all duration-300 border-gray-300 focus:ring-2 focus:ring-sky-400 focus:shadow-[0_0_15px_rgba(59,130,246,0.4)]`}
                     aria-label="Área de texto para análise"
                     disabled={isLoading}
                 />
