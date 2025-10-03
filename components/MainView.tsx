@@ -235,7 +235,7 @@ const MainView: React.FC<MainViewProps> = ({
                                     role="region"
                                     aria-labelledby={`accordion-title-${groupId}`}
                                 >
-                                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
+                                    <div className="max-h-96 overflow-y-auto pr-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
                                         {group.actions.map((action) => (
                                             <ActionButton
                                                 key={action}
