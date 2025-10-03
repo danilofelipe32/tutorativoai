@@ -74,12 +74,71 @@ const FormattedResponse: React.FC<FormattedResponseProps> = ({ text, actionType 
 
     const content = useMemo(() => {
         const lines = text.split('\n');
-        // Fix: Replace JSX.Element with React.ReactElement to resolve "Cannot find namespace 'JSX'" error.
         const elements: React.ReactElement[] = [];
         let isList = false;
 
+        // 1. Pre-scan for headers to build the Table of Contents
+        const headers: { text: string; id: string }[] = [];
+        const slugify = (str: string) => str.toLowerCase().replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-');
+
+        lines.forEach((line) => {
+            const trimmedLine = line.trim();
+            // A header is a line that consists only of bold text.
+            const isHeader = trimmedLine.startsWith('**') && trimmedLine.endsWith('**') && trimmedLine.split('**').length === 3;
+            // Exclude common patterns that aren't titles (e.g., "**Gabarito:**")
+            const isExcludedPattern = /gabarito|alegação|pergunta|cenário|afirmação/i.test(trimmedLine);
+
+            if (isHeader && !isExcludedPattern) {
+                const headerText = trimmedLine.slice(2, -2).trim();
+                if (headerText) { // Ensure header is not empty
+                    headers.push({
+                        text: headerText,
+                        id: `${slugify(headerText)}-${headers.length}`
+                    });
+                }
+            }
+        });
+
+        // 2. If there's more than one header, create and add the TOC element
+        if (headers.length > 1) {
+            elements.push(
+                <nav key="toc" className="bg-slate-900/50 backdrop-blur-sm border border-white/10 rounded-lg p-4 mb-6" aria-labelledby="toc-title">
+                    <h2 id="toc-title" className="text-lg font-bold text-slate-100 mb-3">Tabela de Conteúdo</h2>
+                    <ul className="space-y-2">
+                        {headers.map((header) => (
+                            <li key={header.id}>
+                                <a href={`#${header.id}`} className="text-sky-400 hover:text-sky-300 hover:underline transition-colors text-sm">
+                                    {header.text}
+                                </a>
+                            </li>
+                        ))}
+                    </ul>
+                </nav>
+            );
+        }
+
+        let headerIndex = 0;
+
+        // 3. Process the content line by line
         for (let i = 0; i < lines.length; i++) {
             let line = lines[i];
+            const trimmedLine = line.trim();
+            
+            // Check if the current line is a header we identified
+            const isHeader = trimmedLine.startsWith('**') && trimmedLine.endsWith('**') && trimmedLine.split('**').length === 3;
+            const isExcludedPattern = /gabarito|alegação|pergunta|cenário|afirmação/i.test(trimmedLine);
+            const currentHeaderFromList = headers[headerIndex];
+
+            if (isHeader && !isExcludedPattern && currentHeaderFromList && trimmedLine.slice(2, -2).trim() === currentHeaderFromList.text) {
+                elements.push(
+                    <h2 key={currentHeaderFromList.id} id={currentHeaderFromList.id} className="text-xl font-bold text-slate-100 mt-6 mb-2 pt-2 scroll-mt-24">
+                        {currentHeaderFromList.text}
+                    </h2>
+                );
+                headerIndex++;
+                isList = false;
+                continue; // Skip other processing for this line
+            }
 
             // Table Detection
             if (line.includes('|')) {
