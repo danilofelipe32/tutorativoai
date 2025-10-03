@@ -43,17 +43,17 @@ const ActionButton: React.FC<{
             className={`relative p-3 rounded-xl flex flex-col items-start justify-between text-white shadow-lg transition-all duration-200 ease-in-out hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-white disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:active:scale-100 ${config.className}`}
             aria-disabled={isDisabled}
         >
-            <div className="flex justify-between items-start w-full">
-                <config.icon className="text-3xl mb-2" />
-                <button
-                    onClick={handleFavoriteClick}
-                    className="p-1 text-slate-400 hover:text-yellow-400 transition-colors z-10 rounded-full hover:bg-white/10"
-                    aria-label={isFavorite ? 'Desfavoritar ação' : 'Favoritar ação'}
-                    title={isFavorite ? 'Desfavoritar' : 'Favoritar'}
-                >
-                    {isFavorite ? <StarFillIcon className="text-yellow-400 text-xl" /> : <StarIcon className="text-xl" />}
-                </button>
-            </div>
+            <button
+                onClick={handleFavoriteClick}
+                className="absolute top-2 right-2 p-2 text-slate-400 hover:text-yellow-400 transition-colors z-10 rounded-full hover:bg-white/10"
+                aria-label={isFavorite ? 'Desfavoritar ação' : 'Favoritar ação'}
+                title={isFavorite ? 'Desfavoritar' : 'Favoritar'}
+            >
+                {isFavorite ? <StarFillIcon className="text-yellow-400 text-lg" /> : <StarIcon className="text-lg" />}
+            </button>
+
+            <config.icon className="text-3xl mb-2" />
+            
             <div className="text-left">
                 <h3 className="font-bold text-xs md:text-sm">{config.title}</h3>
                 <p className="text-[10px] opacity-80 mt-1">{config.description}</p>
