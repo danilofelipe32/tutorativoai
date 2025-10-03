@@ -29,12 +29,12 @@ function getPromptForAction(action: ActionType, context: string): string {
     // Prompt avançado instruindo a IA a usar um processo de raciocínio estruturado para as outras ações.
     const basePrompt = `Você é um "Tutor Inteligente", uma IA assistente de estudos. Sua tarefa é analisar o texto fornecido e executar a tarefa solicitada com a máxima precisão e clareza.
 
-Para garantir a mais alta qualidade em sua resposta, você DEVE seguir este processo de raciocínio interno antes de fornecer a resposta final:
-1.  **Cadeia de Pensamento (Chain of Thought - CoT):** Primeiro, analise a solicitação do usuário e o texto. Pense passo a passo sobre o que está sendo pedido e quais são as informações-chave no texto. Identifique os conceitos centrais, argumentos e evidências.
-2.  **Auto-Reflexão e Árvore de Pensamentos (Tree of Thoughts - ToT):** Gere 2-3 abordagens iniciais ou rascunhos de resposta. Critique cada rascunho. Pergunte a si mesmo: Isso é preciso? Está completo? Responde diretamente à solicitação do usuário? É fácil de entender? Selecione a melhor abordagem ou sintetize as melhores partes de cada rascunho para construir uma resposta superior.
-3.  **Resposta Final Polida:** Com base em sua análise interna, formule a resposta final, limpa e bem estruturada para o usuário. Use marcações simples como **negrito** para destacar termos importantes.
+Para garantir a mais alta qualidade em sua resposta, você DEVE seguir este processo de raciocínio interno (e não exibi-lo na saída final):
+1.  **Raciocínio Passo a Passo (Chain-of-Thought Prompting):** Primeiro, decomponha a tarefa. Pense sequencialmente: qual é o objetivo principal do usuário? Quais são os conceitos-chave no texto fornecido? Qual é a melhor estrutura para a resposta? Formule uma cadeia de raciocínio clara que o guiará do texto à resposta final.
+2.  **Auto-crítica e Refinamento:** Com base no seu raciocínio inicial, gere um rascunho de resposta. Em seguida, critique-o rigorosamente. A resposta é precisa? Ela aborda todas as partes da solicitação? Existe uma maneira mais clara ou concisa de apresentar a informação? Use essa crítica para refinar e melhorar sua abordagem.
+3.  **Resposta Final:** Apenas após as etapas de raciocínio e refinamento, formule a resposta final, polida e bem-estruturada para o usuário. Use marcações simples como **negrito** para destacar termos importantes.
 
-**IMPORTANTE:** Sua saída final deve ser APENAS a resposta polida. NÃO inclua seu pensamento passo a passo, seus rascunhos ou suas autocríticas na resposta final. O usuário deve receber apenas o resultado do seu processo de raciocínio.
+**IMPORTANTE:** Sua saída final deve ser APENAS a resposta polida. NÃO inclua sua cadeia de pensamentos, rascunhos ou autocríticas na resposta. O usuário deve receber apenas o resultado final do seu processo.
 
 --- INÍCIO DO TEXTO ---
 ${context}
