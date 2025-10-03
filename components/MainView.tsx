@@ -1,8 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
+
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { ActionType, HistoryItem } from '../types';
 import { actionConfig } from '../constants';
 import HistoryList from './HistoryList';
-import { PlusIcon, LoadingIcon, TrashIcon, ChevronRightIcon } from './icons';
+import { PlusIcon, LoadingIcon, TrashIcon, ChevronRightIcon, StarIcon, StarFillIcon } from './icons';
 
 interface MainViewProps {
     onActionSelect: (action: ActionType) => void;
@@ -18,18 +19,42 @@ interface MainViewProps {
     onPdfUpload: (file: File) => void;
     isPdfLoading: boolean;
     onImportHistory: (importedHistory: HistoryItem[]) => void;
+    favoriteActions: ActionType[];
+    onToggleFavorite: (action: ActionType) => void;
 }
 
-const ActionButton: React.FC<{ action: ActionType; onClick: () => void; isDisabled: boolean }> = ({ action, onClick, isDisabled }) => {
+const ActionButton: React.FC<{ 
+    action: ActionType; 
+    onClick: () => void; 
+    isDisabled: boolean;
+    isFavorite: boolean;
+    onToggleFavorite: (action: ActionType) => void;
+}> = ({ action, onClick, isDisabled, isFavorite, onToggleFavorite }) => {
     const config = actionConfig[action];
+
+    const handleFavoriteClick = (e: React.MouseEvent) => {
+        e.stopPropagation(); // Impede que o botão de ação principal seja acionado
+        onToggleFavorite(action);
+    };
+
     return (
         <button
             onClick={onClick}
             disabled={isDisabled}
-            className={`p-3 rounded-xl flex flex-col items-start justify-between text-white shadow-lg transition-all duration-200 ease-in-out hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-white disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:active:scale-100 ${config.className}`}
+            className={`relative p-3 rounded-xl flex flex-col items-start justify-between text-white shadow-lg transition-all duration-200 ease-in-out hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-white disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:active:scale-100 ${config.className}`}
             aria-disabled={isDisabled}
         >
-            <config.icon className="text-3xl mb-2" />
+            <div className="flex justify-between items-start w-full">
+                <config.icon className="text-3xl mb-2" />
+                <button
+                    onClick={handleFavoriteClick}
+                    className="p-1 -mr-1 -mt-1 text-slate-400 hover:text-yellow-400 transition-colors z-10"
+                    aria-label={isFavorite ? 'Desfavoritar ação' : 'Favoritar ação'}
+                    title={isFavorite ? 'Desfavoritar' : 'Favoritar'}
+                >
+                    {isFavorite ? <StarFillIcon className="text-yellow-400" /> : <StarIcon />}
+                </button>
+            </div>
             <div className="text-left">
                 <h3 className="font-bold text-xs md:text-sm">{config.title}</h3>
                 <p className="text-[10px] opacity-80 mt-1">{config.description}</p>
@@ -38,7 +63,7 @@ const ActionButton: React.FC<{ action: ActionType; onClick: () => void; isDisabl
     );
 };
 
-const actionGroups = [
+const initialActionGroups = [
   {
     title: 'Análise e Compreensão',
     description: 'Ações para extrair, simplificar e entender as informações centrais do texto.',
@@ -142,12 +167,34 @@ const MainView: React.FC<MainViewProps> = ({
     onPdfUpload,
     isPdfLoading,
     onImportHistory,
+    favoriteActions,
+    onToggleFavorite,
 }) => {
     const isTextProvided = inputText.trim().length > 0;
     const fileInputRef = useRef<HTMLInputElement>(null);
     const isLoading = isOcrLoading || isPdfLoading;
-    const [openGroup, setOpenGroup] = useState<string | null>(actionGroups[0].title);
+    
     const [loadingMessage, setLoadingMessage] = useState('');
+
+    const actionGroups = useMemo(() => {
+        const favoriteSet = new Set(favoriteActions);
+
+        const favoritesGroup = {
+            title: '⭐ Favoritos',
+            description: 'Suas ações mais usadas, sempre à mão.',
+            colorClass: 'border-yellow-400 hover:bg-yellow-900/40',
+            actions: favoriteActions.sort((a, b) => actionConfig[a].title.localeCompare(actionConfig[b].title)),
+        };
+
+        const otherGroups = initialActionGroups.map(group => ({
+            ...group,
+            actions: group.actions.filter(action => !favoriteSet.has(action)),
+        })).filter(group => group.actions.length > 0);
+
+        return favoriteActions.length > 0 ? [favoritesGroup, ...otherGroups] : otherGroups;
+    }, [favoriteActions]);
+
+    const [openGroup, setOpenGroup] = useState<string | null>(actionGroups.length > 0 ? actionGroups[0].title : null);
 
     useEffect(() => {
         let intervalId: number | undefined;
@@ -278,6 +325,8 @@ const MainView: React.FC<MainViewProps> = ({
                                                 action={action}
                                                 onClick={() => onActionSelect(action)}
                                                 isDisabled={!isTextProvided || isLoading}
+                                                isFavorite={favoriteActions.includes(action)}
+                                                onToggleFavorite={onToggleFavorite}
                                             />
                                         ))}
                                     </div>
