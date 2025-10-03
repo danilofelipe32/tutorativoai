@@ -255,6 +255,7 @@ const MainView: React.FC<MainViewProps> = ({
                         onClick={onClearText}
                         className="bg-white/5 hover:bg-white/10 text-slate-200 font-semibold py-2 px-4 rounded-lg transition-colors text-sm flex items-center space-x-2 border border-white/10"
                         title="Limpar texto"
+                        aria-label="Limpar área de texto"
                     >
                         <TrashIcon className="text-base" />
                         <span>Limpar</span>

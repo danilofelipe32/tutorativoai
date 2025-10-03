@@ -1,4 +1,5 @@
 
+
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { HistoryItem, ActionType, GroundingChunk } from '../types';
 import { actionConfig } from '../constants';
@@ -352,7 +353,7 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onDelet
                             </div>
                         )}
                     </div>
-                    <button onClick={handleImportClick} className="flex-1 sm:flex-none flex items-center justify-center space-x-2 bg-white/5 hover:bg-white/10 text-slate-200 font-semibold py-2 px-3 rounded-lg transition-colors text-xs border border-white/10" title="Importar Histórico de um arquivo JSON ou XML">
+                    <button onClick={handleImportClick} className="flex-1 sm:flex-none flex items-center justify-center space-x-2 bg-white/5 hover:bg-white/10 text-slate-200 font-semibold py-2 px-3 rounded-lg transition-colors text-xs border border-white/10" title="Importar Histórico de um arquivo JSON ou XML" aria-label="Importar histórico">
                         <ImportIcon/><span>Importar</span>
                     </button>
                     <input type="file" ref={importInputRef} onChange={handleFileImport} accept=".json,.xml,application/json,application/xml" className="hidden" />
@@ -420,9 +421,10 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onDelet
                                             onKeyDown={(e) => e.key === 'Enter' && handleSaveRename(item.id)}
                                             onBlur={() => handleSaveRename(item.id)}
                                             className="w-full bg-slate-900/80 text-slate-200 px-2 py-1 rounded border border-sky-500/50 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                                            aria-label="Novo título para o item"
                                         />
-                                        <button onClick={() => handleSaveRename(item.id)} className="p-2 text-emerald-400 hover:bg-emerald-500/20 rounded-full"><CheckIcon /></button>
-                                        <button onClick={handleCancelRename} className="p-2 text-rose-400 hover:bg-rose-500/20 rounded-full"><CloseIcon /></button>
+                                        <button onClick={() => handleSaveRename(item.id)} className="p-2 text-emerald-400 hover:bg-emerald-500/20 rounded-full" aria-label="Salvar renomeação"><CheckIcon /></button>
+                                        <button onClick={handleCancelRename} className="p-2 text-rose-400 hover:bg-rose-500/20 rounded-full" aria-label="Cancelar renomeação"><CloseIcon /></button>
                                     </div>
                                 ) : (
                                     <>
@@ -435,10 +437,10 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onDelet
                                             </div>
                                         </button>
                                         <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button onClick={() => handleRenameClick(item)} className="p-2 text-slate-400 hover:text-sky-400 hover:bg-sky-500/20 rounded-full" title="Renomear">
+                                            <button onClick={() => handleRenameClick(item)} className="p-2 text-slate-400 hover:text-sky-400 hover:bg-sky-500/20 rounded-full" title="Renomear" aria-label={`Renomear item: ${title}`}>
                                                 <PencilIcon />
                                             </button>
-                                            <button onClick={() => handleDeleteClick(item.id)} className="p-2 text-slate-400 hover:text-rose-400 hover:bg-rose-500/20 rounded-full" title="Excluir">
+                                            <button onClick={() => handleDeleteClick(item.id)} className="p-2 text-slate-400 hover:text-rose-400 hover:bg-rose-500/20 rounded-full" title="Excluir" aria-label={`Excluir item: ${title}`}>
                                                 <TrashIcon />
                                             </button>
                                         </div>
@@ -457,25 +459,27 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onDelet
             </div>
             
             {totalPages > 1 && (
-                <div className="flex items-center justify-between mt-6">
+                <nav className="flex items-center justify-between mt-6" role="navigation" aria-label="Paginação do histórico">
                     <button
                         onClick={handlePrevPage}
                         disabled={currentPage === 1}
                         className="bg-slate-700/50 hover:bg-slate-600/50 text-slate-300 font-semibold py-2 px-4 rounded-lg transition-colors border border-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-sky-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                        aria-label="Ir para a página anterior do histórico"
                     >
                         Anterior
                     </button>
-                    <span className="text-sm text-slate-400 font-medium">
+                    <span className="text-sm text-slate-400 font-medium" aria-live="polite" aria-atomic="true">
                         Página {currentPage} de {totalPages}
                     </span>
                     <button
                         onClick={handleNextPage}
                         disabled={currentPage === totalPages}
                         className="bg-slate-700/50 hover:bg-slate-600/50 text-slate-300 font-semibold py-2 px-4 rounded-lg transition-colors border border-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-sky-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                        aria-label="Ir para a página seguinte do histórico"
                     >
                         Próximo
                     </button>
-                </div>
+                </nav>
             )}
         </section>
     );
