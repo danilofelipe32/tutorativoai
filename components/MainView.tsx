@@ -45,7 +45,7 @@ const ActionButton: React.FC<{
         >
             <button
                 onClick={handleFavoriteClick}
-                className="absolute top-2 right-2 p-2 text-slate-400 hover:text-yellow-400 transition-colors z-10 rounded-full hover:bg-white/10"
+                className="absolute top-2 right-2 p-2 text-slate-400 hover:text-yellow-400 opacity-100 z-10 rounded-full hover:bg-white/10"
                 aria-label={isFavorite ? 'Desfavoritar ação' : 'Favoritar ação'}
                 title={isFavorite ? 'Desfavoritar' : 'Favoritar'}
             >
