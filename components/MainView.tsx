@@ -31,42 +31,41 @@ const ActionButton: React.FC<{
 }> = ({ action, onClick, isDisabled, isFavorite, onToggleFavorite }) => {
     const config = actionConfig[action];
 
-    const handleFavoriteClick = (e: React.MouseEvent | React.KeyboardEvent) => {
-        e.stopPropagation(); // CRITICAL: Prevents the main button's onClick from firing
+    const handleFavoriteClick = () => {
         onToggleFavorite(action);
     };
 
     return (
-        <button
-            onClick={onClick}
-            disabled={isDisabled}
-            className={`relative rounded-xl text-white shadow-lg transition-all duration-200 ease-in-out hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 focus-visible:ring-white ${config.className} w-full p-3 text-left disabled:opacity-50 disabled:cursor-not-allowed`}
-            aria-label={config.title}
-        >
-            <div className="flex flex-col items-start justify-between h-full">
+        // A relative container for both buttons to ensure correct positioning.
+        <div className={`relative group transition-all duration-200 ease-in-out hover:scale-105 ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}>
+            {/* The main button for the action */}
+            <button
+                onClick={onClick}
+                disabled={isDisabled}
+                className={`rounded-xl text-white shadow-lg ${config.className} w-full p-3 text-left flex flex-col justify-between h-full focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 focus-visible:ring-white`}
+                aria-label={config.title}
+            >
                 <config.icon className="text-3xl mb-2" />
-                <div>
+                <div className="mt-auto">
                     <h3 className="font-bold text-xs md:text-sm">{config.title}</h3>
                     <p className="text-[10px] opacity-80 mt-1">{config.description}</p>
                 </div>
-            </div>
-
-            {/* Use a div for the clickable favorite area to avoid nested buttons, which is invalid HTML. */}
-            <div
-                role="button"
-                tabIndex={0}
+            </button>
+            
+            {/* The favorite button, absolutely positioned on top */}
+            <button
                 onClick={handleFavoriteClick}
-                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleFavoriteClick(e); } }}
-                className="absolute top-2 right-2 p-1.5 z-10 rounded-full focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                disabled={isDisabled}
+                className="absolute top-2 right-2 p-1.5 z-20 rounded-full focus:outline-none focus:ring-2 focus:ring-yellow-400"
                 aria-label={isFavorite ? `Desfavoritar ${config.title}` : `Favoritar ${config.title}`}
                 title={isFavorite ? 'Desfavoritar' : 'Favoritar'}
             >
                 {isFavorite 
                     ? <StarFillIcon className="text-yellow-400 text-xl drop-shadow-[0_0_2px_white]" /> 
-                    : <StarIcon className="text-slate-400 hover:text-yellow-300 text-xl transition-colors drop-shadow-[0_0_2px_white]" />
+                    : <StarIcon className="text-slate-300 group-hover:text-yellow-300 text-xl transition-colors drop-shadow-[0_0_2px_white]" />
                 }
-            </div>
-        </button>
+            </button>
+        </div>
     );
 };
 
