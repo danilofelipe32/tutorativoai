@@ -1,5 +1,3 @@
-
-
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { ActionType, HistoryItem } from '../types';
 import { actionConfig } from '../constants';
@@ -49,11 +47,11 @@ const ActionButton: React.FC<{
                 <config.icon className="text-3xl mb-2" />
                 <button
                     onClick={handleFavoriteClick}
-                    className="p-1 -mr-1 -mt-1 text-slate-400 hover:text-yellow-400 transition-colors z-10"
+                    className="p-1 text-slate-400 hover:text-yellow-400 transition-colors z-10 rounded-full hover:bg-white/10"
                     aria-label={isFavorite ? 'Desfavoritar ação' : 'Favoritar ação'}
                     title={isFavorite ? 'Desfavoritar' : 'Favoritar'}
                 >
-                    {isFavorite ? <StarFillIcon className="text-yellow-400" /> : <StarIcon />}
+                    {isFavorite ? <StarFillIcon className="text-yellow-400 text-xl" /> : <StarIcon className="text-xl" />}
                 </button>
             </div>
             <div className="text-left">
