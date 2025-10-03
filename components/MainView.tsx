@@ -31,34 +31,32 @@ const ActionButton: React.FC<{
 }> = ({ action, onClick, isDisabled, isFavorite, onToggleFavorite }) => {
     const config = actionConfig[action];
 
-    const handleFavoriteClick = (e: React.MouseEvent) => {
-        e.stopPropagation();
+    const handleFavoriteClick = (e: React.MouseEvent | React.KeyboardEvent) => {
+        e.stopPropagation(); // CRITICAL: Prevents the main button's onClick from firing
         onToggleFavorite(action);
     };
 
     return (
-        <div
-            className={`relative rounded-xl text-white shadow-lg transition-all duration-200 ease-in-out hover:scale-105 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-offset-slate-900 focus-within:ring-white ${config.className}`}
+        <button
+            onClick={onClick}
+            disabled={isDisabled}
+            className={`relative rounded-xl text-white shadow-lg transition-all duration-200 ease-in-out hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 focus-visible:ring-white ${config.className} w-full p-3 text-left disabled:opacity-50 disabled:cursor-not-allowed`}
+            aria-label={config.title}
         >
-            {/* The main action button, covering the entire area */}
-            <button
-                onClick={onClick}
-                disabled={isDisabled}
-                className="w-full h-full p-3 text-left focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
-                aria-label={config.title}
-            >
-                <div className="flex flex-col items-start justify-between h-full">
-                    <config.icon className="text-3xl mb-2" />
-                    <div>
-                        <h3 className="font-bold text-xs md:text-sm">{config.title}</h3>
-                        <p className="text-[10px] opacity-80 mt-1">{config.description}</p>
-                    </div>
+            <div className="flex flex-col items-start justify-between h-full">
+                <config.icon className="text-3xl mb-2" />
+                <div>
+                    <h3 className="font-bold text-xs md:text-sm">{config.title}</h3>
+                    <p className="text-[10px] opacity-80 mt-1">{config.description}</p>
                 </div>
-            </button>
+            </div>
 
-            {/* Favorite button, refactored for clarity and guaranteed visibility */}
-            <button
+            {/* Use a div for the clickable favorite area to avoid nested buttons, which is invalid HTML. */}
+            <div
+                role="button"
+                tabIndex={0}
                 onClick={handleFavoriteClick}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleFavoriteClick(e); } }}
                 className="absolute top-2 right-2 p-1.5 z-10 rounded-full focus:outline-none focus:ring-2 focus:ring-yellow-400"
                 aria-label={isFavorite ? `Desfavoritar ${config.title}` : `Favoritar ${config.title}`}
                 title={isFavorite ? 'Desfavoritar' : 'Favoritar'}
@@ -67,8 +65,8 @@ const ActionButton: React.FC<{
                     ? <StarFillIcon className="text-yellow-400 text-xl drop-shadow-[0_0_2px_white]" /> 
                     : <StarIcon className="text-slate-400 hover:text-yellow-300 text-xl transition-colors drop-shadow-[0_0_2px_white]" />
                 }
-            </button>
-        </div>
+            </div>
+        </button>
     );
 };
 
