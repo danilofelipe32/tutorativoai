@@ -63,55 +63,55 @@ ${context}
 
     switch (action) {
         case 'SUMMARIZE':
-            return basePrompt + "Tarefa: Crie um resumo conciso e claro dos pontos principais do texto acima. Use bullet points (iniciando cada um com um hífen '-') para facilitar a leitura.";
+            return basePrompt + "Tarefa: Crie um resumo conciso dos pontos-chave do texto. Apresente os pontos como uma lista (bullet points), cada um iniciado por um hífen '-'.";
         case 'KEYWORDS':
-            return basePrompt + "Tarefa: Identifique e liste os 5 a 7 termos ou conceitos mais importantes do texto. Para cada termo, forneça uma breve definição (1-2 frases) baseada no contexto do texto. Formate como: **Termo:** Definição.";
+            return basePrompt + "Tarefa: Identifique e liste os 5 a 7 termos ou conceitos mais importantes do texto. Para cada termo, forneça uma breve definição (1-2 frases) baseada no contexto. Formate como: **Termo:** Definição.";
         case 'REFLECT':
-            return basePrompt + "Tarefa: Elabore de 3 a 5 perguntas abertas e instigantes que incentivem a reflexão sobre o conteúdo do texto. As perguntas devem estimular o pensamento crítico. Numere as perguntas.";
+            return basePrompt + "Tarefa: Elabore de 3 a 5 perguntas abertas e instigantes sobre o texto que incentivem o pensamento crítico e não possam ser respondidas com 'sim' ou 'não'. Numere as perguntas.";
         case 'TEST':
-            return basePrompt + `Tarefa: Crie um pequeno quiz de nível **${difficulty}** com 4 perguntas de múltipla escolha para testar o conhecimento sobre o texto. Siga ESTRITAMENTE este formato:\n1. Pergunta...\na) Opção A\nb) Opção B\nc) Opção C\nd) Opção D\n\n2. Pergunta...\n...\n\nNo final, adicione a chave de respostas usando a tag **Gabarito:** seguido das respostas (ex: 1-c, 2-a...).`;
+            return basePrompt + `Tarefa: Crie um quiz de nível **${difficulty}** com 4 perguntas de múltipla escolha para testar o conhecimento sobre o texto. Siga ESTRITAMENTE este formato:\n1. Pergunta...\na) Opção A\nb) Opção B\nc) Opção C\nd) Opção D\n\nNo final, adicione a chave de respostas usando a tag **Gabarito:** seguido das respostas (ex: 1-c, 2-a...).`;
         case 'SIMPLIFY':
-            return basePrompt + "Tarefa: Reescreva os conceitos mais complexos do texto em uma linguagem simples e fácil de entender, como se estivesse explicando para um estudante do ensino médio. Use parágrafos curtos.";
+            return basePrompt + "Tarefa: Reescreva os conceitos mais complexos do texto em linguagem simples, como se estivesse explicando para alguém mais jovem. Evite jargões, use parágrafos curtos e, se possível, uma analogia.";
         case 'MINDMAP':
-            return basePrompt + "Tarefa: Gere uma estrutura de mapa mental em formato de texto (usando recuo e marcadores como -, +, *) que organize as ideias principais e secundárias do texto. Comece com a ideia central e ramifique os subtópicos.";
+            return basePrompt + "Tarefa: Gere uma estrutura de mapa mental em formato de texto (usando recuo e marcadores como -, +, *) que organize as ideias principais e secundárias do texto. Comece com a ideia central.";
         case 'ANALOGY':
-            return basePrompt + "Tarefa: Explique o conceito central do texto usando uma analogia simples e fácil de entender. A analogia deve relacionar o tópico a algo do cotidiano para facilitar a compreensão.";
+            return basePrompt + "Tarefa: Explique o conceito central do texto usando uma analogia simples e fácil de entender, relacionando o tópico a algo do cotidiano.";
         case 'STEP_BY_STEP':
-            return basePrompt + "Tarefa: Se o texto descreve um processo, evento histórico ou uma sequência de passos, detalhe-o em um formato 'passo a passo' claro e numerado. Se não houver um processo claro, explique a estrutura lógica do texto de forma sequencial.";
+            return basePrompt + "Tarefa: Se o texto descreve um processo ou sequência, detalhe-o em um formato 'passo a passo' numerado. Caso contrário, explique a estrutura lógica do texto de forma sequencial.";
         case 'CONNECTIONS':
-            return basePrompt + "Tarefa: Descreva como os principais conceitos do texto se conectam com o mundo real ou outras áreas do conhecimento (como história, ciência, arte, tecnologia, etc.). Forneça 2 a 3 exemplos práticos e claros, usando bullet points (iniciando com um hífen '-').";
+            return basePrompt + "Tarefa: Liste de 2 a 3 exemplos práticos de como os conceitos do texto se conectam com o mundo real ou outras áreas do conhecimento (ciência, história, etc.). Use bullet points (iniciados por '-').";
         case 'DEEPER_QUESTIONS':
-            return basePrompt + "Tarefa: Gere de 3 a 5 perguntas de aprofundamento que vão além da compreensão superficial do texto. As perguntas devem incentivar o pensamento crítico, desafiar premissas, explorar as implicações das ideias e conectar o conteúdo a conceitos mais amplos. Evite perguntas que possam ser respondidas diretamente com uma simples citação do texto. Numere as perguntas.";
+            return basePrompt + "Tarefa: Gere 3-5 perguntas de aprofundamento que vão além do superficial, desafiando premissas e explorando as implicações das ideias do texto. Numere as perguntas.";
         case 'SOCRATIC_OPPONENT':
-            return basePrompt + "Tarefa: Atue como um 'Oponente Socrático'. Seu objetivo é desafiar as premissas e a lógica do texto fornecido. Formule 3 a 5 perguntas críticas e profundas que questionem os argumentos centrais, identifiquem possíveis falácias ou explorem perspectivas alternativas. Suas perguntas não devem ser para testar o conhecimento, mas para estimular um pensamento mais profundo e um debate rigoroso. Numere as perguntas.";
+            return basePrompt + "Tarefa: Atue como um 'Oponente Socrático'. Formule 3 a 5 perguntas críticas que questionem os argumentos centrais do texto, identifiquem possíveis falhas ou explorem perspectivas alternativas.";
         case 'LESSON_PLAN':
-            return basePrompt + "Tarefa: Com base no texto fornecido, esboce um plano de aula detalhado. O plano de aula deve incluir os seguintes componentes: **Objetivos de Aprendizagem**, **Materiais Necessários**, **Atividade Introdutória (Gancho)**, **Atividades Principais (Instrução e Prática Guiada)**, **Avaliação Formativa** e **Atividade de Encerramento**. Use bullet points para organizar o conteúdo dentro de cada seção.";
+            return basePrompt + "Tarefa: Esboce um plano de aula com base no texto, incluindo: **Objetivos**, **Atividade Introdutória**, **Atividades Principais**, e **Avaliação**. Use bullet points para organizar cada seção.";
         case 'RUBRIC':
-            return basePrompt + "Tarefa: Crie uma rubrica de avaliação analítica com base no conteúdo principal do texto. A rubrica deve ter pelo menos 3 critérios de avaliação e 3 níveis de desempenho (ex: 'Iniciante', 'Proficiente', 'Exemplar'). Formate a rubrica final ESTRITAMENTE como uma tabela Markdown.";
+            return basePrompt + "Tarefa: Crie uma rubrica de avaliação com 3 critérios e 3 níveis de desempenho (ex: 'Iniciante', 'Proficiente', 'Exemplar'). Formate o resultado ESTRITAMENTE como uma tabela Markdown.";
         case 'DIFFERENTIATION':
-            return basePrompt + "Tarefa: Gere uma lista de 3 a 5 estratégias de diferenciação instrucional com base no tópico do texto. Para cada estrategia, descreva como ela pode ser aplicada para apoiar: 1) alunos com dificuldades, 2) alunos na média e 3) alunos avançados. Use bullet points.";
+            return basePrompt + "Tarefa: Sugira 3 estratégias de diferenciação instrucional (para alunos com dificuldades, na média e avançados) com base no tópico do texto. Use bullet points.";
         case 'DOK_QUESTIONS':
-            return basePrompt + "Tarefa: Elabore uma série de perguntas sobre o texto, organizadas pelos quatro níveis da Profundidade de Conhecimento (DOK) de Webb. Forneça 2 perguntas para cada nível:\n**DOK 1 (Recordar):**\n**DOK 2 (Habilidades e Conceitos):**\n**DOK 3 (Pensamento Estratégico):**\n**DOK 4 (Pensamento Estendido):**";
+            return basePrompt + "Tarefa: Elabore 2 perguntas para cada um dos quatro níveis da Profundidade de Conhecimento de Webb (DOK 1 a 4) sobre o texto. Rotule cada nível claramente (ex: **DOK 1 (Recordar):**).";
         case 'WORKSHEETS':
-            return basePrompt + "Tarefa: Crie uma planilha de atividades ('worksheet') envolvente baseada no texto. Inclua uma mistura de 3 a 4 tipos de atividades diferentes, como preencher espaços em branco, perguntas de resposta curta, ou uma questão para desenhar um diagrama. Use tabelas Markdown para estruturar atividades como preencher lacunas ou correspondência para uma apresentação clara e organizada.";
+            return basePrompt + "Tarefa: Crie uma planilha de atividades com 3 a 4 tipos de exercícios diferentes (ex: preencher lacunas, resposta curta, etc.) baseados no texto. Use tabelas Markdown para maior clareza.";
         case 'PROJECT_IDEAS':
-            return basePrompt + "Tarefa: Faça um brainstorm e liste 4 a 6 ideias de projetos criativos e práticos que os alunos poderiam realizar com base no conteúdo do texto. Para cada ideia, forneça uma breve descrição do projeto e o formato do produto final (ex: apresentação de slides, podcast, maquete, etc.). Use bullet points.";
+            return basePrompt + "Tarefa: Liste de 4 a 6 ideias de projetos criativos que os alunos poderiam realizar com base no texto. Para cada ideia, descreva o projeto e o produto final (ex: podcast, apresentação).";
         case 'EXEMPLARS':
-            return basePrompt + "Tarefa: Com base em uma tarefa central do texto (como responder a uma pergunta ou criar um argumento), crie dois exemplos de resposta do aluno: um **Exemplar (Exemplo Forte)** e um **Não-Exemplar (Exemplo com Pontos a Melhorar)**. Para cada um, explique em 1-2 frases por que ele é classificado dessa forma, destacando as qualidades do exemplar e as áreas de melhoria do não-exemplar.";
+            return basePrompt + "Tarefa: Crie dois exemplos de resposta de um aluno: um **Exemplar (Forte)** e um **Não-Exemplar (Com Pontos a Melhorar)**. Explique brevemente por que cada um foi classificado dessa forma.";
         case 'CHOICE_BOARD':
-            return basePrompt + "Tarefa: Crie um 'Quadro de Escolhas' com nove atividades curtas e variadas baseadas no texto. As atividades devem apelar para diferentes estilos de aprendizagem (ex: escrever, desenhar, pesquisar, construir, debater). Formate a resposta ESTRITAMENTE como uma tabela Markdown 3x3.";
+            return basePrompt + "Tarefa: Crie um 'Quadro de Escolhas' com nove atividades variadas baseadas no texto, apelando para diferentes estilos de aprendizagem. Formate a resposta ESTRITAMENTE como uma tabela Markdown 3x3.";
         case 'MISCONCEPTIONS':
-            return basePrompt + "Tarefa: Identifique 2 a 3 equívocos ou interpretações errôneas comuns que os alunos possam ter sobre o tópico do texto. Para cada equívoco, primeiro declare o **Equívoco Comum** e, em seguida, forneça uma **Explicação Clara** para corrigi-lo, usando analogias ou exemplos simples.";
+            return basePrompt + "Tarefa: Identifique 2 a 3 equívocos comuns sobre o tópico do texto. Para cada um, declare o **Equívoco Comum** e forneça uma **Explicação Clara** para corrigi-lo.";
         case 'DISCUSSION_PROMPTS':
-            return basePrompt + "Tarefa: Elabore 5 perguntas para discussão abertas e envolventes que incentivem o debate em sala de aula sobre as ideias, temas ou controvérsias do texto. As perguntas devem ir além da simples recordação de fatos e promover o pensamento crítico e a troca de perspectivas. Numere as perguntas.";
+            return basePrompt + "Tarefa: Elabore 5 perguntas abertas para discussão em grupo que promovam o debate e a troca de perspectivas sobre o texto. Numere as perguntas.";
         case 'INFORMATIONAL_TEXT':
-            return basePrompt + "Tarefa: Reescreva ou sintetize o conteúdo principal do texto em um novo texto informativo curto e coeso (cerca de 3-4 parágrafos). O novo texto deve ser escrito para um público que não tem conhecimento prévio sobre o assunto, definindo termos-chave e apresentando as informações de forma lógica e clara.";
+            return basePrompt + "Tarefa: Sintetize o conteúdo do texto em um novo texto informativo curto (3-4 parágrafos) para um público leigo, explicando os termos-chave de forma clara.";
         case 'REAL_WORLD_EXAMPLES':
-            return basePrompt + "Tarefa: Liste de 4 a 6 exemplos concretos do mundo real que ilustrem os conceitos ou teorias principais apresentados no texto. Para cada exemplo, explique brevemente (1-2 frases) como ele se conecta ao tópico. Use bullet points.";
+            return basePrompt + "Tarefa: Liste de 4 a 6 exemplos concretos do mundo real que ilustrem os conceitos principais do texto. Use bullet points.";
         case 'STORYTELLER':
-            return basePrompt + "Tarefa: Atue como um 'Contador de Histórias Mestre'. Sua tarefa é transformar o conteúdo informativo do texto em uma pequena história, narrativa ou conto envolvente. Use personagens, um cenário e um enredo simples (início, meio, fim) para ilustrar os conceitos principais. O objetivo é tornar o material mais memorável e interessante. A história deve ser curta, direta ao ponto e adequada para o público-alvo do texto original.";
+            return basePrompt + "Tarefa: Transforme o conteúdo principal do texto em uma pequena história ou narrativa envolvente. O objetivo é tornar a informação mais memorável e interessante. Seja breve e direto.";
         case 'FACT_CHECKER':
-            return basePrompt + "Tarefa: Atue como um 'Verificador de Fatos' cético e rigoroso. Sua missão é analisar o texto e identificar as 3 a 5 alegações ou 'fatos' mais significativos. Para cada alegação, formule uma pergunta investigativa que um pesquisador usaria para verificar sua veracidade. As perguntas devem ser específicas e apontar para a necessidade de fontes externas, dados ou evidências. Formate ESTRITAMENTE a saída da seguinte forma:\n**Alegação 1:** [Citação ou paráfrase da alegação do texto].\n**Pergunta de Verificação:** [Sua pergunta investigativa].\n\n**Alegação 2:** ...";
+            return basePrompt + "Tarefa: Atue como um 'Verificador de Fatos'. Identifique de 3 a 5 alegações importantes no texto e, para cada uma, formule uma pergunta para verificar sua veracidade. Formate como:\n**Alegação 1:** [Alegação].\n**Pergunta de Verificação:** [Sua pergunta].";
         case 'AI_QUEST_EDU':
             // Este prompt foi simplificado para ser mais direto e reduzir a chance de erros de API.
             return `Você é o **Gerador de Missões AI QUEST EDU (BNCC)**, um Game Master pedagógico. Sua tarefa é transformar o texto do usuário em uma missão gamificada para alunos.
@@ -123,59 +123,59 @@ ${context}
 
 **Instruções: Crie uma missão de projeto. Inclua um **Título Cativante**, **Missão (o desafio)**, **Recursos (o que eles usam)**, **Etapas (o que eles fazem)** e **Avaliação (como são avaliados)**. Aponte 2-3 **Habilidades da BNCC** relevantes.`;
         case 'POSSIBILITIES_ENGINE':
-            return basePrompt + "Tarefa: Atue como um 'Motor de Possibilidades'. Gere 3 a 5 formas alternativas de explicar o conceito central do texto. Cada alternativa deve usar uma abordagem diferente (ex: uma metáfora visual, uma explicação passo a passo, uma conexão histórica, etc.).";
+            return basePrompt + "Tarefa: Gere 3 a 5 formas alternativas de explicar o conceito central do texto, cada uma com uma abordagem diferente (ex: uma metáfora visual, uma conexão histórica).";
         case 'CO_DESIGNER':
-            return basePrompt + "Tarefa: Atue como um 'Co-Designer' de aprendizado. Com base no texto, ajude o usuário a planejar uma atividade de aprendizado personalizada. Faça 3 perguntas-chave para entender os objetivos e interesses do aluno, e então sugira 2 atividades de projeto que se alinhem a essas respostas.";
+            return basePrompt + "Tarefa: Atue como um 'Co-Designer' de aprendizado. Para ajudar um professor a planejar uma atividade, sugira 3 perguntas-chave que ele poderia fazer a um aluno para entender seus interesses. Em seguida, proponha 2 ideias de atividades de projeto baseadas no texto.";
         case 'COLLABORATION_COACH':
-            return basePrompt + "Tarefa: Atue como um 'Coach de Colaboração'. Imagine que um grupo de alunos precisa trabalhar em um projeto sobre este texto. Sugira 3 funções específicas para os membros do grupo (ex: 'Líder de Pesquisa', 'Gerente de Apresentação') e liste 2 ideias de pesquisa iniciais para o grupo começar a investigar.";
+            return basePrompt + "Tarefa: Atue como um 'Coach de Colaboração'. Sugira 3 funções específicas para membros de um grupo que trabalham com este texto (ex: 'Líder de Pesquisa') e liste 2 ideias de pesquisa para o grupo começar.";
         case 'EXPLORATORIUM':
-            return basePrompt + "Tarefa: Atue como um 'Exploratorium'. Facilite a exploração de dados ou informações no texto. Identifique um conjunto de dados ou um ponto de informação chave no texto e gere 3 perguntas que incentivem o aluno a investigar e visualizar os dados.";
+            return basePrompt + "Tarefa: Identifique um ponto de informação ou dado chave no texto e gere 3 perguntas que incentivem um aluno a investigar e visualizar essa informação mais a fundo.";
         case 'IDENTIFY_PERSPECTIVE':
-            return basePrompt + "Tarefa: Atue como um 'Analisador de Perspectivas'. Analise o texto para identificar o ponto de vista principal do autor. Destaque 2-3 frases ou argumentos que revelem esse ponto de vista. Em seguida, descreva brevemente um ponto de vista alternativo ou oposto que não é apresentado no texto.";
+            return basePrompt + "Tarefa: Analise o texto para identificar o ponto de vista principal do autor. Destaque 2-3 frases que revelem essa perspectiva e descreva brevemente um ponto de vista alternativo.";
         case 'FEEDBACK_GENERATOR':
-            return basePrompt + "Tarefa: Atue como um 'Gerador de Feedback Construtivo'. Imagine que este texto é a resposta de um aluno a uma tarefa. Forneça 3 pontos de feedback: 1) Um 'brilho' (algo que o aluno fez bem). 2) Um 'ponto de crescimento' (uma área específica para melhoria). 3) Uma 'pergunta de aprofundamento' para incentivar o aluno a expandir seu pensamento.";
+            return basePrompt + "Tarefa: Imagine que este texto é a resposta de um aluno. Forneça um feedback construtivo em 3 partes: 1) Um 'brilho' (o que foi bem feito). 2) Um 'ponto de crescimento' (uma área para melhorar). 3) Uma 'pergunta de aprofundamento'.";
         case 'PARETO_PRINCIPLE':
-            return basePrompt + "Tarefa: Aplique o Princípio de Pareto (a regra 80/20) a este texto. Identifique os 20% do conteúdo (os conceitos, ideias ou parágrafos mais críticos) que fornecem 80% do valor ou compreensão do tópico. Liste esses pontos-chave em formato de bullet points.";
+            return basePrompt + "Tarefa: Aplique o Princípio de Pareto (regra 80/20) ao texto. Identifique os 20% do conteúdo mais críticos que fornecem 80% da compreensão do tópico e liste-os em bullet points.";
         case 'FEYNMAN_TECHNIQUE':
-            return basePrompt + "Tarefa: Aplique a Técnica de Feynman. Explique o conceito central do texto da forma mais simples possível, como se estivesse ensinando a uma criança de 12 anos. Use analogias simples, evite jargões e foque na ideia principal. Em seguida, identifique uma área onde sua explicação simplificada pode ser fraca ou incompleta, formulando uma pergunta sobre ela para aprofundar seu próprio entendimento.";
+            return basePrompt + "Tarefa: Aplique a Técnica de Feynman. Primeiro, explique o conceito central do texto em linguagem extremamente simples. Em seguida, identifique uma área onde sua explicação simplificada pode ser fraca, formulando uma pergunta sobre ela.";
         case 'SIMULATED_DEBATE':
-            return basePrompt + "Tarefa: Atue como um moderador e dois debatedores com pontos de vista opostos sobre o tema principal do texto. Crie um diálogo de debate curto entre 'Debatedor A' e 'Debatedor B'. Cada debatedor deve apresentar um argumento principal e uma réplica ao argumento do outro, baseando-se nas ideias (ou na falta delas) do texto. Formate o debate claramente, identificando quem está falando (ex: **Moderador:**, **Debatedor A:**).";
+            return basePrompt + "Tarefa: Crie um diálogo de debate curto entre 'Debatedor A' e 'Debatedor B' com pontos de vista opostos sobre o tema do texto. Cada um deve apresentar um argumento e uma réplica. Formate o diálogo claramente.";
         case 'WHAT_IF_SCENARIOS':
-            return basePrompt + "Tarefa: Atue como um 'Explorador de Hipóteses'. Com base no conceito central do texto, crie 3 cenários hipotéticos instigantes. Para cada um, formate a resposta ESTRITAMENTE da seguinte maneira:\n**Cenário \"E Se...?\":** [Descreva o cenário hipotético aqui].\n**Possíveis Consequências:** [Descreva brevemente 2-3 frases sobre o desdobramento ou implicação].";
+            return basePrompt + "Tarefa: Crie 3 cenários hipotéticos instigantes baseados no conceito central do texto. Formate ESTRITAMENTE como:\n**Cenário \"E Se...?\":** [Descrição].\n**Possíveis Consequências:** [Consequências].";
         case 'EVIDENCE_HUNT':
-            return basePrompt + "Tarefa: Atue como um 'Detetive de Fatos'. Formule 3 'missões de caça às evidências'. Cada missão deve ser uma afirmação baseada no texto. O desafio para o aluno é encontrar a frase ou o dado específico no texto original que comprova ou refuta a afirmação. Formate ESTRITAMENTE da seguinte forma:\n**Afirmação 1:** [Afirmação a ser verificada].\n**Missão:** Encontre a evidência no texto que apoia ou contradiz esta afirmação.\n\n**Afirmação 2:** ...";
+            return basePrompt + "Tarefa: Formule 3 'missões de caça às evidências'. Cada missão deve ser uma afirmação baseada no texto, e o desafio para o aluno é encontrar a evidência que a comprova. Formate ESTRITAMENTE como:\n**Afirmação 1:** [Afirmação].\n**Missão:** Encontre a evidência no texto.";
         case 'GAME_BUILDER':
-            return basePrompt + "Tarefa: Atue como um 'Construtor de Jogos Didáticos'. Descreva as regras para um minijogo simples (de tabuleiro, cartas ou digital) baseado no conteúdo do texto. Sua descrição deve incluir: **Nome do Jogo**, **Objetivo**, **Como Jogar (regras básicas)** e **Condição de Vitória**. O jogo deve ajudar a reforçar os conceitos principais do texto de forma lúdica.";
+            return basePrompt + "Tarefa: Descreva as regras para um minijogo simples (de tabuleiro, cartas, etc.) baseado no conteúdo do texto. Inclua: **Nome do Jogo**, **Objetivo**, **Regras Básicas** e **Condição de Vitória**.";
         case 'MAKER_GUIDE':
-            return basePrompt + "Tarefa: Atue como um 'Guia Maker (STEAM)'. Transforme um conceito teórico do texto em um projeto prático e de baixo custo. Descreva um guia 'faça você mesmo' com os seguintes tópicos: **Título do Projeto**, **Conceito-Chave Abordado**, **Materiais Necessários** (itens comuns), e um **Passo a Passo Simplificado** para a construção ou experimentação. O objetivo é criar uma representação física ou um experimento que ilustre a ideia do texto.";
+            return basePrompt + "Tarefa: Transforme um conceito do texto em um projeto prático de baixo custo. Descreva um guia 'faça você mesmo' com: **Título do Projeto**, **Conceito-Chave**, **Materiais Necessários** e **Passo a Passo Simplificado**.";
         case 'CASE_STUDIES':
-            return basePrompt + "Tarefa: Crie 2 estudos de caso curtos que apliquem os conceitos do texto a uma situação-problema do mundo real. Cada estudo de caso deve apresentar: **1. O Cenário:** uma breve descrição do contexto. **2. O Dilema:** um problema ou desafio que precisa ser resolvido usando as informações do texto. **3. Pergunta para Análise:** uma questão que guie a aplicação do conhecimento. Formate cada estudo de caso claramente.";
+            return basePrompt + "Tarefa: Crie 2 estudos de caso curtos que apliquem os conceitos do texto a um problema do mundo real. Cada um deve ter: **1. Cenário**, **2. Dilema**, e **3. Pergunta para Análise**.";
         case 'PROGRESS_MAP':
-            return basePrompt + "Tarefa: Atue como um 'Guia de Aprendizagem'. Analise o texto e crie um 'Mapa de Progresso' para um estudante. O mapa deve ter duas seções claras: 1. **Conceitos Fundamentais (O que você provavelmente já sabe):** Liste de 3 a 5 conceitos básicos do texto que servem como alicerce. 2. **Áreas para Aprofundamento (O que você precisa aprender):** Liste de 3 a 5 tópicos mais avançados, nuances ou implicações do texto que o estudante deve focar para obter um domínio completo. Use bullet points para cada seção.";
+            return basePrompt + "Tarefa: Crie um 'Mapa de Progresso' para um estudante com duas seções: 1. **Conceitos Fundamentais (O que você já sabe):** liste 3-5 conceitos básicos do texto. 2. **Áreas para Aprofundamento (O que aprender a seguir):** liste 3-5 tópicos avançados do texto.";
         case 'SMART_STUDY_PLAN':
-            return basePrompt + "Tarefa: Crie um 'Plano de Estudo Inteligente' de 3 dias com base no conteúdo do texto. Para cada dia, sugira uma meta de estudo específica e uma pequena atividade prática para reforçar o aprendizado. Formate a resposta da seguinte maneira:\n**Dia 1: Fundamentos**\n*   **Meta:** [Meta para o dia 1]\n*   **Atividade:** [Atividade para o dia 1]\n\n**Dia 2: Aprofundamento**\n*   **Meta:** [Meta para o dia 2]\n*   **Atividade:** [Atividade para o dia 2]\n\n**Dia 3: Aplicação e Revisão**\n*   **Meta:** [Meta para o dia 3]\n*   **Atividade:** [Atividade para o dia 3]";
+            return basePrompt + "Tarefa: Crie um 'Plano de Estudo Inteligente' de 3 dias com base no texto. Para cada dia, sugira uma meta e uma pequena atividade prática. Formate como:\n**Dia 1: Fundamentos**\n*   **Meta:** [Meta]\n*   **Atividade:** [Atividade]";
         case 'GAP_DETECTOR':
-            return basePrompt + "Tarefa: Atue como um 'Detector de Lacunas de Conhecimento'. Analise criticamente o texto e identifique de 3 a 4 áreas onde as informações são superficiais, ambíguas ou que poderiam levar a perguntas não respondidas. Para cada lacuna identificada, explique brevemente por que ela é um ponto que merece mais estudo ou esclarecimento. Use bullet points.";
+            return basePrompt + "Tarefa: Analise criticamente o texto e identifique de 3 a 4 áreas onde as informações são superficiais ou ambíguas, explicando por que cada uma merece mais estudo. Use bullet points.";
         case 'PRACTICAL_APPLICATIONS':
-            return basePrompt + "Tarefa: Atue como um 'Consultor de Carreira e Vida'. Com base nos conceitos do texto, liste de 4 a 6 'Aplicações Práticas' concretas. Para cada aplicação, especifique se ela se aplica ao **Cotidiano** ou ao **Mercado de Trabalho** e descreva brevemente (1-2 frases) como o conhecimento pode ser utilizado nesse contexto. Use o formato: **[Cotidiano/Mercado de Trabalho] - Título da Aplicação:** Descrição.";
+            return basePrompt + "Tarefa: Liste de 4 a 6 aplicações práticas dos conceitos do texto. Especifique se cada aplicação é para o **Cotidiano** ou **Mercado de Trabalho** e descreva seu uso. Formato: **[Cotidiano/Mercado de Trabalho] - Título:** Descrição.";
         case 'CONTEXTUALIZED_EXAMPLES':
-            return basePrompt + "Tarefa: Gere 3 'Exemplos Contextualizados' que ilustrem a aplicação prática dos conceitos do texto. Cada exemplo deve ser um mini cenário ou uma breve história que descreve uma situação do mundo real onde o conhecimento do texto é essencial para entender ou resolver o problema. Numere cada exemplo.";
+            return basePrompt + "Tarefa: Gere 3 'Exemplos Contextualizados' como mini cenários ou breves histórias que descrevem uma situação do mundo real onde o conhecimento do texto é essencial. Numere cada exemplo.";
         case 'INTERDISCIPLINARY_EXPLORATION':
-            return basePrompt + "Tarefa: Realize uma 'Exploração Interdisciplinar'. Identifique o tema central do texto e descreva como ele se conecta com pelo menos 3 outras áreas do conhecimento (ex: História, Arte, Ciência, Filosofia, Economia, etc.). Para cada conexão, explique a relação de forma clara e concisa em 2-3 frases. Use o formato: **Conexão com [Área do Conhecimento]:** Explicação.";
+            return basePrompt + "Tarefa: Descreva como o tema central do texto se conecta com 3 outras áreas do conhecimento (ex: História, Arte, Ciência). Explique cada conexão em 2-3 frases. Formato: **Conexão com [Área]:** Explicação.";
         case 'METAPHORICAL_LEARNING':
-            return `Você é um educador criativo especializado em tornar ideias complexas acessíveis. Explique o conceito de ${context} por meio de metáforas, analogias e histórias envolventes. Use referências do cotidiano para que qualquer pessoa consiga entender e lembrar com facilidade. Finalize com uma pergunta reflexiva para consolidar o entendimento.`;
+            return basePrompt + "Tarefa: Explique o conceito central do texto usando uma metáfora ou analogia criativa e memorável. A explicação deve ser envolvente e terminar com uma pergunta que reforce a compreensão.";
         case 'SPACED_REPETITION':
-            return `Você é um especialista em neuroeducação. Crie um cronograma de revisão espaçada para aprender e memorizar ${context}, baseado em evidências da curva do esquecimento. Inclua as datas ideais para revisar, técnicas de microteste e recomendações de ferramentas digitais para acompanhar o progresso.`;
+            return basePrompt + "Tarefa: Com base nos conceitos-chave do texto, crie um plano de revisão espaçada. Sugira 3 perguntas de revisão e um cronograma simples (ex: revisar em 1 dia, 3 dias, 1 semana) para ajudar na memorização.";
         case 'GROWTH_MINDSET':
-            return `Você é um mentor de desenvolvimento pessoal. Me ensine como desenvolver uma mentalidade de crescimento ao estudar ou aplicar ${context}. Apresente estratégias práticas que reforcem a resiliência, o foco no progresso e a superação de bloqueios. Inclua uma lista de hábitos diários ou reflexões semanais que favoreçam esse mindset.`;
+            return basePrompt + "Tarefa: Escreva 2-3 dicas sobre como abordar o estudo do tópico do texto com uma 'mentalidade de crescimento'. Foque em como superar desafios e ver o esforço como um caminho para o aprendizado.";
         case 'FLOW_STATE':
-            return `Você é um treinador de performance cognitiva. Me oriente sobre como atingir e manter o estado de flow enquanto estudo ou prático ${context}. Indique condições ideais (ambiente, tempo, estímulos), técnicas para evitar distrações e como monitorar se estou em flow de forma prática.`;
+            return basePrompt + "Tarefa: Crie uma lista de 3 a 5 dicas práticas para ajudar um estudante a alcançar o 'estado de flow' (foco profundo) ao estudar o conteúdo deste texto. As dicas devem ser acionáveis e diretas.";
         case 'CURIOSITY_EXPLORATION':
-            return `Você é um mentor do pensamento investigativo. Gere uma lista de perguntas provocativas, tarefas exploratórias e desafios criativos sobre ${context} para estimular minha curiosidade e expandir meu aprendizado de forma autônoma. Organize os tópicos por nível de profundidade (iniciante, intermediário e avançado) e sugira recursos para cada um.`;
+            return basePrompt + "Tarefa: Para despertar a curiosidade sobre o tema, gere 3 'trilhas de exploração'. Cada trilha deve ser uma pergunta intrigante seguida por 2-3 sugestões de tópicos relacionados para pesquisa futura.";
         case 'SCENARIO_BASED_LEARNING':
-            return `Você é um designer instrucional especializado em ensino ativo. Crie uma sequência de cenários realistas e desafiadores onde eu possa aplicar o conhecimento sobre ${context}. Em cada cenário, descreva o contexto, o desafio e as possíveis abordagens, incentivando a tomada de decisão e o raciocínio crítico. Finalize com perguntas de reflexão para consolidar o aprendizado.`;
+            return basePrompt + "Tarefa: Crie um cenário ou estudo de caso curto e realista onde o conhecimento do texto é necessário para resolver um problema. Conclua o cenário com 1-2 perguntas desafiadoras para o leitor.";
         case 'REVERSE_ENGINEERING':
-            return `Você é um especialista em aprendizagem profunda. Me ensine a aplicar engenharia reversa ao estudar ${context}, desconstruindo ideias complexas em blocos simples e lógicos. Forneça uma estrutura passo a passo, use analogias visuais ou práticas, e proponha exercícios para reforçar a reconstrução dos conceitos a partir da base.`;
+            return basePrompt + "Tarefa: Aplique a 'engenharia reversa' ao argumento principal do texto. Desconstrua-o em suas partes fundamentais: 1) A conclusão principal. 2) As premissas ou evidências que a sustentam. Apresente isso em uma lista clara.";
         default:
             return context;
     }
