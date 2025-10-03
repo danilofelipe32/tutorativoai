@@ -2,7 +2,7 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { HistoryItem, ActionType, GroundingChunk } from '../types';
 import { actionConfig } from '../constants';
-import { HistoryIcon, TrashIcon, PencilIcon, SearchIcon, DownloadIcon, ImportIcon, CheckIcon, CloseIcon } from './icons';
+import { HistoryIcon, TrashIcon, PencilIcon, SearchIcon, DownloadIcon, ImportIcon, CheckIcon, CloseIcon, SortIcon } from './icons';
 
 interface HistoryListProps {
     history: HistoryItem[];
@@ -13,12 +13,14 @@ interface HistoryListProps {
 }
 
 const ITEMS_PER_PAGE = 10;
+type SortOption = 'date-desc' | 'date-asc' | 'action-asc';
 
 const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onDeleteItem, onRenameItem, onImportHistory }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [editingItemId, setEditingItemId] = useState<number | null>(null);
     const [renameValue, setRenameValue] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
+    const [sortOption, setSortOption] = useState<SortOption>('date-desc');
     const [isExportMenuOpen, setIsExportMenuOpen] = useState(false);
     
     const inputRef = useRef<HTMLInputElement>(null);
@@ -45,33 +47,55 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onDelet
         };
     }, []);
 
-    const filteredHistory = useMemo(() => {
-        if (!searchTerm.trim()) {
-            return history;
-        }
-        const lowerCaseSearch = searchTerm.toLowerCase();
-        return history.filter(item => {
-            const title = item.customTitle ?? actionConfig[item.actionType].title;
-            const originalText = item.fullInputText;
-            const resultText = item.fullResult.text;
+    const processedHistory = useMemo(() => {
+        let processedItems = [...history]; // Start with a shallow copy
 
-            return (
-                title.toLowerCase().includes(lowerCaseSearch) ||
-                originalText.toLowerCase().includes(lowerCaseSearch) ||
-                resultText.toLowerCase().includes(lowerCaseSearch)
-            );
-        });
-    }, [history, searchTerm]);
+        // 1. Filter
+        if (searchTerm.trim()) {
+            const lowerCaseSearch = searchTerm.toLowerCase();
+            processedItems = processedItems.filter(item => {
+                const title = item.customTitle ?? actionConfig[item.actionType].title;
+                const originalText = item.fullInputText;
+                const resultText = item.fullResult.text;
+
+                return (
+                    title.toLowerCase().includes(lowerCaseSearch) ||
+                    originalText.toLowerCase().includes(lowerCaseSearch) ||
+                    resultText.toLowerCase().includes(lowerCaseSearch)
+                );
+            });
+        }
+        
+        // 2. Sort
+        switch (sortOption) {
+            case 'date-asc':
+                processedItems.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+                break;
+            case 'action-asc':
+                processedItems.sort((a, b) => {
+                    const titleA = actionConfig[a.actionType].title;
+                    const titleB = actionConfig[b.actionType].title;
+                    return titleA.localeCompare(titleB);
+                });
+                break;
+            case 'date-desc':
+            default:
+                processedItems.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+                break;
+        }
+
+        return processedItems;
+    }, [history, searchTerm, sortOption]);
 
     // Reset to page 1 when search term changes or history is updated
     useEffect(() => {
         setCurrentPage(1);
-    }, [filteredHistory.length]);
+    }, [processedHistory.length]);
 
     // Pagination logic
-    const totalPages = Math.ceil(filteredHistory.length / ITEMS_PER_PAGE);
+    const totalPages = Math.ceil(processedHistory.length / ITEMS_PER_PAGE);
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    const currentItems = filteredHistory.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+    const currentItems = processedHistory.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
     const handleNextPage = () => {
         setCurrentPage(prev => Math.min(prev + 1, totalPages));
@@ -328,16 +352,35 @@ const HistoryList: React.FC<HistoryListProps> = ({ history, onItemClick, onDelet
                 </div>
             </div>
 
-            <div className="relative mb-4">
-                <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                <input
-                    type="text"
-                    placeholder="Pesquisar no histórico..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full bg-slate-900/50 text-slate-300 pl-10 pr-4 py-2 rounded-lg border border-white/10 focus:outline-none focus:ring-2 focus:ring-sky-500"
-                />
+            <div className="flex flex-col sm:flex-row items-center gap-4 mb-4">
+                <div className="relative w-full sm:flex-grow">
+                    <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                    <input
+                        type="text"
+                        placeholder="Pesquisar no histórico..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full bg-slate-900/50 text-slate-300 pl-10 pr-4 py-2 rounded-lg border border-white/10 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                        aria-label="Pesquisar no histórico"
+                    />
+                </div>
+                <div className="relative w-full sm:w-auto">
+                    <label htmlFor="sort-history" className="sr-only">Ordenar histórico</label>
+                    <select
+                        id="sort-history"
+                        value={sortOption}
+                        onChange={(e) => setSortOption(e.target.value as SortOption)}
+                        className="w-full sm:w-auto appearance-none bg-slate-900/50 text-slate-300 pl-4 pr-10 py-2 rounded-lg border border-white/10 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                        aria-label="Ordenar histórico"
+                    >
+                        <option value="date-desc">Mais Recentes</option>
+                        <option value="date-asc">Mais Antigos</option>
+                        <option value="action-asc">Tipo de Ação (A-Z)</option>
+                    </select>
+                    <SortIcon className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                </div>
             </div>
+
 
             <div className="space-y-2 mt-4">
                 {history.length > 0 && currentItems.length > 0 ? (
