@@ -30,15 +30,26 @@ const ActionButton: React.FC<{
     onToggleFavorite: (action: ActionType) => void;
 }> = ({ action, onClick, isDisabled, isFavorite, onToggleFavorite }) => {
     const config = actionConfig[action];
+    const [isAnimating, setIsAnimating] = useState(false); // Estado para a animação
 
-    const handleFavoriteClick = () => {
+    const handleFavoriteClick = (e: React.MouseEvent) => {
+        e.stopPropagation(); // Impede que o clique no favorito acione a ação principal
         onToggleFavorite(action);
+        setIsAnimating(true);
+        // Reseta o estado da animação após a sua conclusão
+        const animationDuration = 300; // em milissegundos
+        setTimeout(() => {
+            setIsAnimating(false);
+        }, animationDuration);
     };
 
+    // Determina a classe para a animação
+    const animationClass = isAnimating ? 'animate-favorite-pop' : '';
+
     return (
-        // A relative container for both buttons to ensure correct positioning.
+        // Um contêiner relativo para o card de ação
         <div className={`relative group transition-all duration-200 ease-in-out hover:scale-105 ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}>
-            {/* The main button for the action */}
+            {/* O botão principal para a ação */}
             <button
                 onClick={onClick}
                 disabled={isDisabled}
@@ -52,17 +63,17 @@ const ActionButton: React.FC<{
                 </div>
             </button>
             
-            {/* The favorite button, absolutely positioned on top */}
+            {/* O botão de favorito, agora sem fundo para parecer apenas uma estrela */}
             <button
                 onClick={handleFavoriteClick}
                 disabled={isDisabled}
-                className="absolute top-2 right-2 p-1.5 z-20 rounded-full focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                className="absolute top-1 right-1 p-2 z-20 rounded-full focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-colors"
                 aria-label={isFavorite ? `Desfavoritar ${config.title}` : `Favoritar ${config.title}`}
                 title={isFavorite ? 'Desfavoritar' : 'Favoritar'}
             >
                 {isFavorite 
-                    ? <StarFillIcon className="text-yellow-400 text-xl drop-shadow-[0_0_2px_white]" /> 
-                    : <StarIcon className="text-slate-300 group-hover:text-yellow-300 text-xl transition-colors drop-shadow-[0_0_2px_white]" />
+                    ? <StarFillIcon className={`text-yellow-400 text-xl drop-shadow-[0_0_4px_rgba(250,204,21,0.7)] ${animationClass}`} /> 
+                    : <StarIcon className={`text-slate-200 hover:text-yellow-300 text-xl transition-colors drop-shadow-[0_0_3px_rgba(0,0,0,0.7)] ${animationClass}`} />
                 }
             </button>
         </div>
