@@ -1,5 +1,4 @@
 
-
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { ActionType, HistoryItem } from '../types';
 import { actionConfig } from '../constants';
